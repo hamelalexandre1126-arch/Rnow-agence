@@ -59,8 +59,8 @@ RÈGLES STRICTES :
   `;
 
   try {
-    // UTILISATION DU MODÈLE GEMINI-PRO (Plus stable pour l'API v1beta)
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`, {
+    // --- ICI LA CORRECTION : VERSION v1 ET MODÈLE GEMINI-1.5-FLASH ---
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
