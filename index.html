@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rnow - L'IA Créatrice de Voyages</title>
     <style>
-        /* --- DESIGN IDENTITY: RNOW --- */
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;900&display=swap');
 
         body {
@@ -16,43 +15,26 @@
             padding: 20px;
             display: flex;
             justify-content: center;
-            align-items: center;
             min-height: 100vh;
         }
 
         .container {
             width: 100%;
-            max-width: 550px;
+            max-width: 600px;
             background: #ffffff;
             border-radius: 24px;
             padding: 40px;
             box-shadow: 0 15px 50px rgba(0, 0, 0, 0.08);
             position: relative;
-            overflow: hidden;
-        }
-
-        .accent-blob {
-            position: absolute;
-            bottom: -60px;
-            right: -60px;
-            width: 200px;
-            height: 200px;
-            background: linear-gradient(135deg, #f03e7e 0%, #7e3ef0 100%);
-            border-radius: 50%;
-            filter: blur(40px);
-            opacity: 0.6;
-            z-index: 0;
         }
 
         h1 {
-            font-size: 4rem;
+            font-size: 3.5rem;
             font-weight: 900;
             margin: 0 0 30px 0;
             line-height: 0.9;
             text-transform: uppercase;
-            letter-spacing: -3px;
-            position: relative;
-            z-index: 1;
+            letter-spacing: -2px;
         }
 
         h1 span {
@@ -62,150 +44,90 @@
             -webkit-text-fill-color: transparent;
         }
 
-        .form-group {
-            margin-bottom: 24px;
-            position: relative;
-            z-index: 1;
-        }
-
-        label {
-            display: block;
-            font-weight: 700;
-            font-size: 1.1rem;
-            margin-bottom: 8px;
-            letter-spacing: -0.5px;
-        }
-
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-weight: 700; margin-bottom: 8px; }
         input, textarea {
-            width: 100%;
-            padding: 16px;
-            border-radius: 12px;
-            border: 2px solid #eeeeee;
-            background-color: #fafafa;
-            font-size: 1rem;
-            font-family: inherit;
-            box-sizing: border-box;
-            transition: all 0.3s ease;
+            width: 100%; padding: 15px; border-radius: 12px;
+            border: 2px solid #eeeeee; background-color: #fafafa;
+            font-size: 1rem; font-family: inherit; box-sizing: border-box;
         }
 
-        input:focus, textarea:focus {
-            outline: none;
-            border-color: #7e3ef0;
-            background-color: #ffffff;
-            box-shadow: 0 0 0 4px rgba(126, 62, 240, 0.1);
-        }
-
-        .row {
-            display: flex;
-            gap: 20px;
-            width: 100%;
-            margin-bottom: 24px;
-        }
-
-        .row .form-group {
-            flex: 1;
-            margin-bottom: 0;
-        }
+        .row { display: flex; gap: 15px; margin-bottom: 20px; }
+        .row .form-group { flex: 1; margin-bottom: 0; }
 
         button {
-            width: 100%;
-            padding: 20px;
-            border: none;
-            border-radius: 14px;
-            background: #000000;
-            color: #ffffff;
-            font-size: 1.1rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            z-index: 1;
-            margin-top: 10px;
+            width: 100%; padding: 20px; border: none; border-radius: 14px;
+            background: #000000; color: #ffffff; font-size: 1.1rem;
+            font-weight: 800; text-transform: uppercase; cursor: pointer;
+            transition: 0.3s;
         }
 
-        button:hover {
-            background: #1a1a1a;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
-        }
+        button:hover { transform: translateY(-2px); background: #1a1a1a; }
 
+        /* --- ZONE DE RÉSULTAT AÉRÉE --- */
         #resultat {
             margin-top: 40px;
-            padding: 25px;
-            background: #f9f9f9;
-            border-radius: 16px;
-            border-left: 5px solid #7e3ef0;
+            padding: 30px;
+            background: #ffffff;
+            border-radius: 20px;
+            border: 1px solid #eee;
             display: none;
-            position: relative;
-            z-index: 1;
+            line-height: 1.8; /* Espacement entre les lignes */
         }
 
-        #resultat h2 {
-            font-weight: 900;
-            font-size: 1.5rem;
-            margin-top: 0;
-            text-transform: uppercase;
-        }
+        #resultat h2 { font-weight: 900; text-transform: uppercase; color: #7e3ef0; }
 
         #itineraire-content {
-            white-space: pre-wrap;
-            line-height: 1.6;
-            color: #333;
-            font-size: 0.95rem;
+            color: #222;
+            font-size: 1.05rem;
+            word-wrap: break-word;
         }
 
         .loader {
-            display: none;
-            text-align: center;
-            font-weight: bold;
-            color: #7e3ef0;
-            margin-top: 20px;
-            font-style: italic;
+            display: none; text-align: center; font-weight: bold;
+            color: #7e3ef0; margin-top: 20px;
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <div class="accent-blob"></div>
-
         <h1>Welcome<br>on <span>Rnow</span></h1>
         
         <form id="voyageForm">
             <div class="form-group">
-                <label for="destination">Où souhaites-tu aller ?</label>
-                <input type="text" id="destination" placeholder="Ex: Tokyo, Islande, New York..." required>
+                <label>Destination</label>
+                <input type="text" id="destination" placeholder="Ex: Tulum, Mexique" required>
             </div>
 
             <div class="row">
                 <div class="form-group">
-                    <label for="dateDepart">Date de départ</label>
+                    <label>Départ</label>
                     <input type="date" id="dateDepart" required>
                 </div>
                 <div class="form-group">
-                    <label for="duree">Nombre de jours</label>
-                    <input type="number" id="duree" placeholder="Ex: 7" min="1" required>
+                    <label>Jours</label>
+                    <input type="number" id="duree" placeholder="7" required>
                 </div>
             </div>
 
             <div class="form-group">
-                <label for="budget">Budget total maximum (€)</label>
-                <input type="number" id="budget" placeholder="Ex: 2500" required>
+                <label>Budget (€)</label>
+                <input type="number" id="budget" placeholder="1500" required>
             </div>
 
             <div class="form-group">
-                <label for="hebergement">Type d'hébergement</label>
-                <input type="text" id="hebergement" placeholder="Ex: Hôtel 5*, Airbnb, Villa...">
+                <label>Hébergement souhaité</label>
+                <input type="text" id="hebergement" placeholder="Hôtel de charme, Airbnb...">
             </div>
 
             <div class="form-group">
-                <label for="styleVoyage">Style de voyage & envies</label>
-                <textarea id="styleVoyage" placeholder="Ex: Gastronomie, Aventure, Détente, Shopping..."></textarea>
+                <label>Style & Envies</label>
+                <textarea id="styleVoyage" rows="3" placeholder="Snorkeling, détente, tacos locaux..."></textarea>
             </div>
 
-            <button type="submit" id="btnGenerer">Générer mon voyage</button>
-            <div class="loader" id="loader">Rnow prépare ton itinéraire sur-mesure... <br> (Cela peut prendre 30 secondes)</div>
+            <button type="submit" id="btnGenerer">Générer mon voyage ✨</button>
+            <div class="loader" id="loader">Rnow prépare ton carnet de voyage... 🌴</div>
         </form>
 
         <div id="resultat">
@@ -222,12 +144,10 @@
             const resultDiv = document.getElementById('resultat');
             const contentDiv = document.getElementById('itineraire-content');
 
-            // Animation
             btn.style.display = 'none';
             loader.style.display = 'block';
             resultDiv.style.display = 'none';
 
-            // Récupération des infos du formulaire
             const payload = {
                 destination: document.getElementById('destination').value,
                 budget: document.getElementById('budget').value,
@@ -238,7 +158,6 @@
             };
 
             try {
-                // APPEL RÉEL À TON SERVEUR VERCEL
                 const response = await fetch('/api/generate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -248,21 +167,19 @@
                 const data = await response.json();
 
                 if (data.text) {
-                    // Affichage du vrai itinéraire généré par Gemini
-                    contentDiv.innerText = data.text;
+                    // --- LA LIGNE MAGIQUE POUR LA LISIBILITÉ ---
+                    // On remplace les retours à la ligne par des balises <br>
+                    contentDiv.innerHTML = data.text.replace(/\n/g, '<br>');
+                    resultDiv.style.display = 'block';
                 } else {
-                    contentDiv.innerText = "Désolé, une erreur est survenue lors de la génération. Vérifie que ta clé API est bien configurée dans Vercel.";
+                    alert("Erreur Google : " + (data.text || "Vérifie ta connexion"));
                 }
             } catch (error) {
-                console.error(error);
-                contentDiv.innerText = "Erreur de connexion. Assure-toi que ton site est bien déployé sur Vercel.";
+                alert("Erreur de connexion au serveur.");
             }
 
             loader.style.display = 'none';
             btn.style.display = 'block';
-            resultDiv.style.display = 'block';
-            
-            // Scroll automatique vers le résultat
             resultDiv.scrollIntoView({ behavior: 'smooth' });
         });
     </script>
