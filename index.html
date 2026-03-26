@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rnow - L'IA Créatrice de Voyages</title>
     <style>
-        /* --- DESIGN IDENTITY: RNOW (Inspiré par ton image) --- */
+        /* --- DESIGN IDENTITY: RNOW --- */
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;900&display=swap');
 
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: #fcfcfc; /* Blanc très propre */
+            background-color: #fcfcfc;
             color: #000000;
             margin: 0;
             padding: 20px;
@@ -31,7 +31,6 @@
             overflow: hidden;
         }
 
-        /* L'accent de couleur fluide en arrière-plan */
         .accent-blob {
             position: absolute;
             bottom: -60px;
@@ -46,7 +45,7 @@
         }
 
         h1 {
-            font-size: 4rem; /* Typo Massive */
+            font-size: 4rem;
             font-weight: 900;
             margin: 0 0 30px 0;
             line-height: 0.9;
@@ -71,7 +70,7 @@
 
         label {
             display: block;
-            font-weight: 700; /* Gras comme sur ton image */
+            font-weight: 700;
             font-size: 1.1rem;
             margin-bottom: 8px;
             letter-spacing: -0.5px;
@@ -81,11 +80,11 @@
             width: 100%;
             padding: 16px;
             border-radius: 12px;
-            border: 2px solid #eeeeee; /* Bordure légère mais pro */
+            border: 2px solid #eeeeee;
             background-color: #fafafa;
             font-size: 1rem;
             font-family: inherit;
-            box-sizing: border-box; /* IMPORTANT : Garde tout aligné */
+            box-sizing: border-box;
             transition: all 0.3s ease;
         }
 
@@ -96,17 +95,16 @@
             box-shadow: 0 0 0 4px rgba(126, 62, 240, 0.1);
         }
 
-        /* --- CORRECTION DE L'ALIGNEMENT --- */
         .row {
             display: flex;
-            gap: 20px; /* Espace précis entre les colonnes */
+            gap: 20px;
             width: 100%;
             margin-bottom: 24px;
         }
 
         .row .form-group {
-            flex: 1; /* Force les deux cases à faire 50/50 exactement */
-            margin-bottom: 0; /* Annule la marge du bas pour l'alignement */
+            flex: 1;
+            margin-bottom: 0;
         }
 
         button {
@@ -114,7 +112,7 @@
             padding: 20px;
             border: none;
             border-radius: 14px;
-            background: #000000; /* Noir pour le côté luxe/sérieux */
+            background: #000000;
             color: #ffffff;
             font-size: 1.1rem;
             font-weight: 800;
@@ -132,7 +130,6 @@
             box-shadow: 0 10px 20px rgba(0,0,0,0.15);
         }
 
-        /* Zone de Résultat */
         #resultat {
             margin-top: 40px;
             padding: 25px;
@@ -155,15 +152,16 @@
             white-space: pre-wrap;
             line-height: 1.6;
             color: #333;
+            font-size: 0.95rem;
         }
 
-        /* Loader simple */
         .loader {
             display: none;
             text-align: center;
             font-weight: bold;
             color: #7e3ef0;
-            margin-top: 10px;
+            margin-top: 20px;
+            font-style: italic;
         }
     </style>
 </head>
@@ -207,7 +205,7 @@
             </div>
 
             <button type="submit" id="btnGenerer">Générer mon voyage</button>
-            <div class="loader" id="loader">L'IA analyse les meilleures options...</div>
+            <div class="loader" id="loader">Rnow prépare ton itinéraire sur-mesure... <br> (Cela peut prendre 30 secondes)</div>
         </form>
 
         <div id="resultat">
@@ -217,9 +215,8 @@
     </div>
 
     <script>
-        document.getElementById('voyageForm').addEventListener('submit', function(e) {
+        document.getElementById('voyageForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-
             const btn = document.getElementById('btnGenerer');
             const loader = document.getElementById('loader');
             const resultDiv = document.getElementById('resultat');
@@ -228,42 +225,45 @@
             // Animation
             btn.style.display = 'none';
             loader.style.display = 'block';
+            resultDiv.style.display = 'none';
 
-            // Récupération des infos
-            const dest = document.getElementById('destination').value;
-            const budget = document.getElementById('budget').value;
-            const style = document.getElementById('styleVoyage').value;
+            // Récupération des infos du formulaire
+            const payload = {
+                destination: document.getElementById('destination').value,
+                budget: document.getElementById('budget').value,
+                style: document.getElementById('styleVoyage').value,
+                date: document.getElementById('dateDepart').value,
+                duree: document.getElementById('duree').value,
+                hebergement: document.getElementById('hebergement').value
+            };
 
-            // Simulation de l'IA
-            setTimeout(() => {
-                loader.style.display = 'none';
-                btn.style.display = 'block';
-                resultDiv.style.display = 'block';
+            try {
+                // APPEL RÉEL À TON SERVEUR VERCEL
+                const response = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
 
-                contentDiv.innerHTML = `
-**Destination :** ${dest}
-**Budget :** ${budget} €
-**Style :** ${style}
+                const data = await response.json();
 
----
+                if (data.text) {
+                    // Affichage du vrai itinéraire généré par Gemini
+                    contentDiv.innerText = data.text;
+                } else {
+                    contentDiv.innerText = "Désolé, une erreur est survenue lors de la génération. Vérifie que ta clé API est bien configurée dans Vercel.";
+                }
+            } catch (error) {
+                console.error(error);
+                contentDiv.innerText = "Erreur de connexion. Assure-toi que ton site est bien déployé sur Vercel.";
+            }
 
-### 🗓️ TON PLANNING SUR-MESURE
-
-**Jour 1 : L'arrivée Luxe**
-• Transfert privé vers ton hébergement.
-• Cocktail de bienvenue avec vue panoramique.
-• Dîner gastronomique pour découvrir les saveurs locales.
-
-**Jour 2 : Immersion & Culture**
-• Matinée : Visite privée des lieux iconiques sans la foule.
-• Après-midi : Activité personnalisée (Atelier local ou Shopping privé).
-
-*(Ceci est une simulation. Connecte ta clé API pour avoir un itinéraire réel et complet !)*
-
----
-🚀 **Rnow PRO :** Bientôt, accède aux vrais tarifs d'avions et d'hôtels en temps réel.
-                `;
-            }, 2000);
+            loader.style.display = 'none';
+            btn.style.display = 'block';
+            resultDiv.style.display = 'block';
+            
+            // Scroll automatique vers le résultat
+            resultDiv.scrollIntoView({ behavior: 'smooth' });
         });
     </script>
 </body>
