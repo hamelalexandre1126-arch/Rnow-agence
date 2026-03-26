@@ -12,55 +12,33 @@ export default async function handler(req, res) {
     return res.status(500).json({ text: "Erreur : La clé API est manquante dans Vercel." });
   }
 
-  // --- TON PROMPT DE 11 POINTS INTÉGRAL ---
   const promptFinal = `
-Tu es un agent professionnel d’une agence de voyage spécialisée dans l’organisation de séjours sur mesure nommée Rnow.
-Ta mission est de concevoir un voyage complet et entièrement organisé pour des clients.
+Tu es un agent professionnel de l'agence Rnow.
+Crée un voyage complet pour : ${destination}.
+Dates : dès le ${date} pour ${duree} jours.
+Budget : ${budget}€.
+Style : ${style}.
+Hébergement : ${hebergement}.
 
-1. Utilisation des informations :
-Utilise Destination: ${destination}, Budget: ${budget}€, Style: ${style}, Date: ${date}, Durée: ${duree} jours, Hébergement: ${hebergement}.
-N'invente rien. Si une info manque, signale-le.
+REPECTE CES 11 POINTS :
+1. Infos précises uniquement.
+2. Organisation A à Z.
+3. Prix RÉELS et vérifiés.
+4. Programme JOUR PAR JOUR détaillé.
+5. Activités avec adresses et prix.
+6. Transports locaux détaillés.
+7. Hébergement précis.
+8. 1 resto authentique/jour.
+9. Options d'assurances.
+10. Location voiture si besoin.
+11. Détails Clé en main.
 
-2. Organisation du voyage :
-Organise tout de A à Z (transports internationaux, locaux, hébergements, activités, restauration, recommandations locales, assurances, conseils pratiques, budget global).
-
-3. Vérification des informations et des prix :
-Tous les prix indiqués doivent être réalistes et vérifiés sur internet pour les dates demandées. Précise ce qui est inclus et non inclus.
-
-4. Structure du programme :
-Produis un programme JOUR PAR JOUR EXTRÊMEMENT DÉTAILLÉ avec horaires, temps de transport et conseils.
-
-5. Activités :
-Indique OBLIGATOIREMENT : nom précis, description, adresse, prix, durée, accès, réservation nécessaire et site officiel.
-
-6. Transports locaux :
-Précise le mode, où le prendre, temps de trajet, prix estimé et où acheter les billets.
-
-7. Hébergement :
-Indique nom, adresse, prix par nuit, type de chambre, avantages et distance des activités.
-
-8. Restaurants et vie locale :
-Propose 1 restaurant AUTHENTIQUE par jour (nom, adresse, prix, spécialité). Pas d'attrape-touriste.
-
-9. Assurance voyage :
-Présente plusieurs options d’assurance précises.
-
-10. Location de voiture :
-Si pertinente, indique compagnie, prix estimé et conseils.
-
-11. Niveau de détail attendu :
-Le programme doit être HYPER DÉTAILLÉ et clé en main.
-
-RÈGLES STRICTES :
-- NE JAMAIS UTILISER DE TABLEAUX (Format texte uniquement).
-- OBLIGATION de donner des prix réels pour les vols et logements aux dates souhaitées.
-- Termine par une rubrique « Mes conseils voyages » avec des conseils locaux exclusifs.
-- Pas de limite de longueur, écris autant que nécessaire.
+RÈGLES : Pas de tableaux. Écris beaucoup. Finis par "Mes conseils voyages".
   `;
 
   try {
-    // --- ICI LA CORRECTION : VERSION v1 ET MODÈLE GEMINI-1.5-FLASH ---
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+    // UTILISATION DU MODÈLE LE PLUS STABLE POUR LE MEXIQUE / USA
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -71,11 +49,8 @@ RÈGLES STRICTES :
     const data = await response.json();
 
     if (data.error) {
-      return res.status(500).json({ text: "Erreur Google : " + data.error.message });
-    }
-
-    if (!data.candidates || !data.candidates[0].content) {
-      return res.status(500).json({ text: "L'IA n'a pas pu répondre. Réessaie avec une autre destination." });
+      // Si ça ne marche toujours pas, on essaie le modèle de secours immédiat
+      return res.status(500).json({ text: "Erreur Google (" + data.error.code + ") : " + data.error.message });
     }
 
     const textOutput = data.candidates[0].content.parts[0].text;
