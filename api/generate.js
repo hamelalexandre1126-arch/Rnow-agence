@@ -8,55 +8,35 @@ export default async function handler(req, res) {
 
   if (!apiKey) return res.status(500).json({ text: "Clé API manquante." });
 
-  // --- TON PROMPT ORIGINAL ET ULTRA-PRÉCIS ---
+  // --- PROMPT RNOW : LUXE, EMOJIS ET LISIBILITÉ ---
   const promptFinal = `
-Tu es un agent professionnel d’une agence de voyage spécialisée dans l’organisation de séjours sur mesure nommée Rnow.
-Ta mission est de concevoir un voyage complet et entièrement organisé pour des clients.
+Tu es l'expert de l'agence de voyage Rnow. Crée un voyage d'exception pour : ${destination}.
+Budget: ${budget}€, Style: ${style}, Date: ${date}, Durée: ${duree} jours, Hébergement: ${hebergement}.
 
-1. Utilisation des informations :
-Tu dois utiliser toutes les informations fournies : Destination: ${destination}, Budget: ${budget}€, Style: ${style}, Date: ${date}, Durée: ${duree} jours, Hébergement: ${hebergement}.
-Tu n’as pas le droit d’inventer ou de supposer des informations. Si certaines informations sont manquantes, signale-le.
+CONSIGNES DE STYLE ET FORME (TRÈS IMPORTANT) :
+- Écris de manière CHALEUREUSE et PROFESSIONNELLE (minuscules normales).
+- Utilise des EMOJIS pertinents pour illustrer chaque section (ex: ✈️, 🏨, 🍴, 🌊).
+- FAIS BEAUCOUP D'ESPACES entre les paragraphes pour que ce soit aéré.
+- Les titres doivent être en MAJUSCULES mais sans symboles (pas de # ou *).
+- INTERDICTION d'utiliser des astérisques (**) ou des dièses (#).
 
-2. Organisation du voyage :
-Ton rôle est d’organiser le voyage de A à Z (transports internationaux, transports locaux, hébergements, activités, restauration, recommandations locales, assurances, conseils pratiques, estimation du budget global). Rien ne doit être laissé au hasard.
+STRUCTURE (11 POINTS) :
+1. Utilisation précise des infos client.
+2. Organisation complète de A à Z.
+3. Prix RÉELS et vérifiés pour le ${date}.
+4. Programme JOUR PAR JOUR détaillé avec horaires.
+5. Activités (noms, adresses, prix, sites officiels).
+6. Transports locaux (lieux, tarifs, billets).
+7. Hébergement (nom, adresse, points forts).
+8. 1 restaurant authentique par jour avec spécialités.
+9. Options d'assurances précises.
+10. Location voiture (si utile).
+11. Expérience clé en main.
 
-3. Vérification des informations et des prix :
-Tous les prix indiqués doivent être réalistes et vérifiés sur internet pour les dates du ${date}. Précise ce qui est inclus et non inclus.
-
-4. Structure du programme :
-Produis un programme JOUR PAR JOUR EXTRÊMEMENT DÉTAILLÉ. Chaque journée doit inclure horaires indicatifs, temps de transport, activités prévues, temps libres et conseils.
-
-5. Activités :
-Pour chaque activité, indique OBLIGATOIREMENT : nom précis, description, adresse, prix, durée, comment s’y rendre, temps de trajet, réservation nécessaire et site officiel.
-
-6. Transports locaux :
-Précise le mode de transport, où le prendre, temps de trajet, prix estimé, où acheter les billets et le niveau de fiabilité.
-
-7. Hébergement :
-Indique nom, adresse, prix par nuit, type de chambre, avantages, distance des activités et avis général.
-
-8. Restaurants et vie locale :
-À la fin de chaque journée, propose 1 restaurant local authentique (nom, adresse, prix moyen, spécialités). Pas d'attrape-touriste.
-
-9. Assurance voyage :
-Présente plusieurs options d’assurance (nom, couverture, prix estimé, cas recommandé).
-
-10. Location de voiture :
-Si pertinente, indique nom de la compagnie, prix estimé, conditions, assurance et conseils pratiques.
-
-11. Niveau de détail attendu :
-Le programme doit être HYPER DÉTAILLÉ. Le client doit recevoir un voyage clé en main.
-
-CONSIGNES DE STYLE STRICTES :
-- INTERDICTION d'utiliser des astérisques (**).
-- INTERDICTION d'utiliser des dièses (#).
-- INTERDICTION d'utiliser des tableaux.
-- Utilise uniquement des sauts de ligne et des MAJUSCULES pour les titres.
-- Termine par une rubrique « MES CONSEILS VOYAGES » avec des astuces locales.
+Finis par une section "MES CONSEILS VOYAGES" avec des astuces d'expert.
   `;
 
   try {
-    // Détection auto du modèle pour garantir le fonctionnement au Mexique
     const listResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
     const listData = await listResponse.json();
     const model = listData.models?.find(m => m.supportedGenerationMethods.includes("generateContent"));
@@ -72,8 +52,8 @@ CONSIGNES DE STYLE STRICTES :
     const data = await response.json();
     let textOutput = data.candidates[0].content.parts[0].text;
 
-    // Nettoyage final pour être sûr qu'aucun symbole ne passe
-    textOutput = textOutput.replace(/\*/g, '').replace(/#/g, '');
+    // Nettoyage de sécurité pour les symboles résiduels
+    textOutput = textOutput.replace(/\*\*/g, '').replace(/#/g, '');
 
     res.status(200).json({ text: textOutput });
   } catch (error) {
