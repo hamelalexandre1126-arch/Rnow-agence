@@ -9,31 +9,16 @@ export default async function handler(req, res) {
   const apiKey = process.env.GEMINI_API_KEY;
 
   if (!apiKey) {
-    return res.status(500).json({ text: "Erreur : La clé API est manquante dans Vercel." });
+    return res.status(500).json({ text: "Erreur : La clé API est manquante." });
   }
 
-  const promptFinal = `
-Tu es un agent professionnel d’une agence de voyage spécialisée dans l’organisation de séjours sur mesure nommée Rnow.
-Ta mission est de concevoir un voyage complet pour : ${destination}.
-
-1. Utilisation des informations : Destination: ${destination}, Budget: ${budget}€, Style: ${style}, Date: ${date}, Durée: ${duree} jours, Hébergement: ${hebergement}.
-2. Organisation de A à Z : transports, logements, activités, restauration, assurances, conseils.
-3. Prix RÉELS et vérifiés sur internet pour les dates du ${date}.
-4. Programme JOUR PAR JOUR HYPER DÉTAILLÉ avec horaires.
-5. Activités : nom précis, description, adresse, prix, durée, accès, site officiel.
-6. Transports locaux : mode, lieu, prix, fiabilité.
-7. Hébergement : nom, adresse, prix/nuit, type de chambre.
-8. Restaurants : 1 restaurant AUTHENTIQUE par jour (pas d'attrape-touriste).
-9. Assurance voyage : plusieurs options précises.
-10. Location voiture : si pertinente (compagnie, prix).
-11. Niveau de détail : programme clé en main.
-
-RÈGLES : Pas de tableaux. Écris beaucoup. Finis par "Mes conseils voyages".
-  `;
+  const promptFinal = `Tu es l'agent Rnow. Crée un voyage pour ${destination} (${duree} jours) dès le ${date}. Budget: ${budget}€. Style: ${style}. Hébergement: ${hebergement}. Détaille tout (vols, hôtels, activités, restos) selon mes 11 points précis. Pas de tableaux.`;
 
   try {
-    // --- CHANGEMENT CRUCIAL : v1 AU LIEU DE v1beta + gemini-pro ---
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${apiKey}`, {
+    // --- L'URL LA PLUS COMPATIBLE AU MONDE ---
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+
+    const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -43,12 +28,9 @@ RÈGLES : Pas de tableaux. Écris beaucoup. Finis par "Mes conseils voyages".
 
     const data = await response.json();
 
+    // SI CA NE MARCHE PAS, ON RENVOIE L'ERREUR POUR COMPRENDRE
     if (data.error) {
-      return res.status(500).json({ text: "Erreur Google (" + data.error.code + ") : " + data.error.message });
-    }
-
-    if (!data.candidates || !data.candidates[0].content) {
-      return res.status(500).json({ text: "L'IA n'a pas pu répondre. Vérifie ta destination." });
+      return res.status(500).json({ text: "Erreur Google : " + data.error.message + " (Code: " + data.error.status + ")" });
     }
 
     const textOutput = data.candidates[0].content.parts[0].text;
