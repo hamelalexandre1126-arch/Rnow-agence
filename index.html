@@ -3,135 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rnow - L'IA Créatrice de Voyages</title>
+    <title>Rnow - L'Expert Voyage</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;900&display=swap');
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #fcfcfc;
-            color: #000000;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            min-height: 100vh;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 600px;
-            background: #ffffff;
-            border-radius: 24px;
-            padding: 40px;
-            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.08);
-            position: relative;
-        }
-
-        h1 {
-            font-size: 3.5rem;
-            font-weight: 900;
-            margin: 0 0 30px 0;
-            line-height: 0.9;
-            text-transform: uppercase;
-            letter-spacing: -2px;
-        }
-
-        h1 span {
-            display: block;
-            background: linear-gradient(90deg, #f03e7e, #7e3ef0);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
+        body { font-family: 'Poppins', sans-serif; background-color: #fcfcfc; margin: 0; padding: 20px; display: flex; justify-content: center; }
+        .container { width: 100%; max-width: 650px; background: #ffffff; border-radius: 24px; padding: 40px; box-shadow: 0 15px 50px rgba(0, 0, 0, 0.08); }
+        h1 { font-size: 3rem; font-weight: 900; line-height: 0.9; text-transform: uppercase; margin-bottom: 30px; }
+        h1 span { background: linear-gradient(90deg, #f03e7e, #7e3ef0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .form-group { margin-bottom: 20px; }
-        label { display: block; font-weight: 700; margin-bottom: 8px; }
-        input, textarea {
-            width: 100%; padding: 15px; border-radius: 12px;
-            border: 2px solid #eeeeee; background-color: #fafafa;
-            font-size: 1rem; font-family: inherit; box-sizing: border-box;
-        }
-
+        label { display: block; font-weight: 700; margin-bottom: 8px; font-size: 0.9rem; color: #444; }
+        input, textarea, select { width: 100%; padding: 14px; border-radius: 12px; border: 2px solid #eee; background: #fafafa; font-size: 1rem; font-family: inherit; box-sizing: border-box; }
         .row { display: flex; gap: 15px; margin-bottom: 20px; }
         .row .form-group { flex: 1; margin-bottom: 0; }
-
-        button {
-            width: 100%; padding: 20px; border: none; border-radius: 14px;
-            background: #000000; color: #ffffff; font-size: 1.1rem;
-            font-weight: 800; text-transform: uppercase; cursor: pointer;
-            transition: 0.3s;
-        }
-
+        button { width: 100%; padding: 20px; border: none; border-radius: 14px; background: #000; color: #fff; font-size: 1.1rem; font-weight: 800; text-transform: uppercase; cursor: pointer; transition: 0.3s; margin-top: 10px; }
         button:hover { transform: translateY(-2px); background: #1a1a1a; }
-
-        /* --- ZONE DE RÉSULTAT AÉRÉE --- */
-        #resultat {
-            margin-top: 40px;
-            padding: 30px;
-            background: #ffffff;
-            border-radius: 20px;
-            border: 1px solid #eee;
-            display: none;
-            line-height: 1.8; /* Espacement entre les lignes */
-        }
-
-        #resultat h2 { font-weight: 900; text-transform: uppercase; color: #7e3ef0; }
-
-        #itineraire-content {
-            color: #222;
-            font-size: 1.05rem;
-            word-wrap: break-word;
-        }
-
-        .loader {
-            display: none; text-align: center; font-weight: bold;
-            color: #7e3ef0; margin-top: 20px;
-        }
+        #resultat { margin-top: 40px; padding: 30px; background: #fff; border: 1px solid #eee; border-radius: 20px; display: none; line-height: 1.8; }
+        #itineraire-content { color: #222; font-size: 1.05rem; }
+        .loader { display: none; text-align: center; font-weight: bold; color: #7e3ef0; margin-top: 20px; }
     </style>
 </head>
 <body>
-
     <div class="container">
-        <h1>Welcome<br>on <span>Rnow</span></h1>
-        
+        <h1>Travel<br>with <span>Rnow</span></h1>
         <form id="voyageForm">
-            <div class="form-group">
-                <label>Destination</label>
-                <input type="text" id="destination" placeholder="Ex: Tulum, Mexique" required>
+            <div class="row">
+                <div class="form-group">
+                    <label>Ville de départ</label>
+                    <input type="text" id="depart" placeholder="Ex: Paris, Montréal..." required>
+                </div>
+                <div class="form-group">
+                    <label>Destination ou Continent</label>
+                    <input type="text" id="destination" placeholder="Ex: Japon ou Asie" required>
+                </div>
             </div>
 
             <div class="row">
                 <div class="form-group">
-                    <label>Départ</label>
+                    <label>Date de départ</label>
                     <input type="date" id="dateDepart" required>
                 </div>
                 <div class="form-group">
-                    <label>Jours</label>
+                    <label>Durée (jours)</label>
                     <input type="number" id="duree" placeholder="7" required>
                 </div>
             </div>
 
             <div class="form-group">
-                <label>Budget (€)</label>
-                <input type="number" id="budget" placeholder="1500" required>
+                <label>Budget total par personne (€)</label>
+                <input type="number" id="budget" placeholder="2000" required>
             </div>
 
             <div class="form-group">
-                <label>Hébergement souhaité</label>
-                <input type="text" id="hebergement" placeholder="Hôtel de charme, Airbnb...">
+                <label>Rythme du voyage</label>
+                <select id="rythme">
+                    <option value="lent">Prendre le temps (1 seule ville, farniente)</option>
+                    <option value="equilibre">Équilibré (2-3 villes maximum)</option>
+                    <option value="intense" selected>Explorateur (Bouger tous les jours, voir le plus de choses)</option>
+                </select>
             </div>
 
             <div class="form-group">
-                <label>Style & Envies</label>
-                <textarea id="styleVoyage" rows="3" placeholder="Snorkeling, détente, tacos locaux..."></textarea>
+                <label>Type d'hébergement préféré</label>
+                <input type="text" id="hebergement" placeholder="Hôtel luxe, Airbnb, Auberge...">
             </div>
 
-            <button type="submit" id="btnGenerer">Générer mon voyage ✨</button>
-            <div class="loader" id="loader">Rnow prépare ton carnet de voyage... 🌴</div>
+            <div class="form-group">
+                <label>Tes envies particulières (Optionnel)</label>
+                <textarea id="styleVoyage" rows="2" placeholder="Ex: Gastronomie locale, surf, randonnées..."></textarea>
+            </div>
+
+            <button type="submit" id="btnGenerer">Calculer mon aventure ✨</button>
+            <div class="loader" id="loader">Rnow analyse les meilleures options... 🌴</div>
         </form>
 
         <div id="resultat">
-            <h2>Ton Itinéraire Rnow</h2>
             <div id="itineraire-content"></div>
         </div>
     </div>
@@ -149,12 +94,14 @@
             resultDiv.style.display = 'none';
 
             const payload = {
+                depart: document.getElementById('depart').value,
                 destination: document.getElementById('destination').value,
                 budget: document.getElementById('budget').value,
                 style: document.getElementById('styleVoyage').value,
                 date: document.getElementById('dateDepart').value,
                 duree: document.getElementById('duree').value,
-                hebergement: document.getElementById('hebergement').value
+                hebergement: document.getElementById('hebergement').value,
+                rythme: document.getElementById('rythme').value
             };
 
             try {
@@ -163,21 +110,12 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
-
                 const data = await response.json();
-
                 if (data.text) {
-                    // --- LA LIGNE MAGIQUE POUR LA LISIBILITÉ ---
-                    // On remplace les retours à la ligne par des balises <br>
                     contentDiv.innerHTML = data.text.replace(/\n/g, '<br>');
                     resultDiv.style.display = 'block';
-                } else {
-                    alert("Erreur Google : " + (data.text || "Vérifie ta connexion"));
-                }
-            } catch (error) {
-                alert("Erreur de connexion au serveur.");
-            }
-
+                } else { alert("Erreur Google"); }
+            } catch (error) { alert("Erreur serveur"); }
             loader.style.display = 'none';
             btn.style.display = 'block';
             resultDiv.scrollIntoView({ behavior: 'smooth' });
