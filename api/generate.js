@@ -3,102 +3,82 @@ const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'POST requis' });
 
-  const { type, depart, destination, budget, style, date, duree, isRealSearch, ancienItineraire, feedback } = req.body;
+  const { type, depart, destination, budget, confort, style, date, duree, isRealSearch, ancienItineraire, feedback } = req.body;
   const apiKey = process.env.GEMINI_API_KEY;
 
   if (!apiKey) return res.status(500).json({ text: "Clé API manquante." });
 
-  // --- LE PROMPT RNOW PREMIUM (REPRIS DE TA FORME ORIGINALE) ---
   const instructionsRnow = `
-Tu es l'Expert-Concierge de Rnow. Ton ton est jeune, ultra-dynamique, luxueux et pro.
-IMPORTANT : Ne mets JAMAIS d'astérisques (*), de dièses (#) ou de gras. Utilise uniquement des MAJUSCULES pour les titres. Saute une ligne entre chaque puce.
+Tu es l'Expert-Concierge de Rnow. Ton ton est dynamique et moderne, mais reste strictement professionnel.
+
+IMPORTANT : 
+- Ne mets JAMAIS d'astérisques (*), de dièses (#) ou de gras (**).
+- N'écris JAMAIS en majuscules (sauf pour les titres de rubriques cités ci-dessous).
+- Saute une ligne entre chaque puce.
 
 STRUCTURE DE RÉPONSE :
 
-1. ACCUEIL : Salue le client avec l'énergie Rnow.
-2. ANALYSE EXPERTE : Un paragraphe de 4-5 lignes qui analyse le combo (Destination: ${destination}, Budget: ${budget}€, Style: ${style}). Montre au client que tu as compris ses attentes.
+1. ACCUEIL : Salue le client avec élégance.
+2. ANALYSE EXPERTE : Un paragraphe de 4-5 lignes (en minuscules) analysant la faisabilité du voyage (destination: ${destination}, budget: ${budget}€, confort: ${confort}). Explique comment tu optimises le budget de ${Math.round(budget/duree)}€/jour.
 
-POUR CHAQUE JOUR (JOUR 1, JOUR 2, etc.) :
+POUR CHAQUE JOUR :
 ------------------------------------------
-TITRE : JOUR X - [NOM DE L'ÉTAPE]
-Une phrase courte qui résume l'ambiance de la journée.
+TITRE : JOUR X - [Nom de l'étape]
+Une courte phrase d'introduction en minuscules.
 
-📍 L'ACTIVITÉ RNOW : [Nom précis de l'activité]. Détaille ici pourquoi c'est génial et ce qu'il va vivre.
-💰 RÉSERVATION : S'il faut réserver, mets [Réserver l'activité](Lien). Sinon, écris "Accès libre / Pas de réservation nécessaire".
+📍 L'ACTIVITÉ RNOW : [Nom]. Description détaillée de l'expérience (en minuscules).
+💰 RÉSERVATION : S'il faut réserver, [Réserver l'activité](Lien). Sinon, "Accès libre".
 
-🏠 TON REFUGE : [Nom de l'hôtel/logement]. Explique l'atout unique du lieu et son adresse.
+🏠 TON REFUGE : [Nom]. Pourquoi ce choix selon le niveau de confort ${confort} (en minuscules).
 💰 RÉSERVATION : [Réserver cet hôtel](Lien).
 
-🍴 LA TABLE RNOW : [Nom du restaurant]. Décris le plat signature et l'ambiance.
+🍴 LA TABLE RNOW : [Nom]. Conseil gastronomique adapté au budget (en minuscules).
 💰 RÉSERVATION : [Réserver une table](Lien) (si applicable).
 
-🚕 TRANSPORT : Détaille ici les trajets du jour (Mode, Temps, Coût estimé).
+🚕 TRANSPORT : Détails logistiques (mode, temps, coût estimé) en minuscules.
 
 ------------------------------------------
 
-5. LOGISTIQUE GLOBALE : Vols A/R, Assurances et Location de véhicule.
-6. LE CONSEIL D'INITIÉ : Un secret de local pour rendre le voyage inoubliable.
+5. LOGISTIQUE GLOBALE : Vols A/R, assurances et location.
+6. LE CONSEIL D'INITIÉ : Un secret de local en minuscules pour sublimer le séjour.
 
 CONSIGNES LIENS :
 - Vols : [Réserver mon vol](https://www.skyscanner.fr/transport/vols/${depart}/${destination}/${date})
 - Hôtels : [Réserver cet hôtel](https://www.booking.com/searchresults.html?ss=NOM_HOTEL+${destination})
 - Activités : [Réserver l'activité](https://www.getyourguide.fr/s/?q=NOM_ACTIVITE)
-- SI PAS DE RÉSERVATION : Ne mets pas de lien.
+- Si pas de réservation nécessaire, ne mets aucun lien.
   `;
 
   let promptFinal = "";
 
   if (isRealSearch) {
-    promptFinal = `TRANSFORMATION RÉELLE : Reprends cet itinéraire : "${ancienItineraire}".
-    Remplace toutes les estimations par des conseils PRÉCIS (Noms d'hôtels et restos réels) et génère les liens cliquables correspondants.
-    ${instructionsRnow}`;
+    promptFinal = `TRANSFORMATION RÉELLE : Reprends cet itinéraire : "${ancienItineraire}". Propose des noms réels adaptés au budget de ${budget}€ et au confort ${confort}. Tout le texte doit être en minuscules. ${instructionsRnow}`;
   } else if (type === "initial") {
-    promptFinal = `SIMULATION INITIALE : Crée le voyage de rêve pour ${destination} (${duree} jours) dès le ${date}. 
-    Utilise tes connaissances pour proposer des lieux iconiques. Mets des [Estimations] pour les prix.
-    ${instructionsRnow}`;
+    promptFinal = `SIMULATION INITIALE : Crée un voyage de ${duree} jours à ${destination}. Budget: ${budget}€, Confort: ${confort}. Tout le texte doit être en minuscules. ${instructionsRnow}`;
   } else {
-    promptFinal = `MODIFICATION : Applique ce changement "${feedback}" à l'itinéraire suivant : "${ancienItineraire}". 
-    ${instructionsRnow}`;
+    promptFinal = `MODIFICATION : "${feedback}" sur : "${ancienItineraire}". Tout le texte doit être en minuscules. ${instructionsRnow}`;
   }
 
   try {
-    // --- DÉTECTION DYNAMIQUE DU MODÈLE ---
     const listResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
     const listData = await listResponse.json();
     let selectedModel = listData.models?.find(m => m.name.includes("flash")) || listData.models?.[0];
-
-    if (!selectedModel) throw new Error("Aucun modèle trouvé.");
-
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/${selectedModel.name}:generateContent?key=${apiKey}`;
-
-    const bodyPayload = {
-      contents: [{ parts: [{ text: promptFinal }] }],
-      safetySettings: [
-        { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
-        { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
-        { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" },
-        { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" }
-      ]
-    };
 
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(bodyPayload)
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: promptFinal }] }],
+        safetySettings: [{ category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }]
+      })
     });
 
     const data = await response.json();
-
-    if (data.error) return res.status(200).json({ text: "Erreur : " + data.error.message });
-
     let textOutput = data.candidates?.[0]?.content?.parts?.[0]?.text || "Erreur de génération.";
-    
-    // Nettoyage Markdown (on garde le format [Texte](Lien) pour que ton HTML le transforme en bleu)
     textOutput = textOutput.replace(/\*\*/g, '').replace(/\*/g, '').replace(/#/g, '');
-
     res.status(200).json({ text: textOutput });
-
   } catch (error) {
-    res.status(500).json({ text: "Erreur serveur : " + error.message });
+    res.status(500).json({ text: "Erreur technique." });
   }
 }
