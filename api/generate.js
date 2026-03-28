@@ -12,52 +12,40 @@ export default async function handler(req, res) {
 
   if (type === "initial") {
     promptFinal = `
-Tu es l'Expert-Concierge Rnow. Ton ton est jeune, dynamique et passionné. 
+Tu es l'Expert-Concierge Rnow. Ton ton est jeune, dynamique et ultra-professionnel.
 
-IMPORTANT : Les envies du client sont : "${style}". Tu DOIS construire tout l'itinéraire en fonction de ces goûts spécifiques.
+MISSION DANS CET ORDRE PRÉCIS :
 
-MISSION : 
-1. ACCUEIL : Salue le client avec l'énergie Rnow. 
-2. ANALYSE PERSONNALISÉE : Fais un paragraphe (4 lignes) où tu analyses précisément ses envies ("${style}") et son budget (${budget}€). Explique-lui comment tu as adapté le voyage.
-3. RÉSUMÉ : Aperçu rapide du programme.
-4. DÉTAIL CHIRURGICAL : Programme jour par jour.
-
-PARAMÈTRES : 
-Départ: ${depart} | Destination: ${destination} | Budget: ${budget}€/pers | Goûts & Envies: ${style} | Rythme: ${rythme} | Durée: ${duree} jours dès le ${date}.
-
-STRUCTURE PAR JOUR (FORMAT EUROPÉEN DD/MM/YYYY) :
-📍 L'ACTIVITÉ RNOW : [Nom] + [Expertise Rnow : pourquoi ce choix correspond exactement à "${style}"].
+1. ACCUEIL : Salue le client avec l'énergie Rnow.
+2. ANALYSE EXPERTE : Fais un paragraphe (4 lignes) pour commenter ses critères (Destination: ${destination}, Budget: ${budget}€, Envies: ${style}). Explique pourquoi c'est un excellent choix et comment tu as personnalisé le voyage.
+3. PROGRAMME RÉSUMÉ : Liste chaque jour (Jour 1, Jour 2...) avec juste le titre de l'étape pour donner une vue d'ensemble rapide.
+4. DÉTAILS CHIRURGICAUX : Pour chaque jour (Format Date DD/MM/YYYY), détaille :
+📍 L'ACTIVITÉ RNOW : [Nom] + [Expertise : pourquoi ce choix correspond à "${style}"].
 💰 RÉSERVATION : [Prix exact] + [Lien site officiel ou lieu précis].
-🏠 TON REFUGE : [Nom], [ADRESSE COMPLÈTE]. [Pourquoi cet hôtel plaira au client] + [Prix/nuit].
-🍴 LA TABLE RNOW : [Nom], [ADRESSE COMPLÈTE]. [Plat signature] + [Budget moyen].
-🚕 TRANSPORT : [Trajet], [Mode], [Temps] et [Coût].
+🏠 TON REFUGE : [Nom], [ADRESSE COMPLÈTE]. [Atout unique] + [Prix/nuit].
+🍴 LA TABLE RNOW : [Nom], [ADRESSE COMPLÈTE]. [Plat signature] + [Budget].
+🚕 TRANSPORT : [Trajet], [Mode (varie les emojis)], [Temps] et [Coût].
+5. LE CONSEIL D'INITIÉ : Termine par une astuce de local exclusive (lieu secret, meilleur moment pour une vue, etc.).
 
 CONSIGNES DE FORME :
-- DATE : Format européen (ex: 28/03/2026).
-- ESPACEMENT : Saute EXACTEMENT UNE LIGNE entre chaque puce (📍, 💰, etc.).
+- DATE : Format Européen (ex: 28/03/2026).
+- ESPACEMENT : Saute EXACTEMENT UNE LIGNE entre chaque puce d'information (📍, 💰, etc.).
 - ÉMOJIS : Un SEUL emoji au début de chaque ligne. NE JAMAIS répéter le même emoji sur deux lignes qui se suivent.
 - PAS d'astérisques (*), PAS de dièses (#). Titres en MAJUSCULES simples.
+- BUDGET : Tout doit être inclus dans les ${budget}€.
     `;
   } else {
     promptFinal = `
-Tu es l'Expert-Concierge Rnow. Reprends cet itinéraire : "${ancienItineraire}"
-Le client souhaite ajuster ceci : "${feedback}"
-MISSION : Réécris l'INTÉGRALITÉ avec la structure Accueil > Analyse > Résumé > Détails.
+Tu es l'Expert-Concierge Rnow. Modifie cet itinéraire : "${ancienItineraire}" selon : "${feedback}".
+MISSION : Réécris l'INTÉGRALITÉ avec la structure Accueil > Analyse > Résumé > Détails par jour > Conseil d'Initié.
 Règles : Dates DD/MM/YYYY, une ligne d'espace, émojis variés, zéro symbole (* ou #).
     `;
   }
 
   try {
-    // --- DÉTECTION ROBUSTE DU MODÈLE ---
     const listResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
     const listData = await listResponse.json();
-    
-    // On cherche par priorité : gemini-1.5-flash, puis gemini-pro, puis n'importe quel modèle qui génère du contenu
-    let model = listData.models?.find(m => m.name.includes("gemini-1.5-flash"));
-    if (!model) model = listData.models?.find(m => m.name.includes("pro"));
-    if (!model) model = listData.models?.find(m => m.supportedGenerationMethods.includes("generateContent"));
-
-    if (!model) throw new Error("Aucun modèle de génération trouvé sur ce compte.");
+    const model = listData.models?.find(m => m.name.includes("pro") || m.name.includes("flash")) || listData.models?.[0];
 
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/${model.name}:generateContent?key=${apiKey}`, {
       method: 'POST',
@@ -66,11 +54,9 @@ Règles : Dates DD/MM/YYYY, une ligne d'espace, émojis variés, zéro symbole (
     });
 
     const data = await response.json();
-
-    if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
-        // Log de l'erreur brute pour comprendre si c'est un problème de sécurité ou de quota
-        console.error("Réponse API invalide:", data);
-        return res.status(500).json({ text: "L'IA est timide aujourd'hui. Réessaie, elle va répondre !" });
+    
+    if (!data.candidates || !data.candidates[0]) {
+      throw new Error("Réponse vide de l'IA");
     }
 
     let textOutput = data.candidates[0].content.parts[0].text;
