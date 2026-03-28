@@ -3,123 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rnow - L'Expert Voyage</title>
+    <title>Rnow | L'Agence de Voyage Instantanée</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;900&display=swap');
-        body { font-family: 'Poppins', sans-serif; background-color: #fcfcfc; margin: 0; padding: 20px; display: flex; justify-content: center; }
-        .container { width: 100%; max-width: 650px; background: #ffffff; border-radius: 24px; padding: 40px; box-shadow: 0 15px 50px rgba(0, 0, 0, 0.08); }
-        h1 { font-size: 3rem; font-weight: 900; line-height: 0.9; text-transform: uppercase; margin-bottom: 30px; }
-        h1 span { background: linear-gradient(90deg, #f03e7e, #7e3ef0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; font-weight: 700; margin-bottom: 8px; font-size: 0.9rem; color: #444; }
-        input, textarea, select { width: 100%; padding: 14px; border-radius: 12px; border: 2px solid #eee; background: #fafafa; font-size: 1rem; font-family: inherit; box-sizing: border-box; }
-        .row { display: flex; gap: 15px; margin-bottom: 20px; }
-        .row .form-group { flex: 1; margin-bottom: 0; }
-        button { width: 100%; padding: 20px; border: none; border-radius: 14px; background: #000; color: #fff; font-size: 1.1rem; font-weight: 800; text-transform: uppercase; cursor: pointer; transition: 0.3s; margin-top: 10px; }
-        button:hover { transform: translateY(-2px); background: #1a1a1a; }
-        #resultat { margin-top: 40px; padding: 30px; background: #fff; border: 1px solid #eee; border-radius: 20px; display: none; line-height: 1.8; }
-        #itineraire-content { color: #222; font-size: 1.05rem; }
-        .loader { display: none; text-align: center; font-weight: bold; color: #7e3ef0; margin-top: 20px; }
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap');
+        
+        body { font-family: 'Poppins', sans-serif; background: #fcfcfc; margin: 0; color: #000; overflow-x: hidden; }
+        
+        /* --- NAVIGATION --- */
+        nav { display: flex; justify-content: space-between; align-items: center; padding: 30px 50px; }
+        .logo { font-weight: 900; font-size: 1.5rem; text-transform: uppercase; letter-spacing: -1px; }
+        .logo span { color: #7e3ef0; }
+        .nav-links a { text-decoration: none; color: #000; font-weight: 700; margin-left: 30px; font-size: 0.9rem; text-transform: uppercase; }
+
+        /* --- HERO SECTION --- */
+        .hero { height: 80vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 0 20px; }
+        .hero h1 { font-size: 5.5rem; font-weight: 900; line-height: 0.85; margin: 0; letter-spacing: -4px; text-transform: uppercase; }
+        .hero h1 span { background: linear-gradient(90deg, #f03e7e, #7e3ef0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero p { max-width: 600px; font-size: 1.2rem; margin: 30px 0; color: #555; line-height: 1.6; }
+        
+        .btn-main { 
+            padding: 22px 45px; background: #000; color: #fff; text-decoration: none; 
+            border-radius: 50px; font-weight: 800; text-transform: uppercase; 
+            transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .btn-main:hover { transform: translateY(-3px); background: #1a1a1a; box-shadow: 0 15px 40px rgba(126, 62, 240, 0.3); }
+
+        /* --- SECTION CONCEPT --- */
+        .concept { padding: 100px 50px; background: #fff; display: flex; gap: 50px; align-items: center; flex-wrap: wrap; }
+        .card { flex: 1; min-width: 250px; padding: 40px; border-radius: 20px; background: #fafafa; border: 1px solid #eee; }
+        .card h3 { font-weight: 900; text-transform: uppercase; margin-top: 0; color: #7e3ef0; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Travel<br>with <span>Rnow</span></h1>
-        <form id="voyageForm">
-            <div class="row">
-                <div class="form-group">
-                    <label>Ville de départ</label>
-                    <input type="text" id="depart" placeholder="Ex: Paris, Montréal..." required>
-                </div>
-                <div class="form-group">
-                    <label>Destination ou Continent</label>
-                    <input type="text" id="destination" placeholder="Ex: Japon ou Asie" required>
-                </div>
-            </div>
 
-            <div class="row">
-                <div class="form-group">
-                    <label>Date de départ</label>
-                    <input type="date" id="dateDepart" required>
-                </div>
-                <div class="form-group">
-                    <label>Durée (jours)</label>
-                    <input type="number" id="duree" placeholder="7" required>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Budget total par personne (€)</label>
-                <input type="number" id="budget" placeholder="2000" required>
-            </div>
-
-            <div class="form-group">
-                <label>Rythme du voyage</label>
-                <select id="rythme">
-                    <option value="lent">Prendre le temps (1 seule ville, farniente)</option>
-                    <option value="equilibre">Équilibré (2-3 villes maximum)</option>
-                    <option value="intense" selected>Explorateur (Bouger tous les jours, voir le plus de choses)</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>Type d'hébergement préféré</label>
-                <input type="text" id="hebergement" placeholder="Hôtel luxe, Airbnb, Auberge...">
-            </div>
-
-            <div class="form-group">
-                <label>Tes envies particulières (Optionnel)</label>
-                <textarea id="styleVoyage" rows="2" placeholder="Ex: Gastronomie locale, surf, randonnées..."></textarea>
-            </div>
-
-            <button type="submit" id="btnGenerer">Calculer mon aventure ✨</button>
-            <div class="loader" id="loader">Rnow analyse les meilleures options... 🌴</div>
-        </form>
-
-        <div id="resultat">
-            <div id="itineraire-content"></div>
+    <nav>
+        <div class="logo">R<span>now</span>.</div>
+        <div class="nav-links">
+            <a href="index.html">Accueil</a>
+            <a href="generateur.html" style="color: #7e3ef0;">Générateur</a>
         </div>
-    </div>
+    </nav>
 
-    <script>
-        document.getElementById('voyageForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const btn = document.getElementById('btnGenerer');
-            const loader = document.getElementById('loader');
-            const resultDiv = document.getElementById('resultat');
-            const contentDiv = document.getElementById('itineraire-content');
+    <section class="hero">
+        <h1>Travel<br><span>Right Now</span></h1>
+        <p>Arrêtez de planifier pendant des mois. Notre IA d'élite conçoit votre itinéraire de luxe sur-mesure en 30 secondes chrono.</p>
+        <a href="generateur.html" class="btn-main">Créer mon voyage</a>
+    </section>
 
-            btn.style.display = 'none';
-            loader.style.display = 'block';
-            resultDiv.style.display = 'none';
+    <section class="concept">
+        <div class="card">
+            <h3>Expertise IA</h3>
+            <p>Gemini 1.5 analyse les prix réels des vols et hôtels pour vous offrir la meilleure expérience possible.</p>
+        </div>
+        <div class="card">
+            <h3>Clé en main</h3>
+            <p>Du vol au restaurant local secret, tout est inclus dans votre carnet de voyage Rnow.</p>
+        </div>
+        <div class="card">
+            <h3>Liberté</h3>
+            <p>Choisissez votre rythme, votre budget et votre style. On s'occupe du reste.</p>
+        </div>
+    </section>
 
-            const payload = {
-                depart: document.getElementById('depart').value,
-                destination: document.getElementById('destination').value,
-                budget: document.getElementById('budget').value,
-                style: document.getElementById('styleVoyage').value,
-                date: document.getElementById('dateDepart').value,
-                duree: document.getElementById('duree').value,
-                hebergement: document.getElementById('hebergement').value,
-                rythme: document.getElementById('rythme').value
-            };
-
-            try {
-                const response = await fetch('/api/generate', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                const data = await response.json();
-                if (data.text) {
-                    contentDiv.innerHTML = data.text.replace(/\n/g, '<br>');
-                    resultDiv.style.display = 'block';
-                } else { alert("Erreur Google"); }
-            } catch (error) { alert("Erreur serveur"); }
-            loader.style.display = 'none';
-            btn.style.display = 'block';
-            resultDiv.scrollIntoView({ behavior: 'smooth' });
-        });
-    </script>
 </body>
 </html>
