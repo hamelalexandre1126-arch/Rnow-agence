@@ -6,45 +6,52 @@
     <title>Rnow | Personnalisation Premium</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;900&display=swap');
+        
         body { font-family: 'Poppins', sans-serif; margin: 0; background: radial-gradient(circle at 10% 10%, rgba(126, 62, 240, 0.05) 0%, rgba(252, 252, 252, 1) 50%); min-height: 100vh; display: flex; justify-content: center; padding: 120px 20px; }
         .bg-blur { position: fixed; width: 400px; height: 400px; border-radius: 50%; filter: blur(100px); opacity: 0.15; z-index: -1; }
         .blur-1 { background: #7e3ef0; top: -100px; left: -100px; }
         .blur-2 { background: #f03e7e; bottom: -100px; right: -100px; }
-        nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,0,0,0.05); position: fixed; top: 0; left: 0; right: 0; z-index: 100; }
+        
+        nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,0,0,0.05); position: fixed; top: 0; left: 0; right: 0; z-index: 100; box-sizing: border-box; }
         .logo { font-weight: 900; font-size: 1.5rem; text-transform: uppercase; letter-spacing: -1.5px; }
         .logo span { color: #7e3ef0; }
         .nav-links a { text-decoration: none; color: #111; font-weight: 700; margin-left: 30px; font-size: 0.85rem; text-transform: uppercase; }
         
-        .container { width: 100%; max-width: 700px; display: flex; flex-direction: column; gap: 30px; }
+        .container { width: 100%; max-width: 750px; display: flex; flex-direction: column; gap: 30px; }
         
-        .box { background: rgba(255, 255, 255, 0.95); border-radius: 35px; padding: 50px; box-shadow: 0 25px 70px rgba(0, 0, 0, 0.06); border: 1px solid rgba(255,255,255,0.5); }
+        .box { background: rgba(255, 255, 255, 0.95); border-radius: 35px; padding: 50px; box-shadow: 0 25px 70px rgba(0, 0, 0, 0.06); border: 1px solid rgba(255,255,255,0.5); box-sizing: border-box; }
         
-        h1 { font-size: 2.2rem; font-weight: 900; text-align: center; text-transform: uppercase; margin-bottom: 30px; }
+        h1 { font-size: 2.2rem; font-weight: 900; text-align: center; text-transform: uppercase; margin-bottom: 40px; line-height: 1; }
         h1 span { color: #7e3ef0; }
         
-        .form-group { margin-bottom: 20px; }
-        label { display: block; font-weight: 800; margin-bottom: 8px; font-size: 0.8rem; text-transform: uppercase; color: #555; }
-        input, textarea, select { width: 100%; padding: 16px; border-radius: 14px; border: 2px solid #f2f2f2; font-family: inherit; font-size: 1rem; box-sizing: border-box; transition: 0.3s; }
-        input:focus { border-color: #7e3ef0; outline: none; }
-        .row { display: flex; gap: 15px; } .row .form-group { flex: 1; }
+        .form-group { margin-bottom: 25px; width: 100%; }
+        label { display: block; font-weight: 800; margin-bottom: 10px; font-size: 0.8rem; text-transform: uppercase; color: #555; }
         
-        button { width: 100%; padding: 20px; border: none; border-radius: 16px; background: #000; color: #fff; font-weight: 900; text-transform: uppercase; cursor: pointer; transition: 0.3s; margin-top: 10px; }
-        button:hover { background: #7e3ef0; transform: translateY(-3px); }
+        input, textarea, select { 
+            width: 100%; padding: 18px; border-radius: 16px; border: 2px solid #f2f2f2; 
+            font-family: inherit; font-size: 1rem; box-sizing: border-box; transition: 0.3s; 
+            background: #ffffff;
+        }
+        input:focus, select:focus, textarea:focus { border-color: #7e3ef0; outline: none; background: #fff; }
         
-        /* --- ZONE DE RÉSULTAT (EMPILEMENT) --- */
+        /* CORRECTIF DES CASES ALIGNÉES */
+        .row { display: flex; gap: 20px; width: 100%; margin-bottom: 5px; } 
+        .row .form-group { flex: 1; min-width: 0; } /* min-width: 0 empêche le débordement */
+        
+        button { width: 100%; padding: 22px; border: none; border-radius: 18px; background: #000; color: #fff; font-weight: 900; text-transform: uppercase; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        button:hover { background: #7e3ef0; transform: translateY(-3px); box-shadow: 0 15px 30px rgba(126, 62, 240, 0.2); }
+        
         #voyages-container { display: flex; flex-direction: column; gap: 30px; }
-        
-        .itineraire-box { background: #fff; border-radius: 30px; border: 1px solid #f0f0f0; padding: 40px; box-shadow: 0 40px 90px rgba(0,0,0,0.08); }
-        .itineraire-box h2 { font-weight: 900; text-transform: uppercase; color: #7e3ef0; margin-top: 0; margin-bottom: 25px; font-size: 1.2rem; }
+        .itineraire-box { background: #fff; border-radius: 35px; border: 1px solid #f0f0f0; padding: 50px; box-shadow: 0 40px 90px rgba(0,0,0,0.08); }
+        .itineraire-box h2 { font-weight: 900; text-transform: uppercase; color: #7e3ef0; margin-top: 0; margin-bottom: 30px; font-size: 1.3rem; }
         .itineraire-content { color: #1a1a1a; font-size: 1.1rem; line-height: 2.5; white-space: pre-wrap; letter-spacing: -0.1px; }
 
-        /* --- ZONE DE MODIFICATION --- */
-        #modifs-zone { display: none; margin-top: 20px; }
-        #modifs-zone h3 { font-weight: 900; text-transform: uppercase; font-size: 1.1rem; margin-bottom: 15px; color: #f03e7e; /* TON ROUGE/ROSE */ text-align: center; }
+        #modifs-zone { display: none; }
+        #modifs-zone h3 { font-weight: 900; text-transform: uppercase; font-size: 1.1rem; margin-bottom: 20px; color: #f03e7e; text-align: center; }
         .btn-modif { background: #f03e7e; }
         .btn-modif:hover { background: #d0356c; }
 
-        .loader { display: none; text-align: center; font-weight: 900; color: #7e3ef0; margin-top: 20px; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px; }
+        .loader { display: none; text-align: center; font-weight: 900; color: #7e3ef0; margin: 30px 0; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 2px; }
     </style>
 </head>
 <body>
@@ -60,13 +67,13 @@
                     <div class="form-group"><label>Destination</label><input type="text" id="destination" placeholder="Tulum" required></div>
                 </div>
                 <div class="row">
-                    <div class="form-group"><label>Date</label><input type="date" id="dateDepart" required></div>
-                    <div class="form-group"><label>Jours</label><input type="number" id="duree" placeholder="5" required></div>
+                    <div class="form-group"><label>Date de départ</label><input type="date" id="dateDepart" required></div>
+                    <div class="form-group"><label>Durée (jours)</label><input type="number" id="duree" placeholder="5" required></div>
                 </div>
-                <div class="form-group"><label>Budget total (€)</label><input type="number" id="budget" placeholder="1500" required></div>
-                <div class="form-group"><label>Rythme</label><select id="rythme"><option value="Détendu">Détendu</option><option value="Équilibré" selected>Équilibré</option><option value="Intense">Intense</option></select></div>
-                <div class="form-group"><label>Hébergement</label><input type="text" id="hebergement" placeholder="Boutique hôtel..."></div>
-                <div class="form-group"><label>Envies</label><textarea id="styleVoyage" rows="2" placeholder="Surf, yoga..."></textarea></div>
+                <div class="form-group"><label>Budget total par personne (€)</label><input type="number" id="budget" placeholder="1500" required></div>
+                <div class="form-group"><label>Rythme souhaité</label><select id="rythme"><option value="Détendu">Détendu</option><option value="Équilibré" selected>Équilibré</option><option value="Intense">Intense</option></select></div>
+                <div class="form-group"><label>Hébergement idéal</label><input type="text" id="hebergement" placeholder="Boutique hôtel colonial..."></div>
+                <div class="form-group"><label>Tes envies particulières</label><textarea id="styleVoyage" rows="3" placeholder="Gastronomie, cenotes cachés..."></textarea></div>
                 <button type="submit" id="btnGenerer">Générer mon voyage ✨</button>
             </form>
             <div id="loader-initial" class="loader">Rnow sculpte votre aventure... 🌴</div>
@@ -76,7 +83,7 @@
 
         <div id="modifs-zone" class="box">
             <h3>Une modification ? Dis-moi ce que tu aimes ou pas :</h3>
-            <textarea id="feedbackClient" rows="3" placeholder="Ex: Je n'aime pas cet hôtel, peux-tu proposer une option plus sauvage ? Enlève le snorkeling du jour 2."></textarea>
+            <textarea id="feedbackClient" rows="3" placeholder="Ex: Je n'aime pas cet hôtel, peux-tu proposer une option plus sauvage ?"></textarea>
             <button id="btnAffiner" class="btn-modif">Affiner mon itinéraire ⚡</button>
             <div id="loader-modif" class="loader">Rnow ajuste votre voyage... ✨</div>
         </div>
@@ -87,15 +94,16 @@
         let versionVoyage = 1;
 
         async function appelerAPI(payload) {
-            const response = await fetch('/api/generate', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-            return await response.json();
+            try {
+                const response = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                return await response.json();
+            } catch (e) { return { text: "Erreur de connexion." }; }
         }
 
-        // --- GÉNÉRATION INITIALE ---
         document.getElementById('voyageForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const loader = document.getElementById('loader-initial');
@@ -104,7 +112,7 @@
 
             loader.style.display = 'block';
             modifsZone.style.display = 'none';
-            voyagesContainer.innerHTML = ""; // On vide l'ancien empilement si on recommence
+            voyagesContainer.innerHTML = "";
             versionVoyage = 1;
 
             const payload = {
@@ -122,58 +130,36 @@
             const data = await appelerAPI(payload);
             if (data.text) {
                 dernierItineraire = data.text;
-                // ON CRÉE UNE NOUVELLE BOITE POUR LE VOYAGE
                 ajouterVoyageAuConteneur(data.text);
                 modifsZone.style.display = 'block';
             }
             loader.style.display = 'none';
         });
 
-        // --- AFFINAGE (CORRECTION) ---
         document.getElementById('btnAffiner').addEventListener('click', async function() {
             const feedback = document.getElementById('feedbackClient').value;
             if (!feedback) return alert("Dis-moi ce que tu veux changer !");
-
             const loader = document.getElementById('loader-modif');
-            const modifsZone = document.getElementById('modifs-zone');
-            
             loader.style.display = 'block';
 
-            const payload = {
-                type: "correction",
-                ancienItineraire: dernierItineraire,
-                feedback: feedback
-            };
-
+            const payload = { type: "correction", ancienItineraire: dernierItineraire, feedback: feedback };
             const data = await appelerAPI(payload);
             if (data.text) {
                 dernierItineraire = data.text;
                 versionVoyage++;
-                // ON CRÉE UNE NOUVELLE BOITE SANS EFFACER L'ANCIENNE
                 ajouterVoyageAuConteneur(data.text);
-                document.getElementById('feedbackClient').value = ""; // On vide le champ
+                document.getElementById('feedbackClient').value = "";
             }
             loader.style.display = 'none';
-            modifsZone.scrollIntoView({ behavior: 'smooth' }); // On scrolle vers la zone de modif
+            document.getElementById('voyages-container').lastElementChild.scrollIntoView({ behavior: 'smooth' });
         });
 
-        // Fonction pour créer une nouvelle boîte de voyage
         function ajouterVoyageAuConteneur(texteItineraire) {
             const voyagesContainer = document.getElementById('voyages-container');
-            
-            const nouvelleBoite = document.createElement('div');
-            nouvelleBoite.className = 'itineraire-box';
-            
-            const titre = document.createElement('h2');
-            titre.innerText = `Ton Voyage Rnow - Version ${versionVoyage}`;
-            
-            const contenu = document.createElement('div');
-            contenu.className = 'itineraire-content';
-            contenu.innerText = texteItineraire;
-            
-            nouvelleBoite.appendChild(titre);
-            nouvelleBoite.appendChild(contenu);
-            voyagesContainer.appendChild(nouvelleBoite);
+            const boite = document.createElement('div');
+            boite.className = 'itineraire-box';
+            boite.innerHTML = `<h2>Ton Voyage Rnow - Version ${versionVoyage}</h2><div class="itineraire-content">${texteItineraire}</div>`;
+            voyagesContainer.appendChild(boite);
         }
     </script>
 </body>
