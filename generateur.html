@@ -6,240 +6,94 @@
     <title>Rnow | Personnalisation Premium</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;900&display=swap');
-        :root { --primary: #7e3ef0; --secondary: #f03e7e; --dark: #000000; }
-        
-        body { 
-            font-family: 'Poppins', sans-serif; 
-            margin: 0; 
-            color: #fff; 
-            background-color: var(--dark); 
-            min-height: 100vh; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            padding: 120px 20px 60px 20px; 
-            box-sizing: border-box; 
-        }
-
-        /* Blurs adaptés */
-        .bg-blur { position: fixed; width: 600px; height: 600px; border-radius: 50%; filter: blur(140px); opacity: 0.22; z-index: -1; pointer-events: none; }
-        .blur-1 { background: var(--primary); top: -200px; left: -200px; }
-        .blur-2 { background: var(--secondary); bottom: -200px; right: -200px; }
-
-        /* Navigation Responsive */
-        nav { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            padding: 20px 40px; 
-            background: rgba(0, 0, 0, 0.85); 
-            backdrop-filter: blur(25px); 
-            border-bottom: 1px solid rgba(255,255,255,0.1); 
-            position: fixed; top: 0; left: 0; right: 0; z-index: 1000; 
-            box-sizing: border-box; 
-        }
-        .logo { font-weight: 900; font-size: 1.6rem; text-transform: uppercase; color: white; text-decoration: none; }
+        :root { --primary: #7e3ef0; --secondary: #f03e7e; --dark: #000; }
+        body { font-family: 'Poppins', sans-serif; margin: 0; color: #fff; background: var(--dark); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 120px 20px; box-sizing: border-box; overflow-x: hidden; }
+        .bg-blur { position: fixed; width: 500px; height: 500px; border-radius: 50%; filter: blur(120px); opacity: 0.2; z-index: -1; }
+        .blur-1 { background: var(--primary); top: -100px; left: -100px; }
+        nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; background: rgba(0,0,0,0.8); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.1); position: fixed; top: 0; left: 0; right: 0; z-index: 1000; }
+        .logo { font-weight: 900; font-size: 1.6rem; text-decoration: none; color: #fff; }
         .logo span { color: var(--primary); }
-        .nav-links a { text-decoration: none; color: white; font-weight: 700; margin-left: 25px; font-size: 0.8rem; text-transform: uppercase; }
-
         .container { width: 100%; max-width: 800px; display: flex; flex-direction: column; gap: 40px; z-index: 10; }
-
-        /* Box et Formulaire */
-        .box { background: #ffffff; border-radius: 40px; padding: 50px; box-shadow: 0 40px 120px rgba(126, 62, 240, 0.25); color: #000; }
-        h1 { font-size: 2.2rem; font-weight: 900; text-align: center; text-transform: uppercase; margin-bottom: 40px; line-height: 1.1; }
-        h1 span { color: var(--primary); }
-
-        .form-group { margin-bottom: 25px; width: 100%; }
-        label { display: block; font-weight: 800; margin-bottom: 10px; font-size: 0.7rem; text-transform: uppercase; color: #777; }
-        input, textarea, select { width: 100%; padding: 18px; border-radius: 16px; border: 2px solid #f4f4f4; font-family: inherit; font-size: 1rem; box-sizing: border-box; background: #fafafa; }
+        .box { background: #fff; border-radius: 40px; padding: 50px; color: #000; box-shadow: 0 40px 100px rgba(126,62,240,0.2); }
+        h1 { font-size: 2.2rem; text-align: center; text-transform: uppercase; margin-bottom: 40px; }
+        .form-group { margin-bottom: 25px; }
+        label { display: block; font-weight: 800; font-size: 0.7rem; text-transform: uppercase; color: #777; margin-bottom: 10px; }
+        input, select, textarea { width: 100%; padding: 18px; border-radius: 16px; border: 2px solid #f4f4f4; background: #fafafa; font-family: inherit; box-sizing: border-box; }
+        .row { display: flex; gap: 20px; flex-wrap: wrap; }
+        .col { flex: 1; min-width: 250px; }
+        .btn-main { width: 100%; padding: 22px; border: none; border-radius: 20px; background: #000; color: #fff; font-weight: 900; text-transform: uppercase; cursor: pointer; transition: 0.4s; }
         
-        /* Flexbox Responsive pour les lignes */
-        .row { display: flex; gap: 20px; width: 100%; flex-wrap: wrap; } 
-        .col-date { flex: 0 0 calc(60% - 10px); min-width: 200px; }
-        .col-days { flex: 1; min-width: 100px; }
-        .row .form-group { flex: 1; min-width: 280px; }
-
-        .btn-main { width: 100%; padding: 22px; border: none; border-radius: 20px; background: #000; color: #fff; font-weight: 900; text-transform: uppercase; cursor: pointer; transition: 0.4s; margin-top: 10px; font-size: 0.9rem; }
-        .btn-main:hover { background: var(--primary); transform: translateY(-5px); }
-
-        /* Itinéraire */
+        /* Loader Animation */
+        .loader-container { display: none; margin: 30px 0; width: 100%; }
+        .progress-bar { width: 100%; height: 6px; background: #f0f0f0; border-radius: 10px; overflow: hidden; position: relative; }
+        .progress-fill { width: 0%; height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); animation: loading 3s infinite; }
+        @keyframes loading { 0% { width: 0%; } 50% { width: 70%; } 100% { width: 100%; } }
+        
         #voyages-container { display: flex; flex-direction: column; gap: 40px; width: 100%; }
-        .itineraire-box { background: #fff; border-radius: 40px; padding: 50px; box-shadow: 0 50px 130px rgba(0,0,0,0.6); color: #000; animation: fadeIn 0.8s ease forwards; }
-        .itineraire-box h2 { font-weight: 900; text-transform: uppercase; color: var(--primary); margin-bottom: 30px; font-size: 1.3rem; }
-        .itineraire-content { color: #1a1a1a; font-size: 1.05rem; line-height: 2.2; white-space: pre-wrap; margin-bottom: 25px; }
+        .itineraire-box { background: #fff; border-radius: 40px; padding: 50px; color: #000; animation: slideUp 0.6s ease; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
+        .itineraire-content { font-size: 1.05rem; line-height: 2.2; white-space: pre-wrap; margin-bottom: 30px; }
+        .rnow-link { color: var(--primary); font-weight: bold; text-decoration: underline; }
 
-        /* Modifs et Loader */
-        #modifs-zone { display: none; border: 3px solid var(--secondary); background: #fff; }
-        .btn-modif { background: var(--secondary); }
-        .loader { display: none; text-align: center; font-weight: 900; color: var(--primary); margin: 30px 0; text-transform: uppercase; font-size: 0.8rem; }
-        
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        a.rnow-link { color: #7e3ef0; font-weight: bold; text-decoration: underline; }
-
-        /* --- MEDIA QUERIES MOBILE --- */
         @media (max-width: 600px) {
-            body { padding: 100px 15px 40px 15px; }
             nav { padding: 15px 20px; }
-            .logo { font-size: 1.3rem; }
-            .nav-links { display: none; }
-            .box, .itineraire-box { padding: 35px 25px; border-radius: 30px; }
+            .box, .itineraire-box { padding: 30px 20px; }
             h1 { font-size: 1.6rem; }
-            .col-date, .col-days, .row .form-group { flex: 1 1 100%; }
-            .itineraire-content { font-size: 0.95rem; line-height: 1.8; }
+            .nav-links { display: none; }
         }
     </style>
 </head>
 <body>
-    <div class="bg-blur blur-1"></div><div class="bg-blur blur-2"></div>
-    <nav>
-        <a href="index.html" class="logo">R<span>now</span>.</a>
-        <div class="nav-links">
-            <a href="index.html#vision">Vision</a>
-            <a href="index.html#about">À Propos</a>
-            <a href="generateur.html" style="color: var(--secondary);">Lancer l'IA</a>
-        </div>
-    </nav>
-
+    <div class="bg-blur blur-1"></div>
+    <nav><a href="index.html" class="logo">R<span>now</span>.</a></nav>
     <div class="container">
         <div class="box">
             <h1>Crée ton <span>Voyage</span></h1>
             <form id="voyageForm">
                 <div class="row">
-                    <div class="form-group"><label>Départ</label><input type="text" id="depart" placeholder="Ex: Paris" required></div>
-                    <div class="form-group"><label>Destination</label><input type="text" id="destination" placeholder="Ex: Tulum" required></div>
+                    <div class="form-group col"><label>Départ</label><input type="text" id="depart" placeholder="Paris" required></div>
+                    <div class="form-group col"><label>Destination</label><input type="text" id="destination" placeholder="Tulum" required></div>
                 </div>
                 <div class="row">
-                    <div class="form-group col-date"><label>Date de départ</label><input type="date" id="dateDepart" required></div>
-                    <div class="form-group col-days"><label>Durée (jours)</label><input type="number" id="duree" placeholder="7" required></div>
-                </div>
-                <div class="row">
-                    <div class="form-group"><label>Budget total (€)</label><input type="number" id="budget" placeholder="1500" required></div>
-                    <div class="form-group">
-                        <label>Niveau de confort</label>
+                    <div class="form-group col"><label>Date</label><input type="date" id="dateDepart" required></div>
+                    <div class="form-group col"><label>Niveau de confort</label>
                         <select id="confort">
-                            <option value="Backpacker (Hostels & Local)">🎒 Backpacker</option>
-                            <option value="Économique (Guesthouses & Bus)" selected>🚲 Économique</option>
-                            <option value="Standard (Hôtels 3* & Confort)">🚗 Standard</option>
-                            <option value="Premium (Boutique Hôtels)">✨ Premium</option>
-                            <option value="Luxe (Palaces & Privé)">👑 Ultra-Luxe</option>
+                            <option value="Backpacker">🎒 Backpacker</option>
+                            <option value="Standard" selected>🚗 Standard</option>
+                            <option value="Luxe">👑 Luxe</option>
                         </select>
                     </div>
                 </div>
-                <div class="form-group"><label>Rythme souhaité</label>
-                    <select id="rythme"><option value="Détendu">Détendu</option><option value="Équilibré" selected>Équilibré</option><option value="Intense">Intense</option></select>
-                </div>
-                <div class="form-group"><label>Hébergement idéal</label><input type="text" id="hebergement" placeholder="Style d'hôtel..."></div>
-                <div class="form-group"><label>Tes envies</label><textarea id="styleVoyage" rows="3" placeholder="Surf, gastronomie..."></textarea></div>
+                <div class="form-group"><label>Budget total (€)</label><input type="number" id="budget" placeholder="1500" required></div>
+                <div class="form-group"><label>Durée (jours)</label><input type="number" id="duree" placeholder="7" required></div>
                 <button type="button" id="btnGenerer" class="btn-main">Générer mon voyage ✨</button>
+                <div id="loader" class="loader-container">
+                    <div style="text-align:center; color: var(--primary); font-weight:900; margin-bottom:10px; font-size:0.8rem;">L'IA RNW SCULPTE VOTRE CARNET...</div>
+                    <div class="progress-bar"><div class="progress-fill"></div></div>
+                </div>
             </form>
-            <div id="loader-initial" class="loader">Rnow sculpte votre aventure... 🌴</div>
         </div>
         <div id="voyages-container"></div>
-        <div id="modifs-zone" class="box">
-            <h3>Une modification ? Dis-moi ce que tu aimes ou pas :</h3>
-            <textarea id="feedbackClient" rows="4" placeholder="Ex: L'hôtel est trop moderne..."></textarea>
-            <button id="btnAffiner" class="btn-main btn-modif">Affiner mon itinéraire ⚡</button>
-            <div id="loader-modif" class="loader">Rnow ajuste votre voyage... ✨</div>
-        </div>
     </div>
-
     <script>
-        let dernierItineraire = "";
         let versionVoyage = 1;
-
-        function formaterTexte(texte) {
-            return texte.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" class="rnow-link">$1</a>');
-        }
-
-        async function appelerAPI(payload) {
-            const response = await fetch('/api/generate', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-            return await response.json();
-        }
-
-        document.getElementById('btnGenerer').addEventListener('click', async function(e) {
-            e.preventDefault();
-            const loader = document.getElementById('loader-initial');
-            const voyagesContainer = document.getElementById('voyages-container');
+        function formaterTexte(t) { return t.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" class="rnow-link">$1</a>'); }
+        document.getElementById('btnGenerer').onclick = async function() {
+            const loader = document.getElementById('loader');
             loader.style.display = 'block';
-            voyagesContainer.innerHTML = "";
-            versionVoyage = 1;
-            const payload = { 
-                type: "initial", 
-                depart: document.getElementById('depart').value, 
-                destination: document.getElementById('destination').value, 
-                budget: document.getElementById('budget').value, 
-                confort: document.getElementById('confort').value,
-                style: document.getElementById('styleVoyage').value, 
-                date: document.getElementById('dateDepart').value, 
-                duree: document.getElementById('duree').value, 
-                hebergement: document.getElementById('hebergement').value, 
-                rythme: document.getElementById('rythme').value 
-            };
-            const data = await appelerAPI(payload);
-            if (data.text) { 
-                dernierItineraire = data.text; 
-                ajouterVoyageAuConteneur(data.text); 
-                document.getElementById('modifs-zone').style.display = 'block'; 
+            const payload = { type: "initial", depart: document.getElementById('depart').value, destination: document.getElementById('destination').value, budget: document.getElementById('budget').value, confort: document.getElementById('confort').value, date: document.getElementById('dateDepart').value, duree: document.getElementById('duree').value };
+            const res = await fetch('/api/generate', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
+            const data = await res.json();
+            if (data.text) {
+                const container = document.getElementById('voyages-container');
+                const boite = document.createElement('div');
+                boite.className = 'itineraire-box';
+                boite.innerHTML = `<h2>Voyage Rnow V${versionVoyage}</h2><div class="itineraire-content">${formaterTexte(data.text)}</div><button class="btn-main" style="background:#25D366" onclick="window.open('https://wa.me/?text=${encodeURIComponent(data.text)}')">RECEVOIR SUR WHATSAPP 📱</button>`;
+                container.prepend(boite);
+                versionVoyage++;
             }
             loader.style.display = 'none';
-        });
-
-        document.getElementById('btnAffiner').addEventListener('click', async function() {
-            const feedback = document.getElementById('feedbackClient').value;
-            if (!feedback) return alert("Dis-moi ce que tu veux changer !");
-            const loader = document.getElementById('loader-modif');
-            loader.style.display = 'block';
-            const payload = { 
-                type: "correction", 
-                ancienItineraire: dernierItineraire, 
-                feedback: feedback,
-                confort: document.getElementById('confort').value,
-                budget: document.getElementById('budget').value
-            };
-            const data = await appelerAPI(payload);
-            if (data.text) { 
-                dernierItineraire = data.text; 
-                versionVoyage++; 
-                ajouterVoyageAuConteneur(data.text); 
-                document.getElementById('feedbackClient').value = ""; 
-            }
-            loader.style.display = 'none';
-        });
-
-        function ajouterVoyageAuConteneur(texteItineraire) {
-            const voyagesContainer = document.getElementById('voyages-container');
-            const boite = document.createElement('div');
-            boite.className = 'itineraire-box';
-            
-            const titre = document.createElement('h2'); 
-            titre.innerText = `Ton Voyage Rnow - Version ${versionVoyage}`;
-            
-            const contenu = document.createElement('div'); 
-            contenu.className = 'itineraire-content'; 
-            contenu.innerHTML = formaterTexte(texteItineraire);
-            
-            const btnWA = document.createElement('button');
-            btnWA.className = 'btn-main'; 
-            btnWA.style.background = '#25D366'; 
-            btnWA.style.marginTop = '20px'; 
-            btnWA.innerText = "RECEVOIR MON CARNET SUR WHATSAPP 📱";
-            
-            btnWA.onclick = () => { 
-                const message = encodeURIComponent("Voici mon voyage Rnow :\n\n" + texteItineraire); 
-                window.open(`https://wa.me/?text=${message}`, '_blank'); 
-            };
-
-            boite.appendChild(titre); 
-            boite.appendChild(contenu); 
-            boite.appendChild(btnWA);
-            voyagesContainer.appendChild(boite);
-            
-            boite.scrollIntoView({ behavior: 'smooth' });
-        }
+        };
     </script>
 </body>
 </html>
