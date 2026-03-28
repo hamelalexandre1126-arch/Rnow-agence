@@ -17,19 +17,22 @@ STRUCTURE STRICTE (11 POINTS) :
 4. DÉTAILS CHIRURGICAUX (📍 ACTIVITÉ, 💰 RÉSERVATION, 🏠 REFUGE, 🍴 TABLE, 🚕 TRANSPORT).
 5. LOGISTIQUE : Vols, Assurances, Location.
 6. CONSEIL D'INITIÉ.
-RÈGLES : Date DD/MM/YYYY, une ligne d'espace entre chaque puce, UN emoji varié par ligne, ZERO symbole (* ou #).
+RÈGLES : Date DD/MM/YYYY, une ligne d'espace entre chaque puce, UN emoji varié, ZERO symbole (* ou #).
   `;
 
   let promptFinal = "";
 
   if (isRealSearch) {
-    promptFinal = `Tu es l'Expert Rnow. REPRENDS cet itinéraire : "${ancienItineraire}".
-    Pour chaque activité, hôtel ou vol, crée un LIEN DE RECHERCHE RÉEL et CLICQUABLE.
-    FORMATS OBLIGATOIRES :
-    - Vols : https://www.skyscanner.fr/transport/vols/${depart}/${destination}/${date}
-    - Hôtels : https://www.booking.com/searchresults.html?ss=${destination}&checkin=${date}
-    - Activités : https://www.getyourguide.fr/s/?q=${destination}
-    Réécris l'itinéraire complet avec ces liens dans la section 💰 RÉSERVATION. ${instructionsRnow}`;
+    promptFinal = `Tu es l'Expert-Concierge Rnow. REPRENDS cet itinéraire : "${ancienItineraire}".
+    MISSION : Pour chaque Jour, tu DOIS CONSEILLER un hôtel et une activité précise (ex: "Hôtel Azulik" ou "Ruines de Tulum").
+    
+    CONSIGNE LIENS : Après chaque conseil, génère un LIEN DE RECHERCHE sous ce format Markdown : [Texte du bouton](Lien).
+    FORMATS DE LIENS :
+    - Vols : [Réserver mon vol](https://www.skyscanner.fr/transport/vols/${depart}/${destination}/${date})
+    - Hôtels : [Réserver cet hôtel](https://www.booking.com/searchresults.html?ss=NOM_DE_L_HOTEL+${destination})
+    - Activités : [Réserver l'activité](https://www.getyourguide.fr/s/?q=NOM_DE_L_ACTIVITE)
+    
+    Remplace NOM_DE_L_HOTEL et NOM_DE_L_ACTIVITE par les noms réels que tu as choisis. ${instructionsRnow}`;
   } else if (type === "initial") {
     promptFinal = `Génère un itinéraire complet pour ${destination} (${duree} jours) le ${date}. 
     Budget: ${budget}€. Ne fais pas de recherche web pour répondre instantanément.
@@ -40,21 +43,15 @@ RÈGLES : Date DD/MM/YYYY, une ligne d'espace entre chaque puce, UN emoji varié
   }
 
   try {
-    // --- 🔍 SOLUTION DE DÉTECTION DYNAMIQUE DU MODÈLE (Celle qui marche !) ---
     const listResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
     const listData = await listResponse.json();
-    
-    // On cherche le meilleur modèle dispo (Flash en priorité, sinon le premier de la liste)
     let selectedModel = listData.models?.find(m => m.name.includes("flash")) || listData.models?.[0];
-
-    if (!selectedModel) throw new Error("Aucun modèle IA détecté sur ce compte.");
 
     const bodyPayload = {
       contents: [{ parts: [{ text: promptFinal }] }],
       safetySettings: [{ category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }]
     };
 
-    // On appelle l'API avec le nom de modèle détecté dynamiquement
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/${selectedModel.name}:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -63,7 +60,6 @@ RÈGLES : Date DD/MM/YYYY, une ligne d'espace entre chaque puce, UN emoji varié
 
     const data = await response.json();
     let textOutput = data.candidates?.[0]?.content?.parts?.[0]?.text || "Erreur de génération.";
-    
     textOutput = textOutput.replace(/\*\*/g, '').replace(/\*/g, '').replace(/#/g, '');
 
     res.status(200).json({ text: textOutput });
