@@ -23,10 +23,9 @@
         label { display: block; font-weight: 800; margin-bottom: 12px; font-size: 0.75rem; text-transform: uppercase; color: #777; }
         input, textarea, select { width: 100%; padding: 20px; border-radius: 18px; border: 2px solid #f4f4f4; font-family: inherit; font-size: 1.05rem; box-sizing: border-box; background: #fafafa; }
         
-        /* Ajustement des colonnes pour éviter le chevauchement */
         .row { display: flex; gap: 20px; width: 100%; } 
-        .col-date { flex: 0 0 65%; }
-        .col-days { flex: 0 0 calc(35% - 20px); }
+        .col-date { flex: 0 0 60%; }
+        .col-days { flex: 1; }
 
         .btn-main { width: 100%; padding: 24px; border: none; border-radius: 22px; background: #000; color: #fff; font-weight: 900; text-transform: uppercase; cursor: pointer; transition: 0.4s; margin-top: 15px; }
         .btn-main:hover { background: var(--primary); transform: translateY(-6px); }
@@ -120,21 +119,18 @@
             loader.style.display = 'block';
             voyagesContainer.innerHTML = "";
             versionVoyage = 1;
-            
-            // On récupère ici toutes les valeurs, y compris le Confort
             const payload = { 
                 type: "initial", 
                 depart: document.getElementById('depart').value, 
                 destination: document.getElementById('destination').value, 
                 budget: document.getElementById('budget').value, 
-                confort: document.getElementById('confort').value, // AJOUTÉ
+                confort: document.getElementById('confort').value,
                 style: document.getElementById('styleVoyage').value, 
                 date: document.getElementById('dateDepart').value, 
                 duree: document.getElementById('duree').value, 
                 hebergement: document.getElementById('hebergement').value, 
                 rythme: document.getElementById('rythme').value 
             };
-
             const data = await appelerAPI(payload);
             if (data.text) { 
                 dernierItineraire = data.text; 
@@ -153,47 +149,50 @@
                 type: "correction", 
                 ancienItineraire: dernierItineraire, 
                 feedback: feedback,
-                budget: document.getElementById('budget').value, // On repasse le budget pour le contexte
-                confort: document.getElementById('confort').value // On repasse le confort
+                confort: document.getElementById('confort').value,
+                budget: document.getElementById('budget').value
             };
             const data = await appelerAPI(payload);
-            if (data.text) { dernierItineraire = data.text; versionVoyage++; ajouterVoyageAuConteneur(data.text); document.getElementById('feedbackClient').value = ""; }
+            if (data.text) { 
+                dernierItineraire = data.text; 
+                versionVoyage++; 
+                ajouterVoyageAuConteneur(data.text); 
+                document.getElementById('feedbackClient').value = ""; 
+            }
             loader.style.display = 'none';
         });
-
-        async function lancerRechercheReelle(button, textElement) {
-            button.disabled = true; button.innerText = "RECHERCHE DES LIENS RÉELS... ✈️";
-            const data = await appelerAPI({ 
-                isRealSearch: true, 
-                ancienItineraire: textElement.innerText, 
-                depart: document.getElementById('depart').value, 
-                destination: document.getElementById('destination').value, 
-                date: document.getElementById('dateDepart').value,
-                budget: document.getElementById('budget').value,
-                confort: document.getElementById('confort').value
-            });
-            if (data.text) {
-                dernierItineraire = data.text;
-                textElement.innerHTML = formaterTexte(data.text);
-                button.style.display = 'none';
-                const btnWA = document.createElement('button');
-                btnWA.className = 'btn-main'; btnWA.style.background = '#25D366'; btnWA.style.marginTop = '20px'; btnWA.innerText = "RECEVOIR MON CARNET SUR WHATSAPP 📱";
-                btnWA.onclick = () => { const message = encodeURIComponent("Voici mon voyage Rnow :\n\n" + data.text); window.open(`https://wa.me/?text=${message}`, '_blank'); };
-                button.parentElement.appendChild(btnWA);
-            }
-            button.disabled = false;
-        }
 
         function ajouterVoyageAuConteneur(texteItineraire) {
             const voyagesContainer = document.getElementById('voyages-container');
             const boite = document.createElement('div');
             boite.className = 'itineraire-box';
-            const titre = document.createElement('h2'); titre.innerText = `Ton Voyage Rnow - Version ${versionVoyage}`;
-            const contenu = document.createElement('div'); contenu.className = 'itineraire-content'; contenu.innerHTML = formaterTexte(texteItineraire);
-            const btnReal = document.createElement('button'); btnReal.className = 'btn-main'; btnReal.innerText = "CE VOYAGE ME CONVIENT, TROUVER LES LIENS RÉELS ✨";
-            btnReal.onclick = () => lancerRechercheReelle(btnReal, contenu);
-            boite.appendChild(titre); boite.appendChild(contenu); boite.appendChild(btnReal);
+            
+            const titre = document.createElement('h2'); 
+            titre.innerText = `Ton Voyage Rnow - Version ${versionVoyage}`;
+            
+            const contenu = document.createElement('div'); 
+            contenu.className = 'itineraire-content'; 
+            contenu.innerHTML = formaterTexte(texteItineraire);
+            
+            // --- BOUTON WHATSAPP DIRECT ---
+            const btnWA = document.createElement('button');
+            btnWA.className = 'btn-main'; 
+            btnWA.style.background = '#25D366'; 
+            btnWA.style.marginTop = '20px'; 
+            btnWA.innerText = "RECEVOIR MON CARNET SUR WHATSAPP 📱";
+            
+            btnWA.onclick = () => { 
+                const message = encodeURIComponent("Voici mon voyage Rnow :\n\n" + texteItineraire); 
+                window.open(`https://wa.me/?text=${message}`, '_blank'); 
+            };
+
+            boite.appendChild(titre); 
+            boite.appendChild(contenu); 
+            boite.appendChild(btnWA);
             voyagesContainer.appendChild(boite);
+            
+            // Scroll automatique vers la nouvelle version
+            boite.scrollIntoView({ behavior: 'smooth' });
         }
     </script>
 </body>
