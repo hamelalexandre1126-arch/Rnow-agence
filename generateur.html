@@ -3,37 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rnow - L'Expert Voyage</title>
+    <title>Rnow | Générateur de Voyage Premium</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;900&display=swap');
-        body { font-family: 'Poppins', sans-serif; background-color: #fcfcfc; margin: 0; padding: 20px; display: flex; justify-content: center; }
-        .container { width: 100%; max-width: 650px; background: #ffffff; border-radius: 24px; padding: 40px; box-shadow: 0 15px 50px rgba(0, 0, 0, 0.08); }
-        h1 { font-size: 3rem; font-weight: 900; line-height: 0.9; text-transform: uppercase; margin-bottom: 30px; }
-        h1 span { background: linear-gradient(90deg, #f03e7e, #7e3ef0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; font-weight: 700; margin-bottom: 8px; font-size: 0.9rem; color: #444; }
-        input, textarea, select { width: 100%; padding: 14px; border-radius: 12px; border: 2px solid #eee; background: #fafafa; font-size: 1rem; font-family: inherit; box-sizing: border-box; }
-        .row { display: flex; gap: 15px; margin-bottom: 20px; }
-        .row .form-group { flex: 1; margin-bottom: 0; }
-        button { width: 100%; padding: 20px; border: none; border-radius: 14px; background: #000; color: #fff; font-size: 1.1rem; font-weight: 800; text-transform: uppercase; cursor: pointer; transition: 0.3s; margin-top: 10px; }
-        button:hover { transform: translateY(-2px); background: #1a1a1a; }
-        #resultat { margin-top: 40px; padding: 30px; background: #fff; border: 1px solid #eee; border-radius: 20px; display: none; line-height: 1.8; }
-        #itineraire-content { color: #222; font-size: 1.05rem; }
-        .loader { display: none; text-align: center; font-weight: bold; color: #7e3ef0; margin-top: 20px; }
+        
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            margin: 0; 
+            color: #000; 
+            background: radial-gradient(circle at 10% 10%, rgba(126, 62, 240, 0.05) 0%, rgba(252, 252, 252, 1) 50%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 100px 20px 50px 20px;
+        }
+
+        /* --- DESIGN BACKGROUND --- */
+        .bg-blur { position: fixed; width: 400px; height: 400px; border-radius: 50%; filter: blur(100px); opacity: 0.2; z-index: -1; }
+        .blur-1 { background: #7e3ef0; top: -100px; left: -100px; }
+        .blur-2 { background: #f03e7e; bottom: -100px; right: -100px; }
+
+        /* --- NAVIGATION --- */
+        nav { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 15px 40px; background: rgba(255, 255, 255, 0.8); 
+            backdrop-filter: blur(15px); border-bottom: 1px solid rgba(0,0,0,0.05);
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+        }
+        .logo { font-weight: 900; font-size: 1.4rem; text-transform: uppercase; letter-spacing: -1px; }
+        .logo span { color: #7e3ef0; }
+        .nav-links a { text-decoration: none; color: #000; font-weight: 700; margin-left: 25px; font-size: 0.8rem; text-transform: uppercase; }
+
+        /* --- CONTAINER DU FORMULAIRE --- */
+        .container { 
+            width: 100%; max-width: 650px; background: rgba(255, 255, 255, 0.9); 
+            border-radius: 30px; padding: 40px; border: 1px solid rgba(255,255,255,0.4);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.05);
+        }
+
+        h1 { font-size: 2.2rem; font-weight: 900; margin-bottom: 30px; text-transform: uppercase; letter-spacing: -1px; text-align: center; }
+        h1 span { color: #7e3ef0; }
+
+        .form-group { margin-bottom: 22px; }
+        label { display: block; font-weight: 700; margin-bottom: 8px; font-size: 0.85rem; color: #444; text-transform: uppercase; }
+        
+        input, textarea, select { 
+            width: 100%; padding: 16px; border-radius: 14px; border: 2px solid #f0f0f0; 
+            background: #fff; font-size: 1rem; font-family: inherit; box-sizing: border-box; transition: 0.3s;
+        }
+        input:focus, textarea:focus, select:focus { outline: none; border-color: #7e3ef0; box-shadow: 0 0 0 4px rgba(126, 62, 240, 0.1); }
+
+        .row { display: flex; gap: 20px; }
+        .row .form-group { flex: 1; }
+
+        button { 
+            width: 100%; padding: 22px; border: none; border-radius: 16px; 
+            background: #000; color: #fff; font-size: 1rem; font-weight: 800; 
+            text-transform: uppercase; cursor: pointer; transition: 0.4s; margin-top: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        button:hover { transform: translateY(-3px); background: #7e3ef0; box-shadow: 0 15px 35px rgba(126, 62, 240, 0.3); }
+
+        /* --- ZONE DE RÉSULTAT (L'ITINÉRAIRE) --- */
+        #resultat { 
+            margin-top: 40px; padding: 40px; background: #fff; 
+            border-radius: 24px; border: 1px solid #f0f0f0; display: none; 
+            box-shadow: 0 30px 70px rgba(0,0,0,0.08);
+        }
+        
+        #itineraire-content { 
+            color: #222; 
+            font-size: 1.05rem; 
+            line-height: 2.2; /* --- ICI : ESPACEMENT ULTRA-AÉRÉ --- */
+            word-wrap: break-word; 
+            white-space: pre-wrap; /* Respecte les sauts de ligne de l'IA */
+        }
+
+        .loader { display: none; text-align: center; font-weight: 800; color: #7e3ef0; margin-top: 30px; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 1px; }
     </style>
 </head>
 <body>
+
+    <div class="bg-blur blur-1"></div>
+    <div class="bg-blur blur-2"></div>
+
+    <nav>
+        <div class="logo">R<span>now</span>.</div>
+        <div class="nav-links">
+            <a href="index.html">Accueil</a>
+            <a href="generateur.html" style="color: #f03e7e;">Générateur</a>
+        </div>
+    </nav>
+
     <div class="container">
-        <h1>Travel<br>with <span>Rnow</span></h1>
+        <h1>Configure ton <span>Voyage</span></h1>
+        
         <form id="voyageForm">
             <div class="row">
                 <div class="form-group">
                     <label>Ville de départ</label>
-                    <input type="text" id="depart" placeholder="Ex: Paris, Montréal..." required>
+                    <input type="text" id="depart" placeholder="Ex: Paris" required>
                 </div>
                 <div class="form-group">
-                    <label>Destination ou Continent</label>
-                    <input type="text" id="destination" placeholder="Ex: Japon ou Asie" required>
+                    <label>Destination / Continent</label>
+                    <input type="text" id="destination" placeholder="Ex: Mexique ou Asie" required>
                 </div>
             </div>
 
@@ -50,30 +123,30 @@
 
             <div class="form-group">
                 <label>Budget total par personne (€)</label>
-                <input type="number" id="budget" placeholder="2000" required>
+                <input type="number" id="budget" placeholder="1500" required>
             </div>
 
             <div class="form-group">
                 <label>Rythme du voyage</label>
                 <select id="rythme">
-                    <option value="lent">Prendre le temps (1 seule ville, farniente)</option>
-                    <option value="equilibre">Équilibré (2-3 villes maximum)</option>
-                    <option value="intense" selected>Explorateur (Bouger tous les jours, voir le plus de choses)</option>
+                    <option value="Détendu (Une seule ville, farniente)">Détendu (Une seule ville, farniente)</option>
+                    <option value="Équilibré (2-3 escales)" selected>Équilibré (2-3 escales)</option>
+                    <option value="Intense (Bouger tous les jours)">Intense (Bouger tous les jours)</option>
                 </select>
             </div>
 
             <div class="form-group">
-                <label>Type d'hébergement préféré</label>
-                <input type="text" id="hebergement" placeholder="Hôtel luxe, Airbnb, Auberge...">
+                <label>Type d'hébergement</label>
+                <input type="text" id="hebergement" placeholder="Ex: Boutique hôtel, Airbnb de luxe...">
             </div>
 
             <div class="form-group">
-                <label>Tes envies particulières (Optionnel)</label>
-                <textarea id="styleVoyage" rows="2" placeholder="Ex: Gastronomie locale, surf, randonnées..."></textarea>
+                <label>Tes envies (Activités, Passion...)</label>
+                <textarea id="styleVoyage" rows="3" placeholder="Ex: Surf, gastronomie locale, cenotes..."></textarea>
             </div>
 
-            <button type="submit" id="btnGenerer">Calculer mon aventure ✨</button>
-            <div class="loader" id="loader">Rnow analyse les meilleures options... 🌴</div>
+            <button type="submit" id="btnGenerer">Générer mon itinéraire ✨</button>
+            <div class="loader" id="loader">L'IA Rnow prépare votre aventure... 🌴</div>
         </form>
 
         <div id="resultat">
@@ -112,10 +185,12 @@
                 });
                 const data = await response.json();
                 if (data.text) {
-                    contentDiv.innerHTML = data.text.replace(/\n/g, '<br>');
+                    // On affiche le texte. Les retours à la ligne sont gérés par white-space: pre-wrap dans le CSS.
+                    contentDiv.innerText = data.text;
                     resultDiv.style.display = 'block';
-                } else { alert("Erreur Google"); }
-            } catch (error) { alert("Erreur serveur"); }
+                } else { alert("Erreur lors de la génération."); }
+            } catch (error) { alert("Erreur de connexion."); }
+            
             loader.style.display = 'none';
             btn.style.display = 'block';
             resultDiv.scrollIntoView({ behavior: 'smooth' });
