@@ -9,30 +9,28 @@ export default async function handler(req, res) {
   if (!apiKey) return res.status(500).json({ text: "Clé API manquante." });
 
   const promptFinal = `
-Tu es l'expert Rnow. Crée un carnet de voyage ultra-dynamique pour : ${destination}.
+Tu es l'expert de l'agence Rnow. Crée un carnet de voyage d'exception pour : ${destination}.
 Départ: ${depart} | Budget: ${budget}€ | Style: ${style} | Rythme: ${rythme}.
 
 STYLE DE RÉDACTION :
-- Style "Magazine de voyage" : percutant, frais, donne envie !
-- Pas de longs paragraphes. Uniquement des lignes courtes.
-- UTILISE UN EMOJI AU DÉBUT DE CHAQUE LIGNE pour créer une liste visuelle.
+- Dynamique, aéré, chaque info commence par un EMOJI.
+- Pas de longs textes inutiles. Allez droit au but mais avec TOUS les détails techniques.
 
 STRUCTURE OBLIGATOIRE POUR CHAQUE JOUR :
 
-JOUR X : NOM DE L'ÉTAPE 
-📍 ACTIVITÉ : [Nom + description courte]
-🏠 LOGEMENT : [Nom + pourquoi c'est top]
-🍴 RESTO : [Le spot local à ne pas rater]
-💰 BUDGET : [Estimation du jour]
-🔗 LIEN : https://en.pons.com/translate/french-english/officielle
+JOUR X : [NOM DE L'ÉTAPE]
+📍 ACTIVITÉ : [Nom de l'excursion]. [Description précise de l'expérience].
+💰 COÛT & RÉSERVATION : [Prix exact en €] par personne. Réserver sur [Nom du site officiel ou plateforme].
+🏠 LOGEMENT : [Nom de l'hôtel/Airbnb], [Adresse précise]. Pourquoi ce choix ? [Argument phare].
+🍴 DÉJEUNER/DÎNER : [Nom du resto], [Adresse]. Le plat à ne pas rater : [Plat].
+🔗 LIEN OFFICIEL : [Mets UNIQUEMENT l'URL directe de l'activité ou de l'hôtel. Si tu n'es pas sûr de l'URL exacte, ne mets rien ou indique : "À réserver sur place"].
 
-CONSIGNES STRICTES :
-- Chaque nouvelle info doit commencer par un emoji.
-- Double saut de ligne entre chaque section.
+RÈGLES CRUCIALES :
+- Ne mets JAMAIS de liens vers des traducteurs ou des sites génériques. On veut du spécifique.
+- Inclus les détails des vols réels depuis ${depart} pour le ${date} dans le budget global.
+- Précise les transports entre chaque étape (prix du taxi, bus ou location voiture).
 - ZÉRO ASTÉRISQUE (*), ZÉRO DIÈSE (#).
-- FINIS PAR : 💡 MES CONSEILS VOYAGES (3 astuces flash).
-
-Points à inclure : Vols depuis ${depart}, transports locaux, assurances et location voiture si besoin (${rythme}).
+- FINIS PAR : 💡 MES CONSEILS VOYAGES (3 astuces locales inédites).
   `;
 
   try {
@@ -49,7 +47,7 @@ Points à inclure : Vols depuis ${depart}, transports locaux, assurances et loca
     const data = await response.json();
     let textOutput = data.candidates[0].content.parts[0].text;
 
-    // NETTOYAGE FINAL
+    // NETTOYAGE DES SYMBOLES
     textOutput = textOutput.replace(/\*/g, '').replace(/#/g, '');
 
     res.status(200).json({ text: textOutput });
