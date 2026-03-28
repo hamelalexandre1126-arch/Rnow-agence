@@ -190,11 +190,16 @@
             loader.style.display = 'none';
         });
 
-        // --- RECHERCHE ACTIVE (LIENS RÉELS) ---
+        // --- RECHERCHE ACTIVE (LIENS RÉELS) - CORRIGÉ ---
         document.getElementById('btnRealSearch').addEventListener('click', async () => {
             const btn = document.getElementById('btnRealSearch');
             const msg = document.getElementById('msg-patience');
-            const resultDiv = document.querySelector('.itineraire-content'); 
+            
+            // Correction ici : On cible le contenu de la TOUTE DERNIÈRE box ajoutée
+            const containers = document.querySelectorAll('.itineraire-content');
+            const lastResultDiv = containers[containers.length - 1]; 
+
+            if (!lastResultDiv) return alert("Aucun itinéraire trouvé.");
 
             btn.disabled = true;
             btn.innerText = "RECHERCHE EN COURS...";
@@ -208,7 +213,7 @@
 
                 if (data.text) {
                     dernierItineraire = data.text;
-                    resultDiv.innerText = data.text;
+                    lastResultDiv.innerText = data.text; // On met à jour le dernier bloc affiché
                     document.getElementById('container-recherche-active').style.display = 'none';
                     alert("Prix et liens réels ajoutés ! 🚀");
                 }
@@ -227,6 +232,10 @@
             boite.className = 'itineraire-box';
             boite.innerHTML = `<h2>Ton Voyage Rnow - Version ${versionVoyage}</h2><div class="itineraire-content">${texteItineraire}</div>`;
             voyagesContainer.appendChild(boite);
+            // On s'assure que le bouton "Recherche Active" remonte toujours en bas de la dernière version
+            const containerActive = document.getElementById('container-recherche-active');
+            voyagesContainer.appendChild(containerActive);
+            containerActive.style.display = 'block';
         }
     </script>
 </body>
