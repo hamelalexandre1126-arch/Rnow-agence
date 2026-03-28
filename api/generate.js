@@ -12,38 +12,46 @@ export default async function handler(req, res) {
 
   if (type === "initial") {
     promptFinal = `
-Tu es l'Expert-Concierge Rnow. Ton but : un itinéraire d'élite, chirurgical et ultra-structuré.
+Tu es l'Expert-Concierge Rnow. Ton ton est jeune, dynamique et passionné. 
+
+IMPORTANT : Les envies du client sont : "${style}". Tu DOIS construire tout l'itinéraire en fonction de ces goûts spécifiques. Si le client veut de la gastronomie, chaque étape doit être gourmande. S'il veut de l'aventure, chaque activité doit être intense.
+
+MISSION : 
+1. ACCUEIL : Salue le client avec l'énergie Rnow. 
+2. ANALYSE PERSONNALISÉE : Fais un paragraphe (4 lignes) où tu analyses précisément ses envies ("${style}") et son budget (${budget}€). Explique-lui comment tu as adapté le voyage à ses goûts personnels.
+3. RÉSUMÉ : Aperçu rapide du programme.
+4. DÉTAIL CHIRURGICAL : Programme jour par jour.
 
 PARAMÈTRES : 
-Départ: ${depart} | Destination: ${destination} | Budget: ${budget}€/pers | Style: ${style} | Rythme: ${rythme} | Durée: ${duree} jours dès le ${date}.
+Départ: ${depart} | Destination: ${destination} | Budget: ${budget}€/pers | Goûts & Envies: ${style} | Rythme: ${rythme} | Durée: ${duree} jours dès le ${date}.
 
-STRUCTURE OBLIGATOIRE (TRÈS IMPORTANT) :
-1. D'abord, donne un RÉSUMÉ RAPIDE du programme global.
-2. Ensuite, pour CHAQUE JOUR (Format date DD/MM/YYYY), détaille précisément dans cet ordre :
-📍 L'ACTIVITÉ RNOW : [Nom] + [Pourquoi ce choix].
-💰 RÉSERVATION : [Prix exact] + [Lien site officiel ou Lieu].
-🏠 TON REFUGE : [Nom], [Adresse complète]. [Point fort] + [Prix/nuit].
-🍴 LA TABLE RNOW : [Nom], [Adresse complète]. [Plat signature] + [Budget].
+STRUCTURE PAR JOUR (FORMAT EUROPÉEN DD/MM/YYYY) :
+📍 L'ACTIVITÉ RNOW : [Nom] + [Expertise Rnow : pourquoi ce choix correspond exactement à ses envies de "${style}"].
+
+💰 RÉSERVATION : [Prix exact] + [Lien site officiel ou lieu précis].
+
+🏠 TON REFUGE : [Nom], [ADRESSE COMPLÈTE]. [Pourquoi cet hôtel plaira au client] + [Prix/nuit].
+
+🍴 LA TABLE RNOW : [Nom], [ADRESSE COMPLÈTE]. [Plat signature] + [Budget moyen].
+
 🚕 TRANSPORT : [Trajet], [Mode], [Temps] et [Coût].
 
-CONSIGNES DE STYLE :
-- Saute EXACTEMENT UNE LIGNE entre chaque point pour la lisibilité.
-- UN SEUL emoji au début de chaque ligne (pas de répétition consécutive).
+CONSIGNES DE FORME :
+- DATE : Format européen (ex: Samedi 28/03/2026).
+- ESPACEMENT : Saute EXACTEMENT UNE LIGNE entre chaque puce (📍, 💰, etc.).
+- ÉMOJIS : Un SEUL emoji au début de chaque ligne. NE JAMAIS répéter le même emoji sur deux lignes qui se suivent.
 - PAS d'astérisques (*), PAS de dièses (#). Titres en MAJUSCULES simples.
-- Analyse le budget de ${budget}€ pour que tout soit réel.
-- Si une section est inutile (ex: pas de vols), ignore-la totalement.
+- BUDGET : Tout doit rentrer dans l'enveloppe de ${budget}€.
     `;
   } else {
     promptFinal = `
-Tu es l'Expert-Concierge Rnow. Voici l'itinéraire complet que tu as généré : "${ancienItineraire}"
-Le client veut cette modification : "${feedback}"
+Tu es l'Expert-Concierge Rnow. Reprends cet itinéraire : "${ancienItineraire}"
+Le client souhaite ajuster ceci : "${feedback}"
 
 MISSION : 
-Réécris l'INTÉGRALITÉ du voyage avec la même structure : 
-1. Résumé rapide. 
-2. Détails par jour (📍 Activité, 💰 Réservation, 🏠 Refuge, 🍴 Table, 🚕 Transport).
-3. Garde le budget de ${budget}€, les adresses complètes, le format de date européen et l'espacement de UNE LIGNE.
-4. ZÉRO symbole markdown (* ou #).
+Réécris l'INTÉGRALITÉ. Garde ton expertise et l'accent sur ses goûts initiaux ("${style}"). 
+Structure : Accueil > Analyse du changement > Résumé > Détails par jour.
+Règles : Dates DD/MM/YYYY, une ligne d'espace, émojis variés, zéro symbole (* ou #).
     `;
   }
 
@@ -60,9 +68,8 @@ Réécris l'INTÉGRALITÉ du voyage avec la même structure :
 
     const data = await response.json();
 
-    // Sécurité pour éviter l'erreur 'undefined' lors des modifications
     if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
-        return res.status(500).json({ text: "Désolé, une erreur est survenue lors de la modification. Réessaie." });
+        return res.status(500).json({ text: "Erreur technique de l'expert. Réessaie !" });
     }
 
     let textOutput = data.candidates[0].content.parts[0].text;
