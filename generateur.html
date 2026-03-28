@@ -8,60 +8,40 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;900&display=swap');
         
-        :root { 
-            --primary: #7e3ef0; 
-            --secondary: #f03e7e; 
-            --dark: #000000; 
-        }
+        :root { --primary: #7e3ef0; --secondary: #f03e7e; --dark: #000000; }
 
-        body { 
-            font-family: 'Poppins', sans-serif; 
-            margin: 0; 
-            color: #fff; 
-            background-color: var(--dark); 
-            min-height: 100vh; 
-            display: flex; 
-            flex-direction: column;
-            align-items: center;
-            padding: 140px 20px 80px 20px; 
-            overflow-x: hidden;
-            box-sizing: border-box;
-        }
+        body { font-family: 'Poppins', sans-serif; margin: 0; color: #fff; background-color: var(--dark); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 140px 20px 80px 20px; box-sizing: border-box; }
 
         .bg-blur { position: fixed; width: 600px; height: 600px; border-radius: 50%; filter: blur(140px); opacity: 0.22; z-index: -1; pointer-events: none; }
-        .blur-1 { background: var(--primary); top: -200px; left: -200px; animation: float-slow 20s infinite alternate ease-in-out; }
-        .blur-2 { background: var(--secondary); bottom: -200px; right: -200px; animation: float-reverse 25s infinite alternate-reverse ease-in-out; }
-
-        @keyframes float-slow { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(150px, 100px) scale(1.2); } }
-        @keyframes float-reverse { 0% { transform: translate(0, 0) scale(1.1); } 100% { transform: translate(-120px, -80px) scale(0.85); } }
+        .blur-1 { background: var(--primary); top: -200px; left: -200px; }
+        .blur-2 { background: var(--secondary); bottom: -200px; right: -200px; }
 
         nav { display: flex; justify-content: space-between; align-items: center; padding: 30px 60px; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(25px); border-bottom: 1px solid rgba(255,255,255,0.1); position: fixed; top: 0; left: 0; right: 0; z-index: 1000; box-sizing: border-box; }
-        .logo { font-weight: 900; font-size: 1.8rem; text-transform: uppercase; letter-spacing: -2px; color: white; text-decoration: none; }
+        .logo { font-weight: 900; font-size: 1.8rem; text-transform: uppercase; color: white; text-decoration: none; }
         .logo span { color: var(--primary); }
-        .nav-links a { text-decoration: none; color: white; font-weight: 700; margin-left: 35px; font-size: 0.85rem; text-transform: uppercase; transition: 0.4s ease; }
-        .nav-links a:hover { color: var(--secondary); }
+        .nav-links a { text-decoration: none; color: white; font-weight: 700; margin-left: 35px; font-size: 0.85rem; text-transform: uppercase; }
 
         .container { width: 100%; max-width: 800px; display: flex; flex-direction: column; gap: 45px; z-index: 10; }
         .box { background: #ffffff; border-radius: 45px; padding: 60px; box-shadow: 0 40px 120px rgba(126, 62, 240, 0.25); color: #000; }
         
-        h1 { font-size: 2.5rem; font-weight: 900; text-align: center; text-transform: uppercase; margin-bottom: 45px; letter-spacing: -2px; }
+        h1 { font-size: 2.5rem; font-weight: 900; text-align: center; text-transform: uppercase; margin-bottom: 45px; }
         h1 span { color: var(--primary); }
         
         .form-group { margin-bottom: 30px; width: 100%; }
-        label { display: block; font-weight: 800; margin-bottom: 12px; font-size: 0.75rem; text-transform: uppercase; color: #777; letter-spacing: 1.5px; }
+        label { display: block; font-weight: 800; margin-bottom: 12px; font-size: 0.75rem; text-transform: uppercase; color: #777; }
         input, textarea, select { width: 100%; padding: 20px; border-radius: 18px; border: 2px solid #f4f4f4; font-family: inherit; font-size: 1.05rem; box-sizing: border-box; background: #fafafa; }
         
         .row { display: flex; gap: 25px; width: 100%; } 
-        .btn-main { width: 100%; padding: 24px; border: none; border-radius: 22px; background: #000; color: #fff; font-weight: 900; text-transform: uppercase; font-size: 1.1rem; cursor: pointer; transition: 0.4s; margin-top: 15px; }
-        .btn-main:hover { background: var(--primary); transform: translateY(-6px); box-shadow: 0 20px 40px rgba(126, 62, 240, 0.4); }
+        .btn-main { width: 100%; padding: 24px; border: none; border-radius: 22px; background: #000; color: #fff; font-weight: 900; text-transform: uppercase; cursor: pointer; transition: 0.4s; margin-top: 15px; }
+        .btn-main:hover { background: var(--primary); transform: translateY(-6px); }
         
         #voyages-container { display: flex; flex-direction: column; gap: 45px; width: 100%; }
-        .itineraire-box { background: #fff; border-radius: 45px; padding: 65px; box-shadow: 0 50px 130px rgba(0,0,0,0.6); color: #000; animation: fadeIn 0.8s ease forwards; }
+        .itineraire-box { background: #fff; border-radius: 45px; padding: 65px; box-shadow: 0 50px 130px rgba(0,0,0,0.6); color: #000; animation: fadeIn 0.8s ease forwards; position: relative; }
         .itineraire-box h2 { font-weight: 900; text-transform: uppercase; color: var(--primary); margin-bottom: 35px; font-size: 1.5rem; }
-        .itineraire-content { color: #1a1a1a; font-size: 1.15rem; line-height: 2.6; white-space: pre-wrap; }
+        .itineraire-content { color: #1a1a1a; font-size: 1.15rem; line-height: 2.6; white-space: pre-wrap; margin-bottom: 30px; }
 
-        #container-recherche-active { margin-top: 30px; border-top: 2px solid #f4f4f4; padding-top: 30px; }
-        #msg-patience { color: var(--primary); font-weight: 700; display: none; margin-top: 15px; font-size: 0.9rem; text-transform: uppercase; }
+        .btn-real-search { background: var(--primary); margin-top: 20px; }
+        .loader-text { color: var(--primary); font-weight: 700; display: none; margin-top: 15px; font-size: 0.9rem; text-transform: uppercase; text-align: center; }
 
         #modifs-zone { display: none; border: 3px solid var(--secondary); background: #fff; }
         .btn-modif { background: var(--secondary); }
@@ -94,29 +74,22 @@
                     <div class="form-group"><label>Date de départ</label><input type="date" id="dateDepart" required></div>
                     <div class="form-group"><label>Durée (jours)</label><input type="number" id="duree" placeholder="7" required></div>
                 </div>
-                <div class="form-group"><label>Budget total par personne (€)</label><input type="number" id="budget" placeholder="1500" required></div>
+                <div class="form-group"><label>Budget total (€)</label><input type="number" id="budget" placeholder="1500" required></div>
                 <div class="form-group"><label>Rythme souhaité</label>
                     <select id="rythme">
-                        <option value="Détendu">Détendu (Repos & Farniente)</option>
-                        <option value="Équilibré" selected>Équilibré (Mix découverte/repos)</option>
-                        <option value="Intense">Intense (Exploration maximale)</option>
+                        <option value="Détendu">Détendu</option>
+                        <option value="Équilibré" selected>Équilibré</option>
+                        <option value="Intense">Intense</option>
                     </select>
                 </div>
-                <div class="form-group"><label>Hébergement idéal</label><input type="text" id="hebergement" placeholder="Ex: Boutique hôtel avec rooftop..."></div>
-                <div class="form-group"><label>Tes envies particulières</label><textarea id="styleVoyage" rows="3" placeholder="Ex: Surf au lever du soleil..."></textarea></div>
+                <div class="form-group"><label>Hébergement idéal</label><input type="text" id="hebergement" placeholder="Style d'hôtel..."></div>
+                <div class="form-group"><label>Tes envies</label><textarea id="styleVoyage" rows="3" placeholder="Surf, gastronomie..."></textarea></div>
                 <button type="button" id="btnGenerer" class="btn-main">Générer mon voyage ✨</button>
             </form>
             <div id="loader-initial" class="loader">Rnow sculpte votre aventure... 🌴</div>
         </div>
 
         <div id="voyages-container"></div>
-
-        <div id="container-recherche-active" class="itineraire-box" style="display:none; text-align: center;">
-            <button id="btnRealSearch" class="btn-main">
-                CE VOYAGE ME CONVIENT, TROUVER LES LIENS RÉELS ✨
-            </button>
-            <p id="msg-patience">L'expert Rnow scanne le web pour vous (environ 30s)... ✈️</p>
-        </div>
 
         <div id="modifs-zone" class="box">
             <h3>Une modification ? Dis-moi ce que tu aimes ou pas :</h3>
@@ -139,15 +112,12 @@
             return await response.json();
         }
 
-        // --- GÉNÉRATION INITIALE ---
         document.getElementById('btnGenerer').addEventListener('click', async function(e) {
             e.preventDefault();
             const loader = document.getElementById('loader-initial');
-            const containerActive = document.getElementById('container-recherche-active');
             const voyagesContainer = document.getElementById('voyages-container');
 
             loader.style.display = 'block';
-            containerActive.style.display = 'none';
             voyagesContainer.innerHTML = "";
             versionVoyage = 1;
 
@@ -167,13 +137,11 @@
             if (data.text) {
                 dernierItineraire = data.text;
                 ajouterVoyageAuConteneur(data.text);
-                containerActive.style.display = 'block';
                 document.getElementById('modifs-zone').style.display = 'block';
             }
             loader.style.display = 'none';
         });
 
-        // --- AFFINAGE ---
         document.getElementById('btnAffiner').addEventListener('click', async function() {
             const feedback = document.getElementById('feedbackClient').value;
             if (!feedback) return alert("Dis-moi ce que tu veux changer !");
@@ -186,56 +154,59 @@
                 dernierItineraire = data.text;
                 versionVoyage++;
                 ajouterVoyageAuConteneur(data.text);
+                document.getElementById('feedbackClient').value = "";
             }
             loader.style.display = 'none';
+            document.getElementById('voyages-container').lastElementChild.scrollIntoView({ behavior: 'smooth' });
         });
 
-        // --- RECHERCHE ACTIVE (LIENS RÉELS) - CORRIGÉ ---
-        document.getElementById('btnRealSearch').addEventListener('click', async () => {
-            const btn = document.getElementById('btnRealSearch');
-            const msg = document.getElementById('msg-patience');
-            
-            // Correction ici : On cible le contenu de la TOUTE DERNIÈRE box ajoutée
-            const containers = document.querySelectorAll('.itineraire-content');
-            const lastResultDiv = containers[containers.length - 1]; 
-
-            if (!lastResultDiv) return alert("Aucun itinéraire trouvé.");
-
-            btn.disabled = true;
-            btn.innerText = "RECHERCHE EN COURS...";
-            msg.style.display = "block";
+        // FONCTION POUR LANCER LA RECHERCHE REELLE SUR UNE VERSION SPECIFIQUE
+        async function lancerRechercheReelle(button, textElement) {
+            button.disabled = true;
+            button.innerText = "RECHERCHE EN COURS (30s)... ✈️";
 
             try {
                 const data = await appelerAPI({
                     isRealSearch: true,
-                    ancienItineraire: dernierItineraire
+                    ancienItineraire: textElement.innerText
                 });
 
                 if (data.text) {
-                    dernierItineraire = data.text;
-                    lastResultDiv.innerText = data.text; // On met à jour le dernier bloc affiché
-                    document.getElementById('container-recherche-active').style.display = 'none';
+                    textElement.innerText = data.text;
+                    button.style.display = 'none';
                     alert("Prix et liens réels ajoutés ! 🚀");
                 }
             } catch (error) {
-                alert("Erreur lors de la recherche active.");
-            } finally {
-                btn.disabled = false;
-                btn.innerText = "CE VOYAGE ME CONVIENT, TROUVER LES LIENS RÉELS ✨";
-                msg.style.display = "none";
+                alert("Erreur technique. Réessayez !");
+                button.disabled = false;
+                button.innerText = "TROUVER LES LIENS RÉELS ✨";
             }
-        });
+        }
 
         function ajouterVoyageAuConteneur(texteItineraire) {
             const voyagesContainer = document.getElementById('voyages-container');
             const boite = document.createElement('div');
             boite.className = 'itineraire-box';
-            boite.innerHTML = `<h2>Ton Voyage Rnow - Version ${versionVoyage}</h2><div class="itineraire-content">${texteItineraire}</div>`;
+            
+            // Création du titre
+            const titre = document.createElement('h2');
+            titre.innerText = `Ton Voyage Rnow - Version ${versionVoyage}`;
+            
+            // Création du contenu
+            const contenu = document.createElement('div');
+            contenu.className = 'itineraire-content';
+            contenu.innerText = texteItineraire;
+            
+            // Création du bouton Recherche Active propre à CETTE boite
+            const btnReal = document.createElement('button');
+            btnReal.className = 'btn-main btn-real-search';
+            btnReal.innerText = "CE VOYAGE ME CONVIENT, TROUVER LES LIENS RÉELS ✨";
+            btnReal.onclick = () => lancerRechercheReelle(btnReal, contenu);
+
+            boite.appendChild(titre);
+            boite.appendChild(contenu);
+            boite.appendChild(btnReal);
             voyagesContainer.appendChild(boite);
-            // On s'assure que le bouton "Recherche Active" remonte toujours en bas de la dernière version
-            const containerActive = document.getElementById('container-recherche-active');
-            voyagesContainer.appendChild(containerActive);
-            containerActive.style.display = 'block';
         }
     </script>
 </body>
