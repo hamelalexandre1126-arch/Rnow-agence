@@ -374,6 +374,66 @@
             boite.innerHTML = `<h2>Ton Voyage Rnow - Version ${versionVoyage}</h2><div class="itineraire-content">${texteItineraire}</div>`;
             voyagesContainer.appendChild(boite);
         }
+        <div id="container-recherche-active" style="display:none; text-align: center; margin: 20px auto; max-width: 500px;">
+    <button id="btnRealSearch" style="background: #000; color: #fff; padding: 18px 30px; border: none; border-radius: 12px; font-weight: bold; font-size: 16px; cursor: pointer; width: 100%; transition: 0.4s; box-shadow: 0 10px 20px rgba(0,0,0,0.2);">
+        CE VOYAGE ME CONVIENT, TROUVER LES LIENS RÉELS ✨
+    </button>
+    <p id="msg-patience" style="display:none; color: #666; font-size: 14px; margin-top: 12px; font-style: italic;">
+        L'expert Rnow scanne le web pour vous (environ 30s)... ✈️
+    </p>
+</div>
+
+<script>
+    // Cette fonction doit être appelée juste après que ta première simulation s'affiche
+    function afficherBoutonValidation() {
+        document.getElementById('container-recherche-active').style.display = 'block';
+    }
+
+    // Gestion du clic sur le bouton de recherche réelle
+    document.getElementById('btnRealSearch').addEventListener('click', async () => {
+        const btn = document.getElementById('btnRealSearch');
+        const msg = document.getElementById('msg-patience');
+        const resultDiv = document.getElementById('result-text'); // <--- BIEN VÉRIFIER QUE TON ID EST "result-text"
+        
+        // UI : On prévient l'utilisateur que ça travaille
+        btn.disabled = true;
+        btn.style.opacity = "0.6";
+        btn.innerText = "RECHERCHE EN COURS...";
+        msg.style.display = "block";
+
+        try {
+            const response = await fetch('/api/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    isRealSearch: true, // Paramètre crucial pour activer la recherche Google dans ton API
+                    ancienItineraire: resultDiv.innerText, // On envoie le texte de la simulation
+                    apiKey: localStorage.getItem('apiKey') // Si tu stockes ta clé ainsi
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.text) {
+                // On remplace le texte de simulation par les vraies infos trouvées sur le web
+                resultDiv.innerText = data.text;
+                
+                // On cache le bouton car la recherche est terminée
+                document.getElementById('container-recherche-active').style.display = 'none';
+                alert("Carnet mis à jour avec les liens et prix réels ! 🚀");
+            }
+        } catch (error) {
+            console.error("Erreur:", error);
+            alert("Une petite erreur technique... Réessaie dans 10 secondes !");
+        } finally {
+            btn.disabled = false;
+            btn.style.opacity = "1";
+            msg.style.display = "none";
+            btn.innerText = "CE VOYAGE ME CONVIENT, TROUVER LES LIENS RÉELS ✨";
+        }
+    });
+</script>
+
     </script>
 </body>
 </html>
