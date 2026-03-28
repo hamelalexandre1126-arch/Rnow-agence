@@ -12,29 +12,38 @@ export default async function handler(req, res) {
 
   if (type === "initial") {
     promptFinal = `
-Tu es l'Expert-Concierge Rnow. Ton but : un itinéraire d'élite, chirurgical, ultra-précis et parfaitement structuré.
-PARAMÈTRES : Départ: ${depart} | Destination: ${destination} | Budget: ${budget}€/pers | Style: ${style} | Rythme: ${rythme} | Durée: ${duree} jours dès le ${date}.
-RÈGLES DE FORME :
-- DATE : Format Européen (ex: 19/06/2026).
-- ESPACEMENT : Saute EXACTEMENT UNE LIGNE entre chaque point (📍, 💰, 🏠, 🍴, 🚕).
-- ÉMOJIS : Un SEUL emoji au début de chaque ligne. INTERDICTION de répéter le même sur deux lignes consécutives.
-- PAS d'astérisques (*), PAS de dièses (#). Titres en MAJUSCULES simples uniquement.
-CONTENU CHIRURGICAL : Vols RÉELS, Programme Jour par Jour, Activités précises, Réservations avec prix exacts et sites officiels, Hébergement avec ADRESSE COMPLÈTE, Resto avec ADRESSE COMPLÈTE, Transport précis, Assurances, Location et Conseil d'initié.
-IMPORTANT : Si une section est inutile, ne la cite pas.
+Tu es l'Expert-Concierge Rnow. Ton but : un itinéraire d'élite, chirurgical et ultra-structuré.
+
+PARAMÈTRES : 
+Départ: ${depart} | Destination: ${destination} | Budget: ${budget}€/pers | Style: ${style} | Rythme: ${rythme} | Durée: ${duree} jours dès le ${date}.
+
+STRUCTURE OBLIGATOIRE (TRÈS IMPORTANT) :
+1. D'abord, donne un RÉSUMÉ RAPIDE du programme global.
+2. Ensuite, pour CHAQUE JOUR (Format date DD/MM/YYYY), détaille précisément dans cet ordre :
+📍 L'ACTIVITÉ RNOW : [Nom] + [Pourquoi ce choix].
+💰 RÉSERVATION : [Prix exact] + [Lien site officiel ou Lieu].
+🏠 TON REFUGE : [Nom], [Adresse complète]. [Point fort] + [Prix/nuit].
+🍴 LA TABLE RNOW : [Nom], [Adresse complète]. [Plat signature] + [Budget].
+🚕 TRANSPORT : [Trajet], [Mode], [Temps] et [Coût].
+
+CONSIGNES DE STYLE :
+- Saute EXACTEMENT UNE LIGNE entre chaque point pour la lisibilité.
+- UN SEUL emoji au début de chaque ligne (pas de répétition consécutive).
+- PAS d'astérisques (*), PAS de dièses (#). Titres en MAJUSCULES simples.
+- Analyse le budget de ${budget}€ pour que tout soit réel.
+- Si une section est inutile (ex: pas de vols), ignore-la totalement.
     `;
   } else {
-    // --- PROMPT DE CORRECTION RENFORCÉ ---
     promptFinal = `
-Tu es l'Expert-Concierge Rnow. 
-Voici l'itinéraire actuel que tu as généré : 
-"${ancienItineraire}"
+Tu es l'Expert-Concierge Rnow. Voici l'itinéraire complet que tu as généré : "${ancienItineraire}"
+Le client veut cette modification : "${feedback}"
 
-Le client souhaite cette modification précise : "${feedback}"
-
-TA MISSION : 
-Réécris l'intégralité du voyage en intégrant ce changement. 
-CONSERVE TOUTE LA RIGUEUR : Adresses complètes, prix réels, budget de ${budget}€, format de date européen, et l'espacement de UNE LIGNE entre chaque point. 
-Reste chirurgical et n'utilise aucun symbole (* ou #).
+MISSION : 
+Réécris l'INTÉGRALITÉ du voyage avec la même structure : 
+1. Résumé rapide. 
+2. Détails par jour (📍 Activité, 💰 Réservation, 🏠 Refuge, 🍴 Table, 🚕 Transport).
+3. Garde le budget de ${budget}€, les adresses complètes, le format de date européen et l'espacement de UNE LIGNE.
+4. ZÉRO symbole markdown (* ou #).
     `;
   }
 
@@ -51,10 +60,9 @@ Reste chirurgical et n'utilise aucun symbole (* ou #).
 
     const data = await response.json();
 
-    // --- SÉCURITÉ AJOUTÉE ICI POUR ÉVITER L'ERREUR 'UNDEFINED' ---
+    // Sécurité pour éviter l'erreur 'undefined' lors des modifications
     if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
-        console.error("Erreur API Gemini:", data);
-        return res.status(500).json({ text: "L'IA n'a pas pu traiter la modification. Réessaie avec une demande plus précise." });
+        return res.status(500).json({ text: "Désolé, une erreur est survenue lors de la modification. Réessaie." });
     }
 
     let textOutput = data.candidates[0].content.parts[0].text;
