@@ -12,13 +12,19 @@
         .blur-1 { background: #7e3ef0; top: -100px; left: -100px; }
         .blur-2 { background: #f03e7e; bottom: -100px; right: -100px; }
         
-        nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,0,0,0.05); position: fixed; top: 0; left: 0; right: 0; z-index: 100; box-sizing: border-box; }
-        .logo { font-weight: 900; font-size: 1.5rem; text-transform: uppercase; letter-spacing: -1.5px; }
+        /* --- NAVIGATION HARMONISÉE AVEC L'ACCUEIL --- */
+        nav { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 25px 50px; background: rgba(0, 0, 0, 0.8); 
+            backdrop-filter: blur(15px); border-bottom: 1px solid rgba(255,255,255,0.05);
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000; box-sizing: border-box;
+        }
+        .logo { font-weight: 900; font-size: 1.6rem; text-transform: uppercase; letter-spacing: -1.5px; color: white; }
         .logo span { color: #7e3ef0; }
-        .nav-links a { text-decoration: none; color: #111; font-weight: 700; margin-left: 30px; font-size: 0.85rem; text-transform: uppercase; }
+        .nav-links a { text-decoration: none; color: white; font-weight: 700; margin-left: 30px; font-size: 0.85rem; text-transform: uppercase; transition: 0.3s; }
+        .nav-links a:hover { color: #f03e7e; }
         
         .container { width: 100%; max-width: 750px; display: flex; flex-direction: column; gap: 30px; }
-        
         .box { background: rgba(255, 255, 255, 0.95); border-radius: 35px; padding: 50px; box-shadow: 0 25px 70px rgba(0, 0, 0, 0.06); border: 1px solid rgba(255,255,255,0.5); box-sizing: border-box; }
         
         h1 { font-size: 2.2rem; font-weight: 900; text-align: center; text-transform: uppercase; margin-bottom: 40px; line-height: 1; }
@@ -26,17 +32,11 @@
         
         .form-group { margin-bottom: 25px; width: 100%; }
         label { display: block; font-weight: 800; margin-bottom: 10px; font-size: 0.8rem; text-transform: uppercase; color: #555; }
+        input, textarea, select { width: 100%; padding: 18px; border-radius: 16px; border: 2px solid #f2f2f2; font-family: inherit; font-size: 1rem; box-sizing: border-box; transition: 0.3s; background: #ffffff; }
+        input:focus, select:focus, textarea:focus { border-color: #7e3ef0; outline: none; }
         
-        input, textarea, select { 
-            width: 100%; padding: 18px; border-radius: 16px; border: 2px solid #f2f2f2; 
-            font-family: inherit; font-size: 1rem; box-sizing: border-box; transition: 0.3s; 
-            background: #ffffff;
-        }
-        input:focus, select:focus, textarea:focus { border-color: #7e3ef0; outline: none; background: #fff; }
-        
-        /* CORRECTIF DES CASES ALIGNÉES */
         .row { display: flex; gap: 20px; width: 100%; margin-bottom: 5px; } 
-        .row .form-group { flex: 1; min-width: 0; } /* min-width: 0 empêche le débordement */
+        .row .form-group { flex: 1; min-width: 0; }
         
         button { width: 100%; padding: 22px; border: none; border-radius: 18px; background: #000; color: #fff; font-weight: 900; text-transform: uppercase; cursor: pointer; transition: 0.3s; margin-top: 10px; }
         button:hover { background: #7e3ef0; transform: translateY(-3px); box-shadow: 0 15px 30px rgba(126, 62, 240, 0.2); }
@@ -56,7 +56,15 @@
 </head>
 <body>
     <div class="bg-blur blur-1"></div><div class="bg-blur blur-2"></div>
-    <nav><div class="logo">R<span>now</span>.</div><div class="nav-links"><a href="index.html">Accueil</a><a href="generateur.html" style="color: #f03e7e;">Générateur</a></div></nav>
+    
+    <nav>
+        <div class="logo">R<span>now</span>.</div>
+        <div class="nav-links">
+            <a href="index.html#vision">Notre Vision</a>
+            <a href="index.html#about">À Propos</a>
+            <a href="generateur.html" style="color: #f03e7e;">Lancer l'IA</a>
+        </div>
+    </nav>
 
     <div class="container">
         <div class="box">
@@ -94,14 +102,12 @@
         let versionVoyage = 1;
 
         async function appelerAPI(payload) {
-            try {
-                const response = await fetch('/api/generate', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                return await response.json();
-            } catch (e) { return { text: "Erreur de connexion." }; }
+            const response = await fetch('/api/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            return await response.json();
         }
 
         document.getElementById('voyageForm').addEventListener('submit', async function(e) {
@@ -151,7 +157,6 @@
                 document.getElementById('feedbackClient').value = "";
             }
             loader.style.display = 'none';
-            document.getElementById('voyages-container').lastElementChild.scrollIntoView({ behavior: 'smooth' });
         });
 
         function ajouterVoyageAuConteneur(texteItineraire) {
