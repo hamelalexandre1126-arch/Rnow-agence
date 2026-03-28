@@ -65,18 +65,23 @@ TA MISSION :
   }
 
   try {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+    // --- ÉTAPE 1 : AUTO-DÉTECTION DU MODÈLE DISPONIBLE ---
+    const listResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+    const listData = await listResponse.json();
+    
+    // On cherche le meilleur modèle flash ou pro disponible sur ton compte
+    const model = listData.models?.find(m => m.name.includes("flash") || m.name.includes("pro")) || listData.models?.[0];
+
+    if (!model) throw new Error("Aucun modèle trouvé");
+
+    // --- ÉTAPE 2 : GÉNÉRATION DU CONTENU ---
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/${model.name}:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ contents: [{ parts: [{ text: promptFinal }] }] })
     });
 
     const data = await response.json();
-    
-    if (data.error) {
-        return res.status(500).json({ text: "Erreur technique : " + data.error.message });
-    }
-
     let textOutput = data.candidates[0].content.parts[0].text;
     
     // Nettoyage final des symboles Markdown
@@ -84,6 +89,6 @@ TA MISSION :
 
     res.status(200).json({ text: textOutput });
   } catch (error) {
-    res.status(500).json({ text: "L'IA est momentanément saturée. Réessaie dans quelques instants." });
+    res.status(500).json({ text: "Erreur technique : " + error.message });
   }
 }
