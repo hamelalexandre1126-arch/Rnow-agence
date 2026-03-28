@@ -28,232 +28,53 @@
             box-sizing: border-box;
         }
 
-        /* --- EFFETS DE FLOU ORGANIQUES --- */
-        .bg-blur { 
-            position: fixed; 
-            width: 600px; 
-            height: 600px; 
-            border-radius: 50%; 
-            filter: blur(140px); 
-            opacity: 0.22; 
-            z-index: -1; 
-            pointer-events: none; 
-        }
-        
-        .blur-1 { 
-            background: var(--primary); 
-            top: -200px; 
-            left: -200px; 
-            animation: float-slow 20s infinite alternate ease-in-out; 
-        }
-        
-        .blur-2 { 
-            background: var(--secondary); 
-            bottom: -200px; 
-            right: -200px; 
-            animation: float-reverse 25s infinite alternate-reverse ease-in-out; 
-        }
+        .bg-blur { position: fixed; width: 600px; height: 600px; border-radius: 50%; filter: blur(140px); opacity: 0.22; z-index: -1; pointer-events: none; }
+        .blur-1 { background: var(--primary); top: -200px; left: -200px; animation: float-slow 20s infinite alternate ease-in-out; }
+        .blur-2 { background: var(--secondary); bottom: -200px; right: -200px; animation: float-reverse 25s infinite alternate-reverse ease-in-out; }
 
-        @keyframes float-slow { 
-            0% { transform: translate(0, 0) scale(1); } 
-            100% { transform: translate(150px, 100px) scale(1.2); } 
-        }
+        @keyframes float-slow { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(150px, 100px) scale(1.2); } }
+        @keyframes float-reverse { 0% { transform: translate(0, 0) scale(1.1); } 100% { transform: translate(-120px, -80px) scale(0.85); } }
 
-        @keyframes float-reverse { 
-            0% { transform: translate(0, 0) scale(1.1); } 
-            100% { transform: translate(-120px, -80px) scale(0.85); } 
-        }
-
-        /* --- NAVIGATION --- */
-        nav { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            padding: 30px 60px; 
-            background: rgba(0, 0, 0, 0.8); 
-            backdrop-filter: blur(25px); 
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            right: 0; 
-            z-index: 1000;
-            box-sizing: border-box;
-        }
-
-        .logo-link { text-decoration: none; color: inherit; transition: 0.3s; }
-        .logo-link:hover { opacity: 0.8; }
-        .logo { font-weight: 900; font-size: 1.8rem; text-transform: uppercase; letter-spacing: -2px; color: white; }
+        nav { display: flex; justify-content: space-between; align-items: center; padding: 30px 60px; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(25px); border-bottom: 1px solid rgba(255,255,255,0.1); position: fixed; top: 0; left: 0; right: 0; z-index: 1000; box-sizing: border-box; }
+        .logo { font-weight: 900; font-size: 1.8rem; text-transform: uppercase; letter-spacing: -2px; color: white; text-decoration: none; }
         .logo span { color: var(--primary); }
-        
-        .nav-links { display: flex; align-items: center; }
-        .nav-links a { 
-            text-decoration: none; 
-            color: white; 
-            font-weight: 700; 
-            margin-left: 35px; 
-            font-size: 0.85rem; 
-            text-transform: uppercase; 
-            transition: 0.4s ease; 
-        }
+        .nav-links a { text-decoration: none; color: white; font-weight: 700; margin-left: 35px; font-size: 0.85rem; text-transform: uppercase; transition: 0.4s ease; }
         .nav-links a:hover { color: var(--secondary); }
 
-        /* --- CONTENEUR --- */
-        .container { 
-            width: 100%; 
-            max-width: 800px; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 45px; 
-            z-index: 10; 
-        }
+        .container { width: 100%; max-width: 800px; display: flex; flex-direction: column; gap: 45px; z-index: 10; }
+        .box { background: #ffffff; border-radius: 45px; padding: 60px; box-shadow: 0 40px 120px rgba(126, 62, 240, 0.25); color: #000; }
         
-        /* --- BOX FORMULAIRE --- */
-        .box { 
-            background: #ffffff; 
-            border-radius: 45px; 
-            padding: 60px; 
-            box-shadow: 0 40px 120px rgba(126, 62, 240, 0.25); 
-            box-sizing: border-box; 
-            color: #000;
-            transition: transform 0.4s ease;
-        }
-        
-        h1 { 
-            font-size: 2.5rem; 
-            font-weight: 900; 
-            text-align: center; 
-            text-transform: uppercase; 
-            margin-bottom: 45px; 
-            letter-spacing: -2px;
-            line-height: 1; 
-        }
+        h1 { font-size: 2.5rem; font-weight: 900; text-align: center; text-transform: uppercase; margin-bottom: 45px; letter-spacing: -2px; }
         h1 span { color: var(--primary); }
         
         .form-group { margin-bottom: 30px; width: 100%; }
-        label { 
-            display: block; 
-            font-weight: 800; 
-            margin-bottom: 12px; 
-            font-size: 0.75rem; 
-            text-transform: uppercase; 
-            color: #777; 
-            letter-spacing: 1.5px; 
-        }
-        
-        input, textarea, select { 
-            width: 100%; 
-            padding: 20px; 
-            border-radius: 18px; 
-            border: 2px solid #f4f4f4; 
-            font-family: inherit; 
-            font-size: 1.05rem; 
-            box-sizing: border-box; 
-            transition: all 0.3s ease; 
-            background: #fafafa;
-        }
-        input:focus, select:focus, textarea:focus { 
-            border-color: var(--primary); 
-            outline: none; 
-            background: #fff;
-            box-shadow: 0 0 0 6px rgba(126, 62, 240, 0.05);
-        }
+        label { display: block; font-weight: 800; margin-bottom: 12px; font-size: 0.75rem; text-transform: uppercase; color: #777; letter-spacing: 1.5px; }
+        input, textarea, select { width: 100%; padding: 20px; border-radius: 18px; border: 2px solid #f4f4f4; font-family: inherit; font-size: 1.05rem; box-sizing: border-box; background: #fafafa; }
         
         .row { display: flex; gap: 25px; width: 100%; } 
-        .row .form-group { flex: 1; min-width: 0; }
+        .btn-main { width: 100%; padding: 24px; border: none; border-radius: 22px; background: #000; color: #fff; font-weight: 900; text-transform: uppercase; font-size: 1.1rem; cursor: pointer; transition: 0.4s; margin-top: 15px; }
+        .btn-main:hover { background: var(--primary); transform: translateY(-6px); box-shadow: 0 20px 40px rgba(126, 62, 240, 0.4); }
         
-        .btn-main { 
-            width: 100%; 
-            padding: 24px; 
-            border: none; 
-            border-radius: 22px; 
-            background: #000; 
-            color: #fff; 
-            font-weight: 900; 
-            text-transform: uppercase; 
-            font-size: 1.1rem;
-            cursor: pointer; 
-            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            margin-top: 15px; 
-        }
-        .btn-main:hover { 
-            background: var(--primary); 
-            transform: translateY(-6px); 
-            box-shadow: 0 20px 40px rgba(126, 62, 240, 0.4); 
-        }
-        
-        /* --- ITINÉRAIRES --- */
         #voyages-container { display: flex; flex-direction: column; gap: 45px; width: 100%; }
-        
-        .itineraire-box { 
-            background: #fff; 
-            border-radius: 45px; 
-            padding: 65px; 
-            box-shadow: 0 50px 130px rgba(0,0,0,0.6); 
-            color: #000;
-            animation: fadeIn 0.8s ease forwards;
-        }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .itineraire-box { background: #fff; border-radius: 45px; padding: 65px; box-shadow: 0 50px 130px rgba(0,0,0,0.6); color: #000; animation: fadeIn 0.8s ease forwards; }
+        .itineraire-box h2 { font-weight: 900; text-transform: uppercase; color: var(--primary); margin-bottom: 35px; font-size: 1.5rem; }
+        .itineraire-content { color: #1a1a1a; font-size: 1.15rem; line-height: 2.6; white-space: pre-wrap; }
 
-        .itineraire-box h2 { 
-            font-weight: 900; 
-            text-transform: uppercase; 
-            color: var(--primary); 
-            margin-top: 0; 
-            margin-bottom: 35px; 
-            font-size: 1.5rem; 
-            letter-spacing: -1.5px; 
-        }
-        .itineraire-content { 
-            color: #1a1a1a; 
-            font-size: 1.15rem; 
-            line-height: 2.6; 
-            white-space: pre-wrap; 
-            letter-spacing: -0.2px; 
-        }
+        #container-recherche-active { margin-top: 30px; border-top: 2px solid #f4f4f4; padding-top: 30px; }
+        #msg-patience { color: var(--primary); font-weight: 700; display: none; margin-top: 15px; font-size: 0.9rem; text-transform: uppercase; }
 
-        /* --- ZONE DE FEEDBACK --- */
-        #modifs-zone { 
-            display: none; 
-            border: 3px solid var(--secondary); 
-            background: #fff; 
-        }
-        #modifs-zone h3 { 
-            font-weight: 900; 
-            text-transform: uppercase; 
-            font-size: 1.2rem; 
-            margin-bottom: 25px; 
-            color: var(--secondary); 
-            text-align: center; 
-            letter-spacing: -1px;
-        }
+        #modifs-zone { display: none; border: 3px solid var(--secondary); background: #fff; }
         .btn-modif { background: var(--secondary); }
-        .btn-modif:hover { 
-            background: #d0356c; 
-            box-shadow: 0 20px 40px rgba(240, 62, 126, 0.45); 
-        }
-
-        .loader { 
-            display: none; 
-            text-align: center; 
-            font-weight: 900; 
-            color: var(--primary); 
-            margin: 40px 0; 
-            text-transform: uppercase; 
-            font-size: 0.9rem; 
-            letter-spacing: 4px;
-            animation: pulse 1.5s infinite;
-        }
-        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+        .loader { display: none; text-align: center; font-weight: 900; color: var(--primary); margin: 40px 0; text-transform: uppercase; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { opacity: 0.5; } 100% { opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
     <div class="bg-blur blur-1"></div><div class="bg-blur blur-2"></div>
     
     <nav>
-        <a href="index.html" class="logo-link">
-            <div class="logo">R<span>now</span>.</div>
-        </a>
+        <a href="index.html" class="logo">R<span>now</span>.</a>
         <div class="nav-links">
             <a href="index.html#vision">Notre Vision</a>
             <a href="index.html#about">À Propos</a>
@@ -282,17 +103,24 @@
                     </select>
                 </div>
                 <div class="form-group"><label>Hébergement idéal</label><input type="text" id="hebergement" placeholder="Ex: Boutique hôtel avec rooftop..."></div>
-                <div class="form-group"><label>Tes envies particulières</label><textarea id="styleVoyage" rows="3" placeholder="Ex: Surf au lever du soleil, gastronomie locale, cenotes cachés..."></textarea></div>
-                <button type="submit" id="btnGenerer" class="btn-main">Générer mon voyage ✨</button>
+                <div class="form-group"><label>Tes envies particulières</label><textarea id="styleVoyage" rows="3" placeholder="Ex: Surf au lever du soleil..."></textarea></div>
+                <button type="button" id="btnGenerer" class="btn-main">Générer mon voyage ✨</button>
             </form>
             <div id="loader-initial" class="loader">Rnow sculpte votre aventure... 🌴</div>
         </div>
 
         <div id="voyages-container"></div>
 
+        <div id="container-recherche-active" class="itineraire-box" style="display:none; text-align: center;">
+            <button id="btnRealSearch" class="btn-main">
+                CE VOYAGE ME CONVIENT, TROUVER LES LIENS RÉELS ✨
+            </button>
+            <p id="msg-patience">L'expert Rnow scanne le web pour vous (environ 30s)... ✈️</p>
+        </div>
+
         <div id="modifs-zone" class="box">
             <h3>Une modification ? Dis-moi ce que tu aimes ou pas :</h3>
-            <textarea id="feedbackClient" rows="4" placeholder="Ex: L'hôtel est trop moderne, je préfèrerais un style colonial. Enlève la visite du musée le jour 3..."></textarea>
+            <textarea id="feedbackClient" rows="4" placeholder="Ex: L'hôtel est trop moderne..."></textarea>
             <button id="btnAffiner" class="btn-main btn-modif">Affiner mon itinéraire ⚡</button>
             <div id="loader-modif" class="loader">Rnow ajuste votre voyage... ✨</div>
         </div>
@@ -311,14 +139,15 @@
             return await response.json();
         }
 
-        document.getElementById('voyageForm').addEventListener('submit', async function(e) {
+        // --- GÉNÉRATION INITIALE ---
+        document.getElementById('btnGenerer').addEventListener('click', async function(e) {
             e.preventDefault();
             const loader = document.getElementById('loader-initial');
-            const modifsZone = document.getElementById('modifs-zone');
+            const containerActive = document.getElementById('container-recherche-active');
             const voyagesContainer = document.getElementById('voyages-container');
 
             loader.style.display = 'block';
-            modifsZone.style.display = 'none';
+            containerActive.style.display = 'none';
             voyagesContainer.innerHTML = "";
             versionVoyage = 1;
 
@@ -338,33 +167,58 @@
             if (data.text) {
                 dernierItineraire = data.text;
                 ajouterVoyageAuConteneur(data.text);
-                modifsZone.style.display = 'block';
+                containerActive.style.display = 'block';
+                document.getElementById('modifs-zone').style.display = 'block';
             }
             loader.style.display = 'none';
         });
 
+        // --- AFFINAGE ---
         document.getElementById('btnAffiner').addEventListener('click', async function() {
             const feedback = document.getElementById('feedbackClient').value;
             if (!feedback) return alert("Dis-moi ce que tu veux changer !");
-            
             const loader = document.getElementById('loader-modif');
             loader.style.display = 'block';
 
-            const payload = { 
-                type: "correction", 
-                ancienItineraire: dernierItineraire, 
-                feedback: feedback 
-            };
-            
+            const payload = { type: "correction", ancienItineraire: dernierItineraire, feedback: feedback };
             const data = await appelerAPI(payload);
             if (data.text) {
                 dernierItineraire = data.text;
                 versionVoyage++;
                 ajouterVoyageAuConteneur(data.text);
-                document.getElementById('feedbackClient').value = "";
             }
             loader.style.display = 'none';
-            document.getElementById('voyages-container').lastElementChild.scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // --- RECHERCHE ACTIVE (LIENS RÉELS) ---
+        document.getElementById('btnRealSearch').addEventListener('click', async () => {
+            const btn = document.getElementById('btnRealSearch');
+            const msg = document.getElementById('msg-patience');
+            const resultDiv = document.querySelector('.itineraire-content'); 
+
+            btn.disabled = true;
+            btn.innerText = "RECHERCHE EN COURS...";
+            msg.style.display = "block";
+
+            try {
+                const data = await appelerAPI({
+                    isRealSearch: true,
+                    ancienItineraire: dernierItineraire
+                });
+
+                if (data.text) {
+                    dernierItineraire = data.text;
+                    resultDiv.innerText = data.text;
+                    document.getElementById('container-recherche-active').style.display = 'none';
+                    alert("Prix et liens réels ajoutés ! 🚀");
+                }
+            } catch (error) {
+                alert("Erreur lors de la recherche active.");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "CE VOYAGE ME CONVIENT, TROUVER LES LIENS RÉELS ✨";
+                msg.style.display = "none";
+            }
         });
 
         function ajouterVoyageAuConteneur(texteItineraire) {
@@ -374,66 +228,6 @@
             boite.innerHTML = `<h2>Ton Voyage Rnow - Version ${versionVoyage}</h2><div class="itineraire-content">${texteItineraire}</div>`;
             voyagesContainer.appendChild(boite);
         }
-        <div id="container-recherche-active" style="display:none; text-align: center; margin: 20px auto; max-width: 500px;">
-    <button id="btnRealSearch" style="background: #000; color: #fff; padding: 18px 30px; border: none; border-radius: 12px; font-weight: bold; font-size: 16px; cursor: pointer; width: 100%; transition: 0.4s; box-shadow: 0 10px 20px rgba(0,0,0,0.2);">
-        CE VOYAGE ME CONVIENT, TROUVER LES LIENS RÉELS ✨
-    </button>
-    <p id="msg-patience" style="display:none; color: #666; font-size: 14px; margin-top: 12px; font-style: italic;">
-        L'expert Rnow scanne le web pour vous (environ 30s)... ✈️
-    </p>
-</div>
-
-<script>
-    // Cette fonction doit être appelée juste après que ta première simulation s'affiche
-    function afficherBoutonValidation() {
-        document.getElementById('container-recherche-active').style.display = 'block';
-    }
-
-    // Gestion du clic sur le bouton de recherche réelle
-    document.getElementById('btnRealSearch').addEventListener('click', async () => {
-        const btn = document.getElementById('btnRealSearch');
-        const msg = document.getElementById('msg-patience');
-        const resultDiv = document.getElementById('result-text'); // <--- BIEN VÉRIFIER QUE TON ID EST "result-text"
-        
-        // UI : On prévient l'utilisateur que ça travaille
-        btn.disabled = true;
-        btn.style.opacity = "0.6";
-        btn.innerText = "RECHERCHE EN COURS...";
-        msg.style.display = "block";
-
-        try {
-            const response = await fetch('/api/generate', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    isRealSearch: true, // Paramètre crucial pour activer la recherche Google dans ton API
-                    ancienItineraire: resultDiv.innerText, // On envoie le texte de la simulation
-                    apiKey: localStorage.getItem('apiKey') // Si tu stockes ta clé ainsi
-                })
-            });
-
-            const data = await response.json();
-
-            if (data.text) {
-                // On remplace le texte de simulation par les vraies infos trouvées sur le web
-                resultDiv.innerText = data.text;
-                
-                // On cache le bouton car la recherche est terminée
-                document.getElementById('container-recherche-active').style.display = 'none';
-                alert("Carnet mis à jour avec les liens et prix réels ! 🚀");
-            }
-        } catch (error) {
-            console.error("Erreur:", error);
-            alert("Une petite erreur technique... Réessaie dans 10 secondes !");
-        } finally {
-            btn.disabled = false;
-            btn.style.opacity = "1";
-            msg.style.display = "none";
-            btn.innerText = "CE VOYAGE ME CONVIENT, TROUVER LES LIENS RÉELS ✨";
-        }
-    });
-</script>
-
     </script>
 </body>
 </html>
