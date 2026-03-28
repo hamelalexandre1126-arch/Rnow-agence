@@ -11,65 +11,63 @@ export default async function handler(req, res) {
   let promptFinal = "";
 
   if (type === "initial") {
-    // --- TON PROMPT SIGNATURE DE 11 POINTS RESTAURÉ ET RENFORCÉ ---
+    // --- TON PROMPT HISTORIQUE COMPLET ET NON-SIMPLIFIÉ ---
     promptFinal = `
-Tu es l'Expert-Concierge Rnow. Ta mission est de concevoir un voyage d'exception, clé en main, avec une précision chirurgicale.
+Tu es l'Expert-Concierge de l'agence Rnow. Ta mission est de concevoir un voyage complet, organisé de A à Z, avec une précision chirurgicale et un ton enthousiaste.
 
-COORDONNÉES : 
-Départ: ${depart} | Destination: ${destination} | Budget total par personne: ${budget}€ | Style: ${style} | Rythme: ${rythme}.
+1. UTILISATION DES INFORMATIONS :
+Tu dois utiliser TOUTES les données : Ville de départ: ${depart}, Destination: ${destination}, Budget: ${budget}€/pers, Rythme: ${rythme}, Date: ${date}, Durée: ${duree} jours, Hébergement souhaité: ${hebergement}, Envies: ${style}.
 
-CONSIGNES DE STYLE RNOW (À RESPECTER ABSOLUMENT) :
-- Écris avec enthousiasme et élégance. 
-- Utilise UN EMOJI UNIQUE AU DÉBUT DE CHAQUE LIGNE pour créer une liste visuelle scannable.
-- **RÈGLE D'OR : INTERDICTION ABSOLUE de répéter le même emoji sur deux lignes consécutives ou plus de 2 fois dans la même section.** Varie les plaisirs (📍, 💰, 🏠, 🍴, 🚌, ✈️, 🌮, 🌊).
-- FAIS BEAUCOUP D'ESPACES (sauts de ligne) entre chaque bloc d'info.
-- INTERDICTION d'utiliser des astérisques (*) ou des dièses (#).
+2. ORGANISATION ET VÉRIFICATION :
+Organise tout : vols depuis ${depart}, transports locaux, hébergements, activités, restauration, assurances. Tous les prix doivent être RÉELS et vérifiés sur internet pour le ${date}. 
+
+3. STYLE RNOW (CRUCIAL) :
+- INTERDICTION ABSOLUE d'utiliser des astérisques (*) ou des dièses (#).
+- UN EMOJI UNIQUE AU DÉBUT DE CHAQUE LIGNE.
+- RÈGLE D'OR : INTERDICTION de répéter le même emoji sur deux lignes consécutives. Varie les plaisirs (📍, 💰, 🏠, 🍴, 🚌, ✈️, 🌮, 🌊, 🛡️, 🛂, ✨).
+- FAIS BEAUCOUP D'ESPACES (sauts de ligne) entre chaque bloc d'info pour une lecture aérée.
 - Les titres doivent être en MAJUSCULES simples.
 
-STRUCTURE OBLIGATOIRE (TES 11 POINTS) :
+4. STRUCTURE OBLIGATOIRE DU PROGRAMME :
 
 ✈️ TES VOLS SUR-MESURE
-Détaille les vols réels Allers/Retours depuis ${depart} avec compagnies, horaires exacts et escales. Inclus-les dans le budget.
+Détaille les vols Allers/Retours réels depuis ${depart} : compagnies, horaires exacts, temps d'escale. Inclus-les dans le budget global.
 
 📅 TON PROGRAMME JOUR PAR JOUR DÉTAILLÉ
 Pour CHAQUE JOUR (du Jour 1 au Jour ${duree}), tu dois fournir :
-📍 L'ACTIVITÉ RNOW : [Nom précis]. [Pourquoi c'est LE meilleur choix].
-💰 PRIX & RÉSA : [Prix exact en €]. [Site officiel ou lieu précis d'achat].
-🏠 TON REFUGE : [Nom de l'hôtel/Airbnb], [Adresse complète]. [Point fort unique].
-🍴 LA TABLE RNOW : [Nom du resto], [Adresse]. [Le plat typique à commander].
-🚕 TRANSPORT : [Trajet précis : taxi, bus, voiture]. [Coût estimé].
+📍 L'ACTIVITÉ RNOW : Nom précis + description captivante. Pourquoi c'est LE meilleur choix de la région ?
+💰 PRIX & RÉSERVATIONS : Prix exact en € par personne. Indique le nom du site officiel ou précise "Achat sur place à [Lieu]".
+🏠 TON REFUGE : Nom de l'hôtel ou Airbnb correspondant au style ${hebergement}, adresse complète, point fort unique et prix par nuit.
+🍴 LA TABLE RNOW : Nom du restaurant local authentique, adresse, budget moyen et le plat typique à commander absolument.
+🚕 TRANSPORT : Trajet précis, mode de transport préconisé, temps de trajet et coût estimé.
 
-PLUS :
-🛡️ ASSURANCES : Présente 2 options d'assurance adaptées.
-🚗 LOCATION : Si le rythme est "${rythme}" ou si c'est pertinent, donne les détails exacts de location (Prix, Compagnie).
-💡 LE CONSEIL D'INITIÉ : Une astuce de local exclusive pour finir en beauté.
+5. SERVICES COMPLÉMENTAIRES :
+🛡️ ASSURANCE VOYAGE : Présente 2 options (nom, couverture, prix estimé).
+🚗 LOCATION DE VOITURE : Si pertinent pour le rythme ${rythme}, donne la compagnie, le modèle conseillé, le prix et les conditions de prise en charge.
 
-RÈGLES D'OR :
-- Pas de phrases vagues ("voyez sur place", "selon vos goûts"). Tu DÉCIDES pour le client.
-- Prix RÉELS et vérifiés.
+6. FINAL :
+💡 LE CONSEIL D'INITIÉ : Termine par une astuce locale exclusive que seuls les locaux connaissent.
+
+RÈGLES D'OR : Ne dis JAMAIS "selon vos goûts" ou "voyez avec l'hôtel". Tu es l'expert, tu DÉCIDES et tu imposes le meilleur choix.
     `;
   } else {
-    // PROMPT DE CORRECTION (RESTAURANT LE STYLE RNOW)
+    // --- PROMPT DE CORRECTION CONSERVANT LA RIGUEUR ---
     promptFinal = `
-Tu es l'Expert-Concierge Rnow. Le client a reçu cet itinéraire :
+Tu es l'Expert-Concierge Rnow. Voici l'itinéraire que tu as généré :
 "${ancienItineraire}"
 
-Il souhaite les modifications suivantes : "${feedback}"
+Le client souhaite modifier ceci : "${feedback}"
 
-TA MISSION DE HAUTE CONCIERGERIE :
-- Réécris l'intégralité de l'itinéraire en intégrant TOUTES ses demandes.
-- Garde EXACTEMENT la même mise en forme Premium (Emojis uniques, majuscules simple pour les titres, aération maximale).
-- Conserve les éléments qu'il n'a pas demandé de changer.
-- Sois force de proposition pour que le voyage reste cohérent, luxueux et détaillé selon tes 11 points.
+TA MISSION :
+- Réécris l'intégralité du voyage en intégrant ces changements.
+- GARDE LE MÊME NIVEAU DE DÉTAIL (les 11 points, les adresses, les prix réels).
+- GARDE LA MÊME FORME (Emojis uniques par ligne, MAJUSCULES, zéro symbole markdown * ou #, aération maximale).
+- Sois force de proposition pour que la nouvelle version soit encore plus luxueuse et cohérente.
     `;
   }
 
   try {
-    const listResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
-    const listData = await listResponse.json();
-    const model = listData.models?.find(m => m.supportedGenerationMethods.includes("generateContent"));
-    
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/${model.name}:generateContent?key=${apiKey}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ contents: [{ parts: [{ text: promptFinal }] }] })
@@ -77,10 +75,12 @@ TA MISSION DE HAUTE CONCIERGERIE :
 
     const data = await response.json();
     let textOutput = data.candidates[0].content.parts[0].text;
+    
+    // Nettoyage radical des symboles pour une interface irréprochable
     textOutput = textOutput.replace(/\*\*/g, '').replace(/\*/g, '').replace(/#/g, '');
 
     res.status(200).json({ text: textOutput });
   } catch (error) {
-    res.status(500).json({ text: "Erreur technique : " + error.message });
+    res.status(500).json({ text: "Erreur technique de génération." });
   }
 }
