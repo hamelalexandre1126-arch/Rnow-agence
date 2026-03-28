@@ -9,28 +9,28 @@ export default async function handler(req, res) {
   if (!apiKey) return res.status(500).json({ text: "Clé API manquante." });
 
   const promptFinal = `
-Tu es l'expert de l'agence Rnow. Crée un carnet de voyage d'exception pour : ${destination}.
-Départ: ${depart} | Budget: ${budget}€ | Style: ${style} | Rythme: ${rythme}.
+Tu es l'Expert-Concierge de l'agence Rnow. Ton client attend des ordres de mission précis, pas des suggestions vagues.
+Départ: ${depart} | Destination: ${destination} | Budget: ${budget}€ | Style: ${style} | Rythme: ${rythme}.
 
-STYLE DE RÉDACTION :
-- Dynamique, aéré, chaque info commence par un EMOJI.
-- Pas de longs textes inutiles. Allez droit au but mais avec TOUS les détails techniques.
+RÈGLES D'OR DE RÉDACTION :
+- INTERDICTION de dire "cherchez une agence locale", "voyez avec votre hôtel" ou "selon vos préférences".
+- Tu DOIS choisir LE meilleur prestataire, LE meilleur restaurant et LE meilleur trajet.
+- Chaque info doit être exploitable immédiatement par le client (Nom + Adresse + Prix).
 
-STRUCTURE OBLIGATOIRE POUR CHAQUE JOUR :
+STRUCTURE SCANABLE POUR CHAQUE JOUR :
 
 JOUR X : [NOM DE L'ÉTAPE]
-📍 ACTIVITÉ : [Nom de l'excursion]. [Description précise de l'expérience].
-💰 COÛT & RÉSERVATION : [Prix exact en €] par personne. Réserver sur [Nom du site officiel ou plateforme].
-🏠 LOGEMENT : [Nom de l'hôtel/Airbnb], [Adresse précise]. Pourquoi ce choix ? [Argument phare].
-🍴 DÉJEUNER/DÎNER : [Nom du resto], [Adresse]. Le plat à ne pas rater : [Plat].
-🔗 LIEN OFFICIEL : [Mets UNIQUEMENT l'URL directe de l'activité ou de l'hôtel. Si tu n'es pas sûr de l'URL exacte, ne mets rien ou indique : "À réserver sur place"].
+📍 L'ACTIVITÉ RNOW : [Nom précis de l'endroit/excursion]. [Description courte de pourquoi c'est LE meilleur choix de la région].
+💰 PRIX & RÉSA : [Prix exact en €]. Réservez sur [Nom du site officiel]. Si pas de site, indique : "Achat du billet sur place à [Lieu précis]".
+🏠 TON REFUGE : [Nom de l'hôtel/Airbnb], [Adresse complète]. [Point fort unique]. Prix: [Montant/nuit].
+🍴 LA TABLE RNOW : [Nom du resto], [Adresse]. Commande impérativement : [Nom du plat typique]. Budget: [Prix moyen].
+🚕 TRANSPORT : [Le trajet précis : ex "Taxi de A vers B" ou "Bus ligne 12"]. Coût: [Prix].
 
-RÈGLES CRUCIALES :
-- Ne mets JAMAIS de liens vers des traducteurs ou des sites génériques. On veut du spécifique.
-- Inclus les détails des vols réels depuis ${depart} pour le ${date} dans le budget global.
-- Précise les transports entre chaque étape (prix du taxi, bus ou location voiture).
+CONSIGNES DE SÉCURITÉ :
+- Si tu proposes un lien, il doit être RÉEL et vérifié (ex: Tripadvisor, GetYourGuide, ou Site Officiel). Pas de liens génériques.
+- Inclus les vols réels depuis ${depart} dans le calcul.
 - ZÉRO ASTÉRISQUE (*), ZÉRO DIÈSE (#).
-- FINIS PAR : 💡 MES CONSEILS VOYAGES (3 astuces locales inédites).
+- Finis par : 💡 LE CONSEIL D'INITIÉ (Une astuce de local que personne ne connaît).
   `;
 
   try {
@@ -47,7 +47,7 @@ RÈGLES CRUCIALES :
     const data = await response.json();
     let textOutput = data.candidates[0].content.parts[0].text;
 
-    // NETTOYAGE DES SYMBOLES
+    // NETTOYAGE RADICAL
     textOutput = textOutput.replace(/\*/g, '').replace(/#/g, '');
 
     res.status(200).json({ text: textOutput });
