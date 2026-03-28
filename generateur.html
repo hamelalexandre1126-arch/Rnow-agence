@@ -3,185 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rnow | Générateur de Voyage Premium</title>
+    <title>Rnow | Personnalisation Premium</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;900&display=swap');
-        
-        body { 
-            font-family: 'Poppins', sans-serif; 
-            margin: 0; 
-            color: #000; 
-            background: radial-gradient(circle at 10% 10%, rgba(126, 62, 240, 0.05) 0%, rgba(252, 252, 252, 1) 50%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            padding: 120px 20px 60px 20px;
-        }
-
-        /* --- DESIGN BACKGROUND --- */
-        .bg-blur { position: fixed; width: 450px; height: 450px; border-radius: 50%; filter: blur(120px); opacity: 0.15; z-index: -1; }
+        body { font-family: 'Poppins', sans-serif; margin: 0; background: radial-gradient(circle at 10% 10%, rgba(126, 62, 240, 0.05) 0%, rgba(252, 252, 252, 1) 50%); min-height: 100vh; display: flex; justify-content: center; padding: 120px 20px; }
+        .bg-blur { position: fixed; width: 400px; height: 400px; border-radius: 50%; filter: blur(100px); opacity: 0.15; z-index: -1; }
         .blur-1 { background: #7e3ef0; top: -100px; left: -100px; }
         .blur-2 { background: #f03e7e; bottom: -100px; right: -100px; }
-
-        /* --- NAVIGATION --- */
-        nav { 
-            display: flex; justify-content: space-between; align-items: center; 
-            padding: 20px 50px; background: rgba(255, 255, 255, 0.85); 
-            backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,0,0,0.05);
-            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-        }
+        nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,0,0,0.05); position: fixed; top: 0; left: 0; right: 0; z-index: 100; }
         .logo { font-weight: 900; font-size: 1.5rem; text-transform: uppercase; letter-spacing: -1.5px; }
         .logo span { color: #7e3ef0; }
-        .nav-links a { text-decoration: none; color: #111; font-weight: 700; margin-left: 30px; font-size: 0.85rem; text-transform: uppercase; transition: 0.3s; }
-        .nav-links a:hover { color: #f03e7e; }
-
-        /* --- CONTAINER PRINCIPAL --- */
-        .container { 
-            width: 100%; max-width: 700px; background: rgba(255, 255, 255, 0.95); 
-            border-radius: 35px; padding: 50px; border: 1px solid rgba(255,255,255,0.5);
-            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.06);
-        }
-
-        h1 { font-size: 2.5rem; font-weight: 900; margin-bottom: 35px; text-transform: uppercase; letter-spacing: -1.5px; text-align: center; line-height: 1; }
-        h1 span { color: #7e3ef0; }
-
-        .form-group { margin-bottom: 25px; }
-        label { display: block; font-weight: 800; margin-bottom: 10px; font-size: 0.8rem; color: #555; text-transform: uppercase; letter-spacing: 0.5px; }
+        .nav-links a { text-decoration: none; color: #111; font-weight: 700; margin-left: 30px; font-size: 0.85rem; text-transform: uppercase; }
+        .container { width: 100%; max-width: 700px; background: rgba(255, 255, 255, 0.95); border-radius: 35px; padding: 50px; box-shadow: 0 25px 70px rgba(0, 0, 0, 0.06); }
+        h1 { font-size: 2.2rem; font-weight: 900; text-align: center; text-transform: uppercase; margin-bottom: 30px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-weight: 800; margin-bottom: 8px; font-size: 0.8rem; text-transform: uppercase; color: #555; }
+        input, textarea, select { width: 100%; padding: 16px; border-radius: 14px; border: 2px solid #f2f2f2; font-family: inherit; font-size: 1rem; box-sizing: border-box; }
+        .row { display: flex; gap: 15px; } .row .form-group { flex: 1; }
+        button { width: 100%; padding: 20px; border: none; border-radius: 16px; background: #000; color: #fff; font-weight: 900; text-transform: uppercase; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        button:hover { background: #7e3ef0; transform: translateY(-3px); }
         
-        input, textarea, select { 
-            width: 100%; padding: 18px; border-radius: 16px; border: 2px solid #f2f2f2; 
-            background: #fff; font-size: 1rem; font-family: inherit; box-sizing: border-box; transition: all 0.3s ease;
-        }
-        input:focus, textarea:focus, select:focus { outline: none; border-color: #7e3ef0; background: #fff; box-shadow: 0 0 0 5px rgba(126, 62, 240, 0.08); }
+        #resultat { margin-top: 40px; padding: 40px; background: #fff; border-radius: 30px; border: 1px solid #f0f0f0; display: none; box-shadow: 0 40px 90px rgba(0,0,0,0.08); }
+        #itineraire-content { color: #1a1a1a; font-size: 1.1rem; line-height: 2.5; white-space: pre-wrap; }
 
-        .row { display: flex; gap: 20px; }
-        .row .form-group { flex: 1; }
-
-        button { 
-            width: 100%; padding: 22px; border: none; border-radius: 18px; 
-            background: #000; color: #fff; font-size: 1.1rem; font-weight: 900; 
-            text-transform: uppercase; cursor: pointer; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            margin-top: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-        button:hover { transform: translateY(-4px); background: #1a1a1a; box-shadow: 0 20px 40px rgba(126, 62, 240, 0.3); }
-
-        /* --- ZONE DE RÉSULTAT (ITINÉRAIRE PREMIUM) --- */
-        #resultat { 
-            margin-top: 50px; padding: 50px; background: #ffffff; 
-            border-radius: 30px; border: 1px solid rgba(0,0,0,0.03); display: none; 
-            box-shadow: 0 40px 90px rgba(0,0,0,0.1);
-        }
-        
-        #itineraire-content { 
-            color: #1a1a1a; 
-            font-size: 1.1rem; 
-            /* --- RÉGLAGE CRUCIAL DE LISIBILITÉ --- */
-            line-height: 2.5; 
-            word-wrap: break-word; 
-            white-space: pre-wrap;
-            letter-spacing: -0.1px;
-        }
-
-        /* Espacement automatique entre chaque paragraphe/ligne vide de l'IA */
-        #itineraire-content p, #itineraire-content br {
-            margin-bottom: 15px;
-            display: block;
-            content: "";
-        }
-
-        .loader { 
-            display: none; text-align: center; font-weight: 900; color: #7e3ef0; 
-            margin-top: 40px; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 2px;
-            animation: pulse 1.5s infinite;
-        }
-        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+        /* --- NOUVELLE ZONE DE MODIFICATION --- */
+        #modifs-zone { margin-top: 30px; padding-top: 30px; border-top: 2px solid #f0f0f0; display: none; }
+        #modifs-zone h3 { font-weight: 900; text-transform: uppercase; font-size: 1rem; margin-bottom: 15px; color: #f03e7e; }
+        .btn-modif { background: #f03e7e; margin-top: 15px; }
+        .loader { display: none; text-align: center; font-weight: 900; color: #7e3ef0; margin-top: 20px; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px; }
     </style>
 </head>
 <body>
-
-    <div class="bg-blur blur-1"></div>
-    <div class="bg-blur blur-2"></div>
-
-    <nav>
-        <div class="logo">R<span>now</span>.</div>
-        <div class="nav-links">
-            <a href="index.html">Accueil</a>
-            <a href="generateur.html" style="color: #f03e7e; font-weight: 900;">Générateur</a>
-        </div>
-    </nav>
+    <div class="bg-blur blur-1"></div><div class="bg-blur blur-2"></div>
+    <nav><div class="logo">R<span>now</span>.</div><div class="nav-links"><a href="index.html">Accueil</a><a href="generateur.html" style="color: #f03e7e;">Générateur</a></div></nav>
 
     <div class="container">
-        <h1>Crée ton <span>Expérience</span></h1>
-        
+        <h1>Crée ton <span>Voyage</span></h1>
         <form id="voyageForm">
             <div class="row">
-                <div class="form-group">
-                    <label>Départ</label>
-                    <input type="text" id="depart" placeholder="Paris" required>
-                </div>
-                <div class="form-group">
-                    <label>Destination</label>
-                    <input type="text" id="destination" placeholder="Tulum" required>
-                </div>
+                <div class="form-group"><label>Départ</label><input type="text" id="depart" placeholder="Paris" required></div>
+                <div class="form-group"><label>Destination</label><input type="text" id="destination" placeholder="Tulum" required></div>
             </div>
-
             <div class="row">
-                <div class="form-group">
-                    <label>Date de départ</label>
-                    <input type="date" id="dateDepart" required>
-                </div>
-                <div class="form-group">
-                    <label>Durée (jours)</label>
-                    <input type="number" id="duree" placeholder="5" required>
-                </div>
+                <div class="form-group"><label>Date</label><input type="date" id="dateDepart" required></div>
+                <div class="form-group"><label>Jours</label><input type="number" id="duree" placeholder="5" required></div>
             </div>
-
-            <div class="form-group">
-                <label>Budget total par personne (€)</label>
-                <input type="number" id="budget" placeholder="1200" required>
-            </div>
-
-            <div class="form-group">
-                <label>Rythme souhaité</label>
-                <select id="rythme">
-                    <option value="Détendu (1 ville, farniente total)">Détendu (1 ville, farniente total)</option>
-                    <option value="Équilibré (2-3 escales, mix repos/visites)" selected>Équilibré (2-3 escales, mix repos/visites)</option>
-                    <option value="Intense (Bouger tous les jours, explorateur)">Intense (Bouger tous les jours, explorateur)</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>Hébergement idéal</label>
-                <input type="text" id="hebergement" placeholder="Boutique hôtel colonial, Villa avec piscine...">
-            </div>
-
-            <div class="form-group">
-                <label>Tes envies (Activités, Passion...)</label>
-                <textarea id="styleVoyage" rows="3" placeholder="Gastronomie, cenotes cachés, yoga au lever du soleil..."></textarea>
-            </div>
-
-            <button type="submit" id="btnGenerer">Calculer mon voyage ✨</button>
-            <div class="loader" id="loader">L'IA Rnow sculpte votre itinéraire de rêve... 🌊</div>
+            <div class="form-group"><label>Budget total (€)</label><input type="number" id="budget" placeholder="1500" required></div>
+            <div class="form-group"><label>Rythme</label><select id="rythme"><option value="Détendu">Détendu</option><option value="Équilibré" selected>Équilibré</option><option value="Intense">Intense</option></select></div>
+            <div class="form-group"><label>Hébergement</label><input type="text" id="hebergement" placeholder="Boutique hôtel..."></div>
+            <div class="form-group"><label>Envies</label><textarea id="styleVoyage" rows="2" placeholder="Surf, yoga..."></textarea></div>
+            <button type="submit" id="btnGenerer">Générer mon voyage ✨</button>
         </form>
+
+        <div id="loader" class="loader">Rnow sculpte votre aventure... 🌴</div>
 
         <div id="resultat">
             <div id="itineraire-content"></div>
+            
+            <div id="modifs-zone">
+                <h3>Une modification ? Dis-moi ce que tu aimes ou pas :</h3>
+                <textarea id="feedbackClient" rows="3" placeholder="Ex: Je n'aime pas cet hôtel, peux-tu proposer une option plus sauvage ? Enlève le snorkeling du jour 2."></textarea>
+                <button id="btnAffiner" class="btn-modif">Affiner mon itinéraire ⚡</button>
+            </div>
         </div>
     </div>
 
     <script>
+        let dernierItineraire = ""; // On stocke l'itinéraire ici
+
+        async function appelerAPI(payload) {
+            const response = await fetch('/api/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            return await response.json();
+        }
+
+        // --- GÉNÉRATION INITIALE ---
         document.getElementById('voyageForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            const btn = document.getElementById('btnGenerer');
             const loader = document.getElementById('loader');
             const resultDiv = document.getElementById('resultat');
             const contentDiv = document.getElementById('itineraire-content');
+            const modifsZone = document.getElementById('modifs-zone');
 
-            btn.style.display = 'none';
             loader.style.display = 'block';
             resultDiv.style.display = 'none';
 
             const payload = {
+                type: "initial",
                 depart: document.getElementById('depart').value,
                 destination: document.getElementById('destination').value,
                 budget: document.getElementById('budget').value,
@@ -192,23 +103,41 @@
                 rythme: document.getElementById('rythme').value
             };
 
-            try {
-                const response = await fetch('/api/generate', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                const data = await response.json();
-                if (data.text) {
-                    // Utilisation de innerText pour garder la pureté du texte tout en respectant pre-wrap
-                    contentDiv.innerText = data.text;
-                    resultDiv.style.display = 'block';
-                } else { alert("Une petite erreur est survenue."); }
-            } catch (error) { alert("Connexion impossible."); }
-            
+            const data = await appelerAPI(payload);
+            if (data.text) {
+                dernierItineraire = data.text;
+                contentDiv.innerText = data.text;
+                resultDiv.style.display = 'block';
+                modifsZone.style.display = 'block';
+            }
             loader.style.display = 'none';
-            btn.style.display = 'block';
             resultDiv.scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // --- AFFINAGE (CORRECTION) ---
+        document.getElementById('btnAffiner').addEventListener('click', async function() {
+            const feedback = document.getElementById('feedbackClient').value;
+            if (!feedback) return alert("Dis-moi ce que tu veux changer !");
+
+            const loader = document.getElementById('loader');
+            const contentDiv = document.getElementById('itineraire-content');
+            
+            loader.innerText = "Rnow ajuste votre voyage... ✨";
+            loader.style.display = 'block';
+
+            const payload = {
+                type: "correction",
+                ancienItineraire: dernierItineraire,
+                feedback: feedback
+            };
+
+            const data = await appelerAPI(payload);
+            if (data.text) {
+                dernierItineraire = data.text;
+                contentDiv.innerText = data.text;
+                document.getElementById('feedbackClient').value = ""; // On vide le champ
+            }
+            loader.style.display = 'none';
         });
     </script>
 </body>
