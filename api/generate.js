@@ -13,36 +13,28 @@ export default async function handler(req, res) {
   if (type === "initial") {
     promptFinal = `
 Tu es l'Expert-Concierge Rnow. Ton but : un itinéraire d'élite, chirurgical, ultra-précis et parfaitement structuré.
-
-PARAMÈTRES : 
-Départ: ${depart} | Destination: ${destination} | Budget: ${budget}€/pers | Style: ${style} | Rythme: ${rythme} | Durée: ${duree} jours dès le ${date}.
-
-RÈGLES DE FORME (PRÉCISION ET LISIBILITÉ) :
-- DATE : Format Européen (ex: Vendredi 19/06/2026).
-- ESPACEMENT : Saute EXACTEMENT UNE LIGNE entre chaque point (📍, 💰, 🏠, 🍴, 🚕). Pas de blocs compacts, mais pas de vide excessif non plus.
-- STRUCTURE : Pour chaque jour, commence par le titre du jour, puis liste les catégories dans l'ordre.
+PARAMÈTRES : Départ: ${depart} | Destination: ${destination} | Budget: ${budget}€/pers | Style: ${style} | Rythme: ${rythme} | Durée: ${duree} jours dès le ${date}.
+RÈGLES DE FORME :
+- DATE : Format Européen (ex: 19/06/2026).
+- ESPACEMENT : Saute EXACTEMENT UNE LIGNE entre chaque point (📍, 💰, 🏠, 🍴, 🚕).
 - ÉMOJIS : Un SEUL emoji au début de chaque ligne. INTERDICTION de répéter le même sur deux lignes consécutives.
 - PAS d'astérisques (*), PAS de dièses (#). Titres en MAJUSCULES simples uniquement.
-
-CONTENU CHIRURGICAL (11 POINTS) :
-1. VOLS : Si nécessaire, vols A/R RÉELS (Compagnies, Horaires, Escales) inclus dans le budget de ${budget}€.
-2. PROGRAMME : Détail du Jour 1 au Jour ${duree}.
-3. ACTIVITÉS : Noms précis + expertise détaillée (pourquoi ce choix ?).
-4. RÉSERVATIONS : Prix exacts en € + liens SITES OFFICIELS ou lieux d'achat.
-5. HÉBERGEMENT : Nom, ADRESSE COMPLÈTE, atout unique et prix/nuit.
-6. RESTAURATION : Nom du resto, ADRESSE COMPLÈTE, budget moyen et plat signature.
-7. TRANSPORT : Trajets précis, mode (varie les emojis), temps et coûts.
-8. BUDGET : Analyse stricte pour que tout rentre dans les ${budget}€.
-9. ASSURANCES : 2 options chiffrées adaptées.
-10. LOCATION : Détails complets si pertinent (modèle, prix, compagnie).
-11. CONSEIL D'INITIÉ : Le secret de local qui fait la différence.
-
-IMPORTANT : Si une section est inutile (ex: pas de vols), ne la cite pas et ne fais aucun commentaire.
+CONTENU CHIRURGICAL : Vols RÉELS, Programme Jour par Jour, Activités précises, Réservations avec prix exacts et sites officiels, Hébergement avec ADRESSE COMPLÈTE, Resto avec ADRESSE COMPLÈTE, Transport précis, Assurances, Location et Conseil d'initié.
+IMPORTANT : Si une section est inutile, ne la cite pas.
     `;
   } else {
+    // --- PROMPT DE CORRECTION RENFORCÉ ---
     promptFinal = `
-Tu es l'Expert-Concierge Rnow. Modifie cet itinéraire : "${ancienItineraire}" selon : "${feedback}".
-RESTE CHIRURGICAL. Garde la structure précise, le budget de ${budget}€, les dates européennes et un espacement de une ligne entre chaque point.
+Tu es l'Expert-Concierge Rnow. 
+Voici l'itinéraire actuel que tu as généré : 
+"${ancienItineraire}"
+
+Le client souhaite cette modification précise : "${feedback}"
+
+TA MISSION : 
+Réécris l'intégralité du voyage en intégrant ce changement. 
+CONSERVE TOUTE LA RIGUEUR : Adresses complètes, prix réels, budget de ${budget}€, format de date européen, et l'espacement de UNE LIGNE entre chaque point. 
+Reste chirurgical et n'utilise aucun symbole (* ou #).
     `;
   }
 
@@ -58,9 +50,14 @@ RESTE CHIRURGICAL. Garde la structure précise, le budget de ${budget}€, les d
     });
 
     const data = await response.json();
+
+    // --- SÉCURITÉ AJOUTÉE ICI POUR ÉVITER L'ERREUR 'UNDEFINED' ---
+    if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
+        console.error("Erreur API Gemini:", data);
+        return res.status(500).json({ text: "L'IA n'a pas pu traiter la modification. Réessaie avec une demande plus précise." });
+    }
+
     let textOutput = data.candidates[0].content.parts[0].text;
-    
-    // Nettoyage final
     textOutput = textOutput.replace(/\*\*/g, '').replace(/\*/g, '').replace(/#/g, '');
 
     res.status(200).json({ text: textOutput });
