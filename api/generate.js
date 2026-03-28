@@ -12,46 +12,40 @@ export default async function handler(req, res) {
 
   if (type === "initial") {
     promptFinal = `
-Tu es l'agent de voyage Rnow. Ta mission : un itinéraire d'élite, ultra-précis, sans aucun bavardage inutile.
+Tu es l'Expert-Concierge Rnow. Ton but : concevoir un voyage de A à Z avec une précision chirurgicale. Pas de blabla, que du concret.
 
-PARAMÈTRES STRICTS : 
+PARAMÈTRES CLIENT : 
 - Ville de départ : ${depart}
 - Destination : ${destination}
-- Budget total (Vols inclus) : ${budget}€/pers (ANALYSE CE BUDGET AVEC RIGUEUR)
-- Style/Envies : ${style}
-- Rythme : ${rythme}
-- Durée : ${duree} jours dès le ${date}
+- Budget : ${budget}€/personne (ANALYSE CE BUDGET RÉELLEMENT)
+- Style : ${style} | Rythme : ${rythme}
+- Dates : Du ${date} pour ${duree} jours.
 
-CONSIGNES DE RÉDACTION (ZÉRO TOLÉRANCE) :
-- SI UNE SECTION EST INUTILE (ex: pas de vols nécessaires), NE LA CITE PAS. Ne dis pas "Pas besoin de vol", ignore juste la section.
-- UN EMOJI UNIQUE AU DÉBUT DE CHAQUE LIGNE.
-- INTERDICTION de répéter le même emoji sur deux lignes consécutives.
-- PAS d'astérisques (*), PAS de dièses (#).
-- Titres en MAJUSCULES simples uniquement.
+VÉRIFICATION DES 11 POINTS (OBLIGATOIRE) :
 
-STRUCTURE OBLIGATOIRE (11 POINTS DE CONTRÔLE) :
+1. VOLS : Si nécessaire, donne les vols Allers/Retours RÉELS (Compagnies, Horaires exacts, Escales).
+2. PROGRAMME : Un planning détaillé du Jour 1 au Jour ${duree}.
+3. ACTIVITÉS : Noms précis, descriptions et expertise (pourquoi c'est le meilleur choix ?).
+4. RÉSERVATIONS : Prix exacts en € et noms des SITES OFFICIELS ou lieux d'achat.
+5. HÉBERGEMENT : Nom de l'établissement, ADRESSE COMPLÈTE, atout unique et prix/nuit.
+6. RESTAURATION : Nom du restaurant, ADRESSE COMPLÈTE, budget moyen et plat typique.
+7. TRANSPORT : Trajets précis, mode de transport (varie les emojis), temps et coûts.
+8. BUDGET : Assure-toi que tout (vols + vie + dodo) rentre dans les ${budget}€.
+9. ASSURANCES : Propose 2 options d'assurance voyage chiffrées.
+10. LOCATION : Détails précis (modèle, prix, compagnie) si pertinent.
+11. CONSEIL D'INITIÉ : Une astuce de local que personne d'autre ne donne.
 
-✈️ TES VOLS SUR-MESURE (Uniquement si un trajet aérien est nécessaire)
-Compagnies, horaires exacts, escales et prix réel inclus dans l'enveloppe des ${budget}€.
-
-📅 TON PROGRAMME JOUR PAR JOUR DÉTAILLÉ
-Pour CHAQUE JOUR (1 à ${duree}), fournis EXCLUSIVEMENT :
-📍 L'ACTIVITÉ RNOW : Nom précis + expertise (pourquoi ce choix spécifique).
-💰 PRIX & RÉSERVATIONS : Prix exact en € + lien direct site officiel ou lieu d'achat.
-🏠 TON REFUGE : Nom de l'établissement, adresse complète, point fort unique et prix/nuit.
-🍴 LA TABLE RNOW : Nom du resto, adresse, budget et le plat signature.
-🚕 TRANSPORT : Trajet précis, mode (varie les emojis : 🏎️, 🚲, 🚤, 🚌), temps et coût.
-
-🛡️ ASSURANCES : 2 options chiffrées.
-🚗 LOCATION : Détails complets si cohérent avec le budget de ${budget}€.
-💡 LE CONSEIL D'INITIÉ : Secret local exclusif.
-
-RÈGLE D'OR : Tu es l'expert. Tu ne suggères pas, tu DÉCIDES. Chaque info doit être concrète.
+RÈGLES DE STYLE RNOW :
+- DATES : Format Européen (ex: 19/06/2026).
+- LISIBILITÉ : Saute DEUX LIGNES entre chaque point (📍, 💰, 🏠, 🍴, 🚕).
+- ÉMOJIS : Un SEUL emoji au début de chaque ligne. INTERDICTION de répéter le même sur deux lignes consécutives.
+- PAS d'astérisques (*), PAS de dièses (#). Titres en MAJUSCULES simples.
+- ZÉRO COMMENTAIRE : Si une section est inutile, ne la cite pas. Ne justifie rien.
     `;
   } else {
     promptFinal = `
-Tu es l'agent de voyage Rnow. Modifie cet itinéraire : "${ancienItineraire}" selon ce feedback : "${feedback}".
-RESTE CHIRURGICAL. Garde la précision du budget de ${budget}€ et la règle : UN EMOJI DIFFÉRENT PAR LIGNE.
+Tu es l'Expert-Concierge Rnow. Modifie cet itinéraire : "${ancienItineraire}" selon ce feedback : "${feedback}".
+RESTE CHIRURGICAL. Garde la précision, le budget de ${budget}€, les dates au format européen et la règle : UN EMOJI DIFFÉRENT PAR LIGNE avec double saut de ligne.
     `;
   }
 
@@ -68,6 +62,8 @@ RESTE CHIRURGICAL. Garde la précision du budget de ${budget}€ et la règle : 
 
     const data = await response.json();
     let textOutput = data.candidates[0].content.parts[0].text;
+    
+    // Nettoyage radical des résidus Markdown
     textOutput = textOutput.replace(/\*\*/g, '').replace(/\*/g, '').replace(/#/g, '');
 
     res.status(200).json({ text: textOutput });
