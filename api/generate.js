@@ -15,7 +15,6 @@ export default async function handler(req, res) {
 Tu es l'Expert-Concierge Rnow. Ton ton est jeune, dynamique et ultra-professionnel.
 
 MISSION DANS CET ORDRE PRÉCIS :
-
 1. ACCUEIL : Salue le client avec l'énergie Rnow.
 2. ANALYSE EXPERTE : Fais un paragraphe (4 lignes) pour commenter ses critères (Destination: ${destination}, Budget: ${budget}€, Envies: ${style}). Explique pourquoi c'est un excellent choix et comment tu as personnalisé le voyage.
 3. PROGRAMME RÉSUMÉ : Liste chaque jour (Jour 1, Jour 2...) avec juste le titre de l'étape pour donner une vue d'ensemble rapide.
@@ -25,7 +24,7 @@ MISSION DANS CET ORDRE PRÉCIS :
 🏠 TON REFUGE : [Nom], [ADRESSE COMPLÈTE]. [Atout unique] + [Prix/nuit].
 🍴 LA TABLE RNOW : [Nom], [ADRESSE COMPLÈTE]. [Plat signature] + [Budget].
 🚕 TRANSPORT : [Trajet], [Mode (varie les emojis)], [Temps] et [Coût].
-5. LE CONSEIL D'INITIÉ : Termine par une astuce de local exclusive (lieu secret, meilleur moment pour une vue, etc.).
+5. LE CONSEIL D'INITIÉ : Termine par une astuce de local exclusive.
 
 CONSIGNES DE FORME :
 - DATE : Format Européen (ex: 28/03/2026).
@@ -43,10 +42,18 @@ Règles : Dates DD/MM/YYYY, une ligne d'espace, émojis variés, zéro symbole (
   }
 
   try {
+    // --- DÉTECTION AUTOMATIQUE DU MODÈLE DISPONIBLE (SÉCURITÉ ANTI-BUG) ---
     const listResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
     const listData = await listResponse.json();
-    const model = listData.models?.find(m => m.name.includes("pro") || m.name.includes("flash")) || listData.models?.[0];
+    
+    // On cherche par priorité : flash, puis pro, puis n'importe quel modèle qui supporte generateContent
+    let model = listData.models?.find(m => m.name.includes("flash"));
+    if (!model) model = listData.models?.find(m => m.name.includes("pro"));
+    if (!model) model = listData.models?.find(m => m.supportedGenerationMethods.includes("generateContent"));
 
+    if (!model) throw new Error("Aucun modèle de génération disponible sur ton compte.");
+
+    // --- GÉNÉRATION DU CONTENU ---
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/${model.name}:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -55,8 +62,8 @@ Règles : Dates DD/MM/YYYY, une ligne d'espace, émojis variés, zéro symbole (
 
     const data = await response.json();
     
-    if (!data.candidates || !data.candidates[0]) {
-      throw new Error("Réponse vide de l'IA");
+    if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
+      throw new Error("L'IA n'a pas pu générer de réponse. Vérifie tes quotas ou réessaie.");
     }
 
     let textOutput = data.candidates[0].content.parts[0].text;
