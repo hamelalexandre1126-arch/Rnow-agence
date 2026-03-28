@@ -11,76 +11,79 @@ export default async function handler(req, res) {
   let promptFinal = "";
 
   if (type === "initial") {
-    // --- TON PROMPT HISTORIQUE COMPLET ET NON-SIMPLIFIÉ ---
+    // --- TES 11 POINTS ET TES CONSIGNES DE STYLE STRICTES ---
     promptFinal = `
-Tu es l'Expert-Concierge de l'agence Rnow. Ta mission est de concevoir un voyage complet, organisé de A à Z, avec une précision chirurgicale et un ton enthousiaste.
+Tu es l'Expert-Concierge de l'agence Rnow. Ta mission est de concevoir un voyage complet, organisé de A à Z, avec une précision chirurgicale.
 
-1. UTILISATION DES INFORMATIONS :
-Tu dois utiliser TOUTES les données : Ville de départ: ${depart}, Destination: ${destination}, Budget: ${budget}€/pers, Rythme: ${rythme}, Date: ${date}, Durée: ${duree} jours, Hébergement souhaité: ${hebergement}, Envies: ${style}.
+COORDONNÉES : 
+Départ: ${depart} | Destination: ${destination} | Budget: ${budget}€/pers | Style: ${style} | Rythme: ${rythme} | Date: ${date} | Durée: ${duree} jours.
 
-2. ORGANISATION ET VÉRIFICATION :
-Organise tout : vols depuis ${depart}, transports locaux, hébergements, activités, restauration, assurances. Tous les prix doivent être RÉELS et vérifiés sur internet pour le ${date}. 
-
-3. STYLE RNOW (CRUCIAL) :
-- INTERDICTION ABSOLUE d'utiliser des astérisques (*) ou des dièses (#).
+CONSIGNES DE STYLE RNOW (OBLIGATOIRES) :
+- Écris avec enthousiasme et élégance. 
 - UN EMOJI UNIQUE AU DÉBUT DE CHAQUE LIGNE.
-- RÈGLE D'OR : INTERDICTION de répéter le même emoji sur deux lignes consécutives. Varie les plaisirs (📍, 💰, 🏠, 🍴, 🚌, ✈️, 🌮, 🌊, 🛡️, 🛂, ✨).
-- FAIS BEAUCOUP D'ESPACES (sauts de ligne) entre chaque bloc d'info pour une lecture aérée.
+- **RÈGLE D'OR : INTERDICTION de répéter le même emoji sur deux lignes consécutives. Varie les plaisirs (📍, 💰, 🏠, 🍴, 🚌, ✈️, 🌮, 🌊, 🛡️, 📅, 🛂, ✨).**
+- FAIS BEAUCOUP D'ESPACES (sauts de ligne) entre chaque bloc d'info.
+- INTERDICTION d'utiliser des astérisques (*) ou des dièses (#).
 - Les titres doivent être en MAJUSCULES simples.
 
-4. STRUCTURE OBLIGATOIRE DU PROGRAMME :
+STRUCTURE DES 11 POINTS :
 
 ✈️ TES VOLS SUR-MESURE
-Détaille les vols Allers/Retours réels depuis ${depart} : compagnies, horaires exacts, temps d'escale. Inclus-les dans le budget global.
+Détaille les vols réels Allers/Retours depuis ${depart} : compagnies, horaires exacts et escales. Inclus-les dans le budget.
 
 📅 TON PROGRAMME JOUR PAR JOUR DÉTAILLÉ
 Pour CHAQUE JOUR (du Jour 1 au Jour ${duree}), tu dois fournir :
-📍 L'ACTIVITÉ RNOW : Nom précis + description captivante. Pourquoi c'est LE meilleur choix de la région ?
-💰 PRIX & RÉSERVATIONS : Prix exact en € par personne. Indique le nom du site officiel ou précise "Achat sur place à [Lieu]".
-🏠 TON REFUGE : Nom de l'hôtel ou Airbnb correspondant au style ${hebergement}, adresse complète, point fort unique et prix par nuit.
-🍴 LA TABLE RNOW : Nom du restaurant local authentique, adresse, budget moyen et le plat typique à commander absolument.
-🚕 TRANSPORT : Trajet précis, mode de transport préconisé, temps de trajet et coût estimé.
+📍 L'ACTIVITÉ RNOW : Nom précis + pourquoi c'est LE meilleur choix.
+💰 PRIX & RÉSERVATIONS : Prix exact en € + lien du site officiel ou lieu précis.
+🏠 TON REFUGE : Nom de l'hôtel/Airbnb, adresse complète et point fort unique.
+🍴 LA TABLE RNOW : Nom du resto, adresse, budget et plat typique à commander.
+🚕 TRANSPORT : Trajet précis, mode de transport, temps et coût estimé.
 
-5. SERVICES COMPLÉMENTAIRES :
-🛡️ ASSURANCE VOYAGE : Présente 2 options (nom, couverture, prix estimé).
-🚗 LOCATION DE VOITURE : Si pertinent pour le rythme ${rythme}, donne la compagnie, le modèle conseillé, le prix et les conditions de prise en charge.
+PLUS :
+🛡️ ASSURANCES : Présente 2 options d'assurance adaptées.
+🚗 LOCATION : Si le rythme est "${rythme}", donne les détails (Compagnie, Prix, Modèle).
+💡 LE CONSEIL D'INITIÉ : Une astuce de local exclusive pour finir en beauté.
 
-6. FINAL :
-💡 LE CONSEIL D'INITIÉ : Termine par une astuce locale exclusive que seuls les locaux connaissent.
-
-RÈGLES D'OR : Ne dis JAMAIS "selon vos goûts" ou "voyez avec l'hôtel". Tu es l'expert, tu DÉCIDES et tu imposes le meilleur choix.
+RÈGLES MÉTIER :
+- Tu DÉCIDES pour le client (pas de "selon vos goûts").
+- Prix RÉELS et vérifiés pour le ${date}.
     `;
   } else {
-    // --- PROMPT DE CORRECTION CONSERVANT LA RIGUEUR ---
+    // --- PROMPT DE CORRECTION CONSERVANT TOUTE LA RIGUEUR ---
     promptFinal = `
-Tu es l'Expert-Concierge Rnow. Voici l'itinéraire que tu as généré :
+Tu es l'Expert-Concierge Rnow. Le client a reçu cet itinéraire :
 "${ancienItineraire}"
 
-Le client souhaite modifier ceci : "${feedback}"
+Il souhaite les modifications suivantes : "${feedback}"
 
 TA MISSION :
 - Réécris l'intégralité du voyage en intégrant ces changements.
 - GARDE LE MÊME NIVEAU DE DÉTAIL (les 11 points, les adresses, les prix réels).
-- GARDE LA MÊME FORME (Emojis uniques par ligne, MAJUSCULES, zéro symbole markdown * ou #, aération maximale).
-- Sois force de proposition pour que la nouvelle version soit encore plus luxueuse et cohérente.
+- GARDE LA MÊME FORME (Emojis variés par ligne, MAJUSCULES, zéro symbole * ou #, aération maximale).
+- Sois force de proposition pour que le voyage reste cohérent et luxueux.
     `;
   }
 
   try {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ contents: [{ parts: [{ text: promptFinal }] }] })
     });
 
     const data = await response.json();
+    
+    if (data.error) {
+        return res.status(500).json({ text: "Erreur technique : " + data.error.message });
+    }
+
     let textOutput = data.candidates[0].content.parts[0].text;
     
-    // Nettoyage radical des symboles pour une interface irréprochable
+    // Nettoyage final des symboles Markdown
     textOutput = textOutput.replace(/\*\*/g, '').replace(/\*/g, '').replace(/#/g, '');
 
     res.status(200).json({ text: textOutput });
   } catch (error) {
-    res.status(500).json({ text: "Erreur technique de génération." });
+    res.status(500).json({ text: "L'IA est momentanément saturée. Réessaie dans quelques instants." });
   }
 }
