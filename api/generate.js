@@ -11,31 +11,28 @@ export default async function handler(req, res) {
   const instructionsRnow = `
 Ton ton est jeune, dynamique et expert. 
 STRUCTURE STRICTE (11 POINTS) :
-1. ACCUEIL Rnow.
+1. ACCUEIL Rnow énergique.
 2. ANALYSE EXPERTE (4 lignes).
-3. PROGRAMME RÉSUMÉ.
+3. PROGRAMME RÉSUMÉ J/J.
 4. DÉTAILS CHIRURGICAUX (📍 ACTIVITÉ, 💰 RÉSERVATION, 🏠 REFUGE, 🍴 TABLE, 🚕 TRANSPORT).
 5. LOGISTIQUE : Vols, Assurances, Location.
 6. CONSEIL D'INITIÉ.
-RÈGLES : Date DD/MM/YYYY, une ligne d'espace entre chaque puce, UN emoji varié, ZERO symbole (* ou #).
+RÈGLES : Date DD/MM/YYYY, une ligne d'espace entre chaque puce, UN emoji varié par ligne, ZERO symbole (* ou #).
   `;
 
   let promptFinal = "";
 
   if (isRealSearch) {
-    // STRATÉGIE "DEEP LINKS" : On transforme l'itinéraire en version avec liens cliquables
     promptFinal = `Tu es l'Expert Rnow. REPRENDS cet itinéraire : "${ancienItineraire}".
-    Pour chaque activité, hôtel ou vol, crée un LIEN DE RECHERCHE RÉEL.
-    EXEMPLES DE FORMATS À UTILISER :
+    Pour chaque activité, hôtel ou vol, crée un LIEN DE RECHERCHE RÉEL et CLICQUABLE.
+    FORMATS OBLIGATOIRES :
     - Vols : https://www.skyscanner.fr/transport/vols/${depart}/${destination}/${date}
     - Hôtels : https://www.booking.com/searchresults.html?ss=${destination}&checkin=${date}
     - Activités : https://www.getyourguide.fr/s/?q=${destination}
-    
-    Réécris l'itinéraire complet en intégrant ces liens dans la section 💰 RÉSERVATION. ${instructionsRnow}`;
+    Réécris l'itinéraire complet avec ces liens dans la section 💰 RÉSERVATION. ${instructionsRnow}`;
   } else if (type === "initial") {
-    // SIMULATION INSTANTANÉE
     promptFinal = `Génère un itinéraire complet pour ${destination} (${duree} jours) le ${date}. 
-    Budget: ${budget}€. Ne fais pas de recherche web. 
+    Budget: ${budget}€. Ne fais pas de recherche web pour répondre instantanément.
     Pour les prix, mets des ESTIMATIONS (ex: [Estimation 50€]).
     ${instructionsRnow}`;
   } else {
@@ -43,16 +40,22 @@ RÈGLES : Date DD/MM/YYYY, une ligne d'espace entre chaque puce, UN emoji varié
   }
 
   try {
-    const modelName = "gemini-1.5-flash"; 
+    // --- 🔍 SOLUTION DE DÉTECTION DYNAMIQUE DU MODÈLE (Celle qui marche !) ---
+    const listResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+    const listData = await listResponse.json();
+    
+    // On cherche le meilleur modèle dispo (Flash en priorité, sinon le premier de la liste)
+    let selectedModel = listData.models?.find(m => m.name.includes("flash")) || listData.models?.[0];
+
+    if (!selectedModel) throw new Error("Aucun modèle IA détecté sur ce compte.");
+
     const bodyPayload = {
       contents: [{ parts: [{ text: promptFinal }] }],
       safetySettings: [{ category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }]
     };
 
-    // ON DÉSACTIVE GOOGLE SEARCH RETRIEVAL (Trop lent / Cause des timeouts)
-    // L'IA utilise sa propre logique pour construire les liens de recherche.
-
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`, {
+    // On appelle l'API avec le nom de modèle détecté dynamiquement
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/${selectedModel.name}:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(bodyPayload)
