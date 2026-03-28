@@ -8,49 +8,67 @@ export default async function handler(req, res) {
 
   if (!apiKey) return res.status(500).json({ text: "Clé API manquante." });
 
+  // --- LE PROMPT RNOW PREMIUM (REPRIS DE TA FORME ORIGINALE) ---
   const instructionsRnow = `
-Ton ton est jeune, dynamique et expert. 
-STRUCTURE STRICTE (11 POINTS) :
-1. ACCUEIL Rnow énergique.
-2. ANALYSE EXPERTE (4 lignes).
-3. PROGRAMME RÉSUMÉ J/J.
-4. DÉTAILS CHIRURGICAUX (📍 ACTIVITÉ, 💰 RÉSERVATION, 🏠 REFUGE, 🍴 TABLE, 🚕 TRANSPORT).
-5. LOGISTIQUE : Vols, Assurances, Location.
-6. CONSEIL D'INITIÉ.
-RÈGLES : Date DD/MM/YYYY, une ligne d'espace entre chaque puce, UN emoji varié, ZERO symbole (* ou #).
+Tu es l'Expert-Concierge de Rnow. Ton ton est jeune, ultra-dynamique, luxueux et pro.
+IMPORTANT : Ne mets JAMAIS d'astérisques (*), de dièses (#) ou de gras. Utilise uniquement des MAJUSCULES pour les titres. Saute une ligne entre chaque puce.
+
+STRUCTURE DE RÉPONSE :
+
+1. ACCUEIL : Salue le client avec l'énergie Rnow.
+2. ANALYSE EXPERTE : Un paragraphe de 4-5 lignes qui analyse le combo (Destination: ${destination}, Budget: ${budget}€, Style: ${style}). Montre au client que tu as compris ses attentes.
+
+POUR CHAQUE JOUR (JOUR 1, JOUR 2, etc.) :
+------------------------------------------
+TITRE : JOUR X - [NOM DE L'ÉTAPE]
+Une phrase courte qui résume l'ambiance de la journée.
+
+📍 L'ACTIVITÉ RNOW : [Nom précis de l'activité]. Détaille ici pourquoi c'est génial et ce qu'il va vivre.
+💰 RÉSERVATION : S'il faut réserver, mets [Réserver l'activité](Lien). Sinon, écris "Accès libre / Pas de réservation nécessaire".
+
+🏠 TON REFUGE : [Nom de l'hôtel/logement]. Explique l'atout unique du lieu et son adresse.
+💰 RÉSERVATION : [Réserver cet hôtel](Lien).
+
+🍴 LA TABLE RNOW : [Nom du restaurant]. Décris le plat signature et l'ambiance.
+💰 RÉSERVATION : [Réserver une table](Lien) (si applicable).
+
+🚕 TRANSPORT : Détaille ici les trajets du jour (Mode, Temps, Coût estimé).
+
+------------------------------------------
+
+5. LOGISTIQUE GLOBALE : Vols A/R, Assurances et Location de véhicule.
+6. LE CONSEIL D'INITIÉ : Un secret de local pour rendre le voyage inoubliable.
+
+CONSIGNES LIENS :
+- Vols : [Réserver mon vol](https://www.skyscanner.fr/transport/vols/${depart}/${destination}/${date})
+- Hôtels : [Réserver cet hôtel](https://www.booking.com/searchresults.html?ss=NOM_HOTEL+${destination})
+- Activités : [Réserver l'activité](https://www.getyourguide.fr/s/?q=NOM_ACTIVITE)
+- SI PAS DE RÉSERVATION : Ne mets pas de lien.
   `;
 
   let promptFinal = "";
 
   if (isRealSearch) {
-    promptFinal = `Tu es l'Expert-Concierge Rnow. REPRENDS cet itinéraire : "${ancienItineraire}".
-    MISSION : Pour chaque Jour, tu DOIS CONSEILLER un hôtel et une activité précise (ex: "Hôtel Azulik" ou "Ruines de Tulum").
-    CONSIGNE LIENS : Après chaque conseil, génère un LIEN DE RECHERCHE sous ce format Markdown : [Texte du bouton](Lien).
-    FORMATS DE LIENS :
-    - Vols : [Réserver mon vol](https://www.skyscanner.fr/transport/vols/${depart}/${destination}/${date})
-    - Hôtels : [Réserver cet hôtel](https://www.booking.com/searchresults.html?ss=NOM_DE_L_HOTEL+${destination})
-    - Activités : [Réserver l'activité](https://www.getyourguide.fr/s/?q=NOM_DE_L_ACTIVITE)
-    Remplace NOM_DE_L_HOTEL et NOM_DE_L_ACTIVITE par les noms réels que tu as choisis. ${instructionsRnow}`;
+    promptFinal = `TRANSFORMATION RÉELLE : Reprends cet itinéraire : "${ancienItineraire}".
+    Remplace toutes les estimations par des conseils PRÉCIS (Noms d'hôtels et restos réels) et génère les liens cliquables correspondants.
+    ${instructionsRnow}`;
   } else if (type === "initial") {
-    promptFinal = `Génère un itinéraire complet pour ${destination} (${duree} jours) le ${date}. 
-    Budget: ${budget}€. Ne fais pas de recherche web pour répondre instantanément.
-    Pour les prix, mets des ESTIMATIONS (ex: [Estimation 50€]).
+    promptFinal = `SIMULATION INITIALE : Crée le voyage de rêve pour ${destination} (${duree} jours) dès le ${date}. 
+    Utilise tes connaissances pour proposer des lieux iconiques. Mets des [Estimations] pour les prix.
     ${instructionsRnow}`;
   } else {
-    promptFinal = `Modifie selon le feedback "${feedback}" : "${ancienItineraire}". ${instructionsRnow}`;
+    promptFinal = `MODIFICATION : Applique ce changement "${feedback}" à l'itinéraire suivant : "${ancienItineraire}". 
+    ${instructionsRnow}`;
   }
 
   try {
-    // --- 🔍 DÉTECTION DYNAMIQUE DU MODÈLE (CETTE PARTIE EST CRUCIALE) ---
+    // --- DÉTECTION DYNAMIQUE DU MODÈLE ---
     const listResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
     const listData = await listResponse.json();
-    
-    // On prend le premier modèle qui contient "flash" ou le premier tout court
     let selectedModel = listData.models?.find(m => m.name.includes("flash")) || listData.models?.[0];
 
     if (!selectedModel) throw new Error("Aucun modèle trouvé.");
 
-    // L'URL doit utiliser le nom complet (ex: models/gemini-1.5-flash)
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/${selectedModel.name}:generateContent?key=${apiKey}`;
 
     const bodyPayload = {
@@ -71,13 +89,11 @@ RÈGLES : Date DD/MM/YYYY, une ligne d'espace entre chaque puce, UN emoji varié
 
     const data = await response.json();
 
-    if (data.error) {
-        return res.status(200).json({ text: "Erreur API Google : " + data.error.message });
-    }
+    if (data.error) return res.status(200).json({ text: "Erreur : " + data.error.message });
 
-    let textOutput = data.candidates?.[0]?.content?.parts?.[0]?.text || "L'IA n'a pas pu générer de texte. Vérifiez vos quotas ou votre clé API.";
+    let textOutput = data.candidates?.[0]?.content?.parts?.[0]?.text || "Erreur de génération.";
     
-    // Nettoyage Markdown
+    // Nettoyage Markdown (on garde le format [Texte](Lien) pour que ton HTML le transforme en bleu)
     textOutput = textOutput.replace(/\*\*/g, '').replace(/\*/g, '').replace(/#/g, '');
 
     res.status(200).json({ text: textOutput });
