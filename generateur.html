@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rnow | Personnalisation Premium</title>
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;900&display=swap');
         
@@ -17,88 +18,242 @@
             font-family: 'Poppins', sans-serif; 
             margin: 0; 
             color: #fff; 
-            background-color: var(--dark); /* --- FOND NOIR COMME L'ACCUEIL --- */
+            background-color: var(--dark); 
             min-height: 100vh; 
             display: flex; 
-            justify-content: center; 
-            padding: 120px 20px; 
+            flex-direction: column;
+            align-items: center;
+            padding: 140px 20px 80px 20px; 
             overflow-x: hidden;
+            box-sizing: border-box;
         }
 
-        /* --- TES EFFETS DE FLOU (CONSERVÉS) --- */
-        .bg-blur { position: fixed; width: 500px; height: 500px; border-radius: 50%; filter: blur(120px); opacity: 0.2; z-index: -1; pointer-events: none; }
-        .blur-1 { background: var(--primary); top: -150px; left: -150px; }
-        .blur-2 { background: var(--secondary); bottom: -150px; right: -150px; }
-        
-        /* --- NAVIGATION HARMONISÉE --- */
-        nav { 
-            display: flex; justify-content: space-between; align-items: center; 
-            padding: 25px 50px; background: rgba(0, 0, 0, 0.85); 
-            backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.1);
-            position: fixed; top: 0; left: 0; right: 0; z-index: 1000; box-sizing: border-box;
+        /* --- EFFETS DE FLOU ORGANIQUES --- */
+        .bg-blur { 
+            position: fixed; 
+            width: 600px; 
+            height: 600px; 
+            border-radius: 50%; 
+            filter: blur(140px); 
+            opacity: 0.22; 
+            z-index: -1; 
+            pointer-events: none; 
         }
-        .logo { font-weight: 900; font-size: 1.6rem; text-transform: uppercase; letter-spacing: -1.5px; color: white; }
+        
+        .blur-1 { 
+            background: var(--primary); 
+            top: -200px; 
+            left: -200px; 
+            animation: float-slow 20s infinite alternate ease-in-out; 
+        }
+        
+        .blur-2 { 
+            background: var(--secondary); 
+            bottom: -200px; 
+            right: -200px; 
+            animation: float-reverse 25s infinite alternate-reverse ease-in-out; 
+        }
+
+        @keyframes float-slow { 
+            0% { transform: translate(0, 0) scale(1); } 
+            100% { transform: translate(150px, 100px) scale(1.2); } 
+        }
+
+        @keyframes float-reverse { 
+            0% { transform: translate(0, 0) scale(1.1); } 
+            100% { transform: translate(-120px, -80px) scale(0.85); } 
+        }
+
+        /* --- NAVIGATION --- */
+        nav { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 30px 60px; 
+            background: rgba(0, 0, 0, 0.8); 
+            backdrop-filter: blur(25px); 
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            right: 0; 
+            z-index: 1000;
+            box-sizing: border-box;
+        }
+
+        .logo-link { text-decoration: none; color: inherit; transition: 0.3s; }
+        .logo-link:hover { opacity: 0.8; }
+        .logo { font-weight: 900; font-size: 1.8rem; text-transform: uppercase; letter-spacing: -2px; color: white; }
         .logo span { color: var(--primary); }
-        .nav-links a { text-decoration: none; color: white; font-weight: 700; margin-left: 30px; font-size: 0.85rem; text-transform: uppercase; transition: 0.3s; }
+        
+        .nav-links { display: flex; align-items: center; }
+        .nav-links a { 
+            text-decoration: none; 
+            color: white; 
+            font-weight: 700; 
+            margin-left: 35px; 
+            font-size: 0.85rem; 
+            text-transform: uppercase; 
+            transition: 0.4s ease; 
+        }
         .nav-links a:hover { color: var(--secondary); }
+
+        /* --- CONTENEUR --- */
+        .container { 
+            width: 100%; 
+            max-width: 800px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 45px; 
+            z-index: 10; 
+        }
         
-        .container { width: 100%; max-width: 750px; display: flex; flex-direction: column; gap: 40px; z-index: 10; }
-        
-        /* --- LES CASES (BLANC IMMACULÉ SUR FOND NOIR) --- */
+        /* --- BOX FORMULAIRE --- */
         .box { 
-            background: rgba(255, 255, 255, 1); 
-            border-radius: 40px; 
-            padding: 50px; 
-            box-shadow: 0 30px 100px rgba(126, 62, 240, 0.2); 
+            background: #ffffff; 
+            border-radius: 45px; 
+            padding: 60px; 
+            box-shadow: 0 40px 120px rgba(126, 62, 240, 0.25); 
             box-sizing: border-box; 
             color: #000;
+            transition: transform 0.4s ease;
         }
         
-        h1 { font-size: 2.2rem; font-weight: 900; text-align: center; text-transform: uppercase; margin-bottom: 40px; line-height: 1; color: #000; }
+        h1 { 
+            font-size: 2.5rem; 
+            font-weight: 900; 
+            text-align: center; 
+            text-transform: uppercase; 
+            margin-bottom: 45px; 
+            letter-spacing: -2px;
+            line-height: 1; 
+        }
         h1 span { color: var(--primary); }
         
-        .form-group { margin-bottom: 25px; width: 100%; }
-        label { display: block; font-weight: 800; margin-bottom: 10px; font-size: 0.75rem; text-transform: uppercase; color: #666; letter-spacing: 1px; }
+        .form-group { margin-bottom: 30px; width: 100%; }
+        label { 
+            display: block; 
+            font-weight: 800; 
+            margin-bottom: 12px; 
+            font-size: 0.75rem; 
+            text-transform: uppercase; 
+            color: #777; 
+            letter-spacing: 1.5px; 
+        }
         
         input, textarea, select { 
-            width: 100%; padding: 18px; border-radius: 16px; border: 2px solid #f0f0f0; 
-            font-family: inherit; font-size: 1rem; box-sizing: border-box; transition: 0.3s; background: #fafafa;
+            width: 100%; 
+            padding: 20px; 
+            border-radius: 18px; 
+            border: 2px solid #f4f4f4; 
+            font-family: inherit; 
+            font-size: 1.05rem; 
+            box-sizing: border-box; 
+            transition: all 0.3s ease; 
+            background: #fafafa;
         }
-        input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; background: #fff; }
+        input:focus, select:focus, textarea:focus { 
+            border-color: var(--primary); 
+            outline: none; 
+            background: #fff;
+            box-shadow: 0 0 0 6px rgba(126, 62, 240, 0.05);
+        }
         
-        .row { display: flex; gap: 20px; width: 100%; } 
+        .row { display: flex; gap: 25px; width: 100%; } 
         .row .form-group { flex: 1; min-width: 0; }
         
-        button { 
-            width: 100%; padding: 22px; border: none; border-radius: 20px; 
-            background: #000; color: #fff; font-weight: 900; 
-            text-transform: uppercase; cursor: pointer; transition: 0.4s; margin-top: 10px; 
+        .btn-main { 
+            width: 100%; 
+            padding: 24px; 
+            border: none; 
+            border-radius: 22px; 
+            background: #000; 
+            color: #fff; 
+            font-weight: 900; 
+            text-transform: uppercase; 
+            font-size: 1.1rem;
+            cursor: pointer; 
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            margin-top: 15px; 
         }
-        button:hover { background: var(--primary); transform: translateY(-5px); box-shadow: 0 15px 30px rgba(126, 62, 240, 0.4); }
+        .btn-main:hover { 
+            background: var(--primary); 
+            transform: translateY(-6px); 
+            box-shadow: 0 20px 40px rgba(126, 62, 240, 0.4); 
+        }
         
-        /* --- EMPILEMENT DES VOYAGES --- */
-        #voyages-container { display: flex; flex-direction: column; gap: 40px; }
+        /* --- ITINÉRAIRES --- */
+        #voyages-container { display: flex; flex-direction: column; gap: 45px; width: 100%; }
+        
         .itineraire-box { 
-            background: #fff; border-radius: 40px; padding: 55px; 
-            box-shadow: 0 40px 100px rgba(0,0,0,0.5); color: #000;
+            background: #fff; 
+            border-radius: 45px; 
+            padding: 65px; 
+            box-shadow: 0 50px 130px rgba(0,0,0,0.6); 
+            color: #000;
+            animation: fadeIn 0.8s ease forwards;
         }
-        .itineraire-box h2 { font-weight: 900; text-transform: uppercase; color: var(--primary); margin-top: 0; margin-bottom: 30px; font-size: 1.3rem; letter-spacing: -1px; }
-        .itineraire-content { color: #1a1a1a; font-size: 1.1rem; line-height: 2.6; white-space: pre-wrap; letter-spacing: -0.1px; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- ZONE DE FEEDBACK (ROSE/ROUGE) --- */
-        #modifs-zone { display: none; border: 2px solid var(--secondary); background: #fff; }
-        #modifs-zone h3 { font-weight: 900; text-transform: uppercase; font-size: 1.1rem; margin-bottom: 20px; color: var(--secondary); text-align: center; }
+        .itineraire-box h2 { 
+            font-weight: 900; 
+            text-transform: uppercase; 
+            color: var(--primary); 
+            margin-top: 0; 
+            margin-bottom: 35px; 
+            font-size: 1.5rem; 
+            letter-spacing: -1.5px; 
+        }
+        .itineraire-content { 
+            color: #1a1a1a; 
+            font-size: 1.15rem; 
+            line-height: 2.6; 
+            white-space: pre-wrap; 
+            letter-spacing: -0.2px; 
+        }
+
+        /* --- ZONE DE FEEDBACK --- */
+        #modifs-zone { 
+            display: none; 
+            border: 3px solid var(--secondary); 
+            background: #fff; 
+        }
+        #modifs-zone h3 { 
+            font-weight: 900; 
+            text-transform: uppercase; 
+            font-size: 1.2rem; 
+            margin-bottom: 25px; 
+            color: var(--secondary); 
+            text-align: center; 
+            letter-spacing: -1px;
+        }
         .btn-modif { background: var(--secondary); }
-        .btn-modif:hover { background: #d0356c; box-shadow: 0 15px 30px rgba(240, 62, 126, 0.4); }
+        .btn-modif:hover { 
+            background: #d0356c; 
+            box-shadow: 0 20px 40px rgba(240, 62, 126, 0.45); 
+        }
 
-        .loader { display: none; text-align: center; font-weight: 900; color: var(--primary); margin: 30px 0; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 3px; }
+        .loader { 
+            display: none; 
+            text-align: center; 
+            font-weight: 900; 
+            color: var(--primary); 
+            margin: 40px 0; 
+            text-transform: uppercase; 
+            font-size: 0.9rem; 
+            letter-spacing: 4px;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
     </style>
 </head>
 <body>
     <div class="bg-blur blur-1"></div><div class="bg-blur blur-2"></div>
     
     <nav>
-        <div class="logo">R<span>now</span>.</div>
+        <a href="index.html" class="logo-link">
+            <div class="logo">R<span>now</span>.</div>
+        </a>
         <div class="nav-links">
             <a href="index.html#vision">Notre Vision</a>
             <a href="index.html#about">À Propos</a>
@@ -111,18 +266,24 @@
             <h1>Crée ton <span>Voyage</span></h1>
             <form id="voyageForm">
                 <div class="row">
-                    <div class="form-group"><label>Départ</label><input type="text" id="depart" placeholder="Paris" required></div>
-                    <div class="form-group"><label>Destination</label><input type="text" id="destination" placeholder="Tulum" required></div>
+                    <div class="form-group"><label>Départ</label><input type="text" id="depart" placeholder="Ex: Paris" required></div>
+                    <div class="form-group"><label>Destination</label><input type="text" id="destination" placeholder="Ex: Tulum" required></div>
                 </div>
                 <div class="row">
                     <div class="form-group"><label>Date de départ</label><input type="date" id="dateDepart" required></div>
-                    <div class="form-group"><label>Durée (jours)</label><input type="number" id="duree" placeholder="5" required></div>
+                    <div class="form-group"><label>Durée (jours)</label><input type="number" id="duree" placeholder="7" required></div>
                 </div>
                 <div class="form-group"><label>Budget total par personne (€)</label><input type="number" id="budget" placeholder="1500" required></div>
-                <div class="form-group"><label>Rythme souhaité</label><select id="rythme"><option value="Détendu">Détendu</option><option value="Équilibré" selected>Équilibré</option><option value="Intense">Intense</option></select></div>
-                <div class="form-group"><label>Hébergement idéal</label><input type="text" id="hebergement" placeholder="Boutique hôtel colonial..."></div>
-                <div class="form-group"><label>Tes envies particulières</label><textarea id="styleVoyage" rows="3" placeholder="Gastronomie, cenotes cachés..."></textarea></div>
-                <button type="submit" id="btnGenerer">Générer mon voyage ✨</button>
+                <div class="form-group"><label>Rythme souhaité</label>
+                    <select id="rythme">
+                        <option value="Détendu">Détendu (Repos & Farniente)</option>
+                        <option value="Équilibré" selected>Équilibré (Mix découverte/repos)</option>
+                        <option value="Intense">Intense (Exploration maximale)</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>Hébergement idéal</label><input type="text" id="hebergement" placeholder="Ex: Boutique hôtel avec rooftop..."></div>
+                <div class="form-group"><label>Tes envies particulières</label><textarea id="styleVoyage" rows="3" placeholder="Ex: Surf au lever du soleil, gastronomie locale, cenotes cachés..."></textarea></div>
+                <button type="submit" id="btnGenerer" class="btn-main">Générer mon voyage ✨</button>
             </form>
             <div id="loader-initial" class="loader">Rnow sculpte votre aventure... 🌴</div>
         </div>
@@ -131,8 +292,8 @@
 
         <div id="modifs-zone" class="box">
             <h3>Une modification ? Dis-moi ce que tu aimes ou pas :</h3>
-            <textarea id="feedbackClient" rows="3" placeholder="Ex: Change l'hôtel du jour 2 pour quelque chose de plus sauvage..."></textarea>
-            <button id="btnAffiner" class="btn-modif">Affiner mon itinéraire ⚡</button>
+            <textarea id="feedbackClient" rows="4" placeholder="Ex: L'hôtel est trop moderne, je préfèrerais un style colonial. Enlève la visite du musée le jour 3..."></textarea>
+            <button id="btnAffiner" class="btn-main btn-modif">Affiner mon itinéraire ⚡</button>
             <div id="loader-modif" class="loader">Rnow ajuste votre voyage... ✨</div>
         </div>
     </div>
@@ -185,10 +346,16 @@
         document.getElementById('btnAffiner').addEventListener('click', async function() {
             const feedback = document.getElementById('feedbackClient').value;
             if (!feedback) return alert("Dis-moi ce que tu veux changer !");
+            
             const loader = document.getElementById('loader-modif');
             loader.style.display = 'block';
 
-            const payload = { type: "correction", ancienItineraire: dernierItineraire, feedback: feedback };
+            const payload = { 
+                type: "correction", 
+                ancienItineraire: dernierItineraire, 
+                feedback: feedback 
+            };
+            
             const data = await appelerAPI(payload);
             if (data.text) {
                 dernierItineraire = data.text;
