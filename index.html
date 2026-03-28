@@ -3,341 +3,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rnow | L'Agence de Voyage Nouvelle Génération</title>
-    
-    <script src="https://unpkg.com/scrollreveal"></script>
-    
+    <title>Rnow | L'Agence de Voyage IA</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;900&display=swap');
         
-        :root { 
-            --primary: #7e3ef0; 
-            --secondary: #f03e7e; 
-            --dark: #000000; 
-        }
+        :root { --primary: #7e3ef0; --secondary: #f03e7e; --dark: #000000; }
 
         body { 
             font-family: 'Poppins', sans-serif; 
             margin: 0; 
             color: #fff; 
             background-color: var(--dark); 
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            box-sizing: border-box; 
             overflow-x: hidden;
-            scroll-behavior: smooth;
         }
 
-        /* --- TES EFFETS DE FLOU (VERSION ULTRA DÉTAILLÉE) --- */
-        .bg-blur { 
-            position: fixed; 
-            width: 650px; 
-            height: 650px; 
-            border-radius: 50%; 
-            filter: blur(130px); 
-            opacity: 0.25; 
-            z-index: -1; 
-            pointer-events: none; 
-        }
-        
-        .blur-1 { 
-            background: var(--primary); 
-            top: -250px; 
-            left: -250px; 
-            animation: float-slow 18s infinite alternate ease-in-out; 
-        }
-        
-        .blur-2 { 
-            background: var(--secondary); 
-            bottom: -250px; 
-            right: -250px; 
-            animation: float-reverse 22s infinite alternate-reverse ease-in-out; 
-        }
+        /* Blurs adaptés au mobile */
+        .bg-blur { position: fixed; width: 300px; height: 300px; border-radius: 50%; filter: blur(80px); opacity: 0.15; z-index: -1; pointer-events: none; }
+        .blur-1 { background: var(--primary); top: -100px; left: -100px; }
+        .blur-2 { background: var(--secondary); bottom: -100px; right: -100px; }
 
-        @keyframes float-slow { 
-            0% { transform: translate(0, 0) scale(1); } 
-            100% { transform: translate(120px, 80px) scale(1.15); } 
-        }
-
-        @keyframes float-reverse { 
-            0% { transform: translate(0, 0) scale(1.1); } 
-            100% { transform: translate(-100px, -60px) scale(0.9); } 
-        }
-
-        /* --- NAVIGATION --- */
+        /* Navigation Responsive */
         nav { 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
-            padding: 30px 60px; 
-            background: rgba(0, 0, 0, 0.75); 
-            backdrop-filter: blur(20px); 
-            border-bottom: 1px solid rgba(255,255,255,0.08);
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            right: 0; 
-            z-index: 1000;
+            padding: 15px 25px; 
+            background: rgba(0, 0, 0, 0.9); 
+            backdrop-filter: blur(15px); 
+            border-bottom: 1px solid rgba(255,255,255,0.1); 
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000; 
             box-sizing: border-box;
         }
-
-        /* LOGO HOME LINK */
-        .logo-link { 
-            text-decoration: none; 
-            color: inherit; 
-            transition: transform 0.3s ease;
-        }
-        .logo-link:hover { transform: scale(1.05); }
-
-        .logo { 
-            font-weight: 900; 
-            font-size: 1.8rem; 
-            text-transform: uppercase; 
-            letter-spacing: -2px; 
-        }
+        .logo { font-weight: 900; font-size: 1.4rem; text-transform: uppercase; color: white; text-decoration: none; }
         .logo span { color: var(--primary); }
+        .nav-links a { text-decoration: none; color: white; font-weight: 700; margin-left: 15px; font-size: 0.75rem; text-transform: uppercase; }
 
-        .nav-links { display: flex; align-items: center; }
-        .nav-links a { 
-            text-decoration: none; 
-            color: white; 
-            font-weight: 700; 
-            margin-left: 35px; 
-            font-size: 0.85rem; 
-            text-transform: uppercase; 
-            letter-spacing: 1px;
-            transition: 0.3s ease; 
-        }
-        .nav-links a:hover { color: var(--secondary); }
-
-        /* --- STRUCTURE DES SECTIONS --- */
-        section { 
-            min-height: 100vh; 
+        /* Hero Section */
+        .hero { 
             display: flex; 
             flex-direction: column; 
-            justify-content: center; 
             align-items: center; 
-            padding: 120px 12%; 
+            justify-content: center; 
             text-align: center; 
-            box-sizing: border-box; 
-            position: relative;
+            padding: 160px 20px 80px 20px; 
+            width: 100%; 
+            max-width: 1000px; 
+            box-sizing: border-box;
         }
+        h1 { font-size: 3rem; font-weight: 900; text-transform: uppercase; line-height: 1.1; margin-bottom: 20px; }
+        h1 span { color: var(--primary); }
+        p.subtitle { font-size: 1.1rem; opacity: 0.8; max-width: 600px; line-height: 1.6; margin-bottom: 40px; }
 
-        /* --- HERO SECTION --- */
-        .hero h1 { 
-            font-size: clamp(3.8rem, 13vw, 8rem); 
-            font-weight: 900; 
-            line-height: 0.82; 
-            margin: 0; 
-            text-transform: uppercase; 
-            letter-spacing: -6px; 
-        }
-        .hero h1 span { 
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .hero p { 
-            font-size: 1.3rem; 
-            max-width: 700px; 
-            margin: 45px 0; 
-            color: rgba(255,255,255,0.75); 
-            line-height: 1.7; 
-            font-weight: 400;
-        }
-
-        .cta-main { 
-            padding: 24px 55px; 
-            background: #fff; 
-            color: #000; 
-            border-radius: 65px; 
-            font-weight: 900; 
-            text-decoration: none; 
-            text-transform: uppercase; 
-            font-size: 1.05rem;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            box-shadow: 0 15px 45px rgba(126, 62, 240, 0.35);
-        }
-        .cta-main:hover { 
-            transform: translateY(-8px); 
+        /* Boutons */
+        .btn-cta { 
+            padding: 20px 45px; 
             background: var(--primary); 
             color: #fff; 
-            box-shadow: 0 20px 50px rgba(126, 62, 240, 0.5);
-        }
-
-        /* --- SECTION VISION --- */
-        .vision-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); 
-            gap: 35px; 
-            margin-top: 80px; 
-            width: 100%; 
-        }
-        .vision-card { 
-            background: rgba(255,255,255,0.04); 
-            padding: 70px 45px; 
-            border-radius: 45px; 
-            border: 1px solid rgba(255,255,255,0.1); 
-            text-align: left;
-            transition: all 0.5s ease;
-        }
-        .vision-card:hover { 
-            background: rgba(255,255,255,0.08); 
-            border-color: var(--primary);
-            transform: translateY(-15px);
-        }
-        .vision-card h3 { 
-            font-size: 1.7rem; 
-            margin-bottom: 25px; 
-            text-transform: uppercase; 
-            color: var(--primary); 
-            letter-spacing: -1px;
-        }
-        .vision-card p { 
-            color: rgba(255,255,255,0.65); 
-            line-height: 1.8; 
-            font-size: 1.05rem; 
-            margin: 0;
-        }
-
-        /* --- SECTION À PROPOS (TON TEXTE DÉDIÉ) --- */
-        .about-section { 
-            background: #ffffff; 
-            color: #000; 
-            border-radius: 90px 90px 0 0; 
-            padding: 150px 12%;
-            text-align: left;
-            align-items: flex-start;
-        }
-        .about-section h2 { 
-            font-size: clamp(3rem, 8vw, 4.5rem); 
+            text-decoration: none; 
             font-weight: 900; 
+            border-radius: 20px; 
             text-transform: uppercase; 
-            margin-bottom: 60px; 
-            letter-spacing: -4px; 
-            line-height: 0.9;
+            transition: 0.4s; 
+            box-shadow: 0 15px 40px rgba(126, 62, 240, 0.4); 
         }
-        .about-content { 
-            max-width: 950px; 
-            font-size: 1.5rem; 
-            line-height: 1.9; 
-            font-weight: 500; 
-            color: #222;
-        }
-        .about-content b { 
-            color: var(--primary); 
-            font-weight: 900; 
-        }
+        .btn-cta:hover { transform: translateY(-5px); background: #6a34cc; }
 
-        .cta-dark {
-            display: inline-block;
-            margin-top: 70px;
-            padding: 24px 55px;
-            background: #000;
-            color: #fff;
-            border-radius: 65px;
-            font-weight: 900;
-            text-decoration: none;
-            text-transform: uppercase;
-            transition: 0.4s;
+        /* Sections de contenu */
+        section { 
+            width: 90%; 
+            max-width: 800px; 
+            background: rgba(255, 255, 255, 0.03); 
+            border: 1px solid rgba(255,255,255,0.08); 
+            border-radius: 40px; 
+            padding: 50px; 
+            margin-bottom: 40px; 
+            box-sizing: border-box; 
         }
-        .cta-dark:hover {
-            background: var(--primary);
-            transform: translateY(-5px);
-        }
+        h2 { font-weight: 900; text-transform: uppercase; font-size: 1.8rem; margin-bottom: 20px; color: var(--secondary); }
+        .content-text { line-height: 1.8; opacity: 0.9; font-size: 1.05rem; }
 
-        /* --- FOOTER --- */
-        footer { 
-            background: #fff; 
-            color: #000; 
-            padding: 80px 60px; 
-            text-align: center; 
-            font-size: 0.85rem; 
-            font-weight: 700; 
-            text-transform: uppercase; 
-            letter-spacing: 3px;
-            opacity: 0.5;
-            border-top: 1px solid #eee;
-        }
+        /* Footer */
+        footer { padding: 40px; opacity: 0.4; font-size: 0.8rem; text-transform: uppercase; font-weight: 700; }
 
+        /* --- MEDIA QUERIES MOBILE --- */
+        @media (max-width: 768px) {
+            h1 { font-size: 2.2rem; }
+            .nav-links { display: none; } /* On épure le menu sur mobile */
+            section { padding: 30px 20px; border-radius: 30px; }
+            h2 { font-size: 1.4rem; }
+            .content-text { font-size: 0.95rem; }
+            .hero { padding-top: 120px; }
+        }
     </style>
 </head>
 <body>
-
-    <div class="bg-blur blur-1"></div>
-    <div class="bg-blur blur-2"></div>
-
+    <div class="bg-blur blur-1"></div><div class="bg-blur blur-2"></div>
+    
     <nav>
-        <a href="index.html" class="logo-link">
-            <div class="logo">R<span>now</span>.</div>
-        </a>
+        <a href="index.html" class="logo">R<span>now</span>.</a>
         <div class="nav-links">
-            <a href="#vision">Notre Vision</a>
+            <a href="#vision">Vision</a>
             <a href="#about">À Propos</a>
             <a href="generateur.html" style="color: var(--secondary);">Lancer l'IA</a>
         </div>
     </nav>
 
-    <section class="hero">
-        <h1>Voyagez<br><span>Plus Loin</span></h1>
-        <p>L'agence de voyage en ligne boostée par l'intelligence artificielle qui répond à chaque besoin, chaque envie, et chaque façon de voyager pour créer un itinéraire <b>100% sur-mesure</b>.</p>
-        <a href="generateur.html" class="cta-main">Concevoir mon voyage</a>
-    </section>
+    <div class="hero">
+        <h1>Voyagez <span>Maintenant.</span><br>Payez le juste prix.</h1>
+        <p class="subtitle">L'intelligence artificielle au service de vos aventures. Des itinéraires experts, des liens réels, aucun compromis.</p>
+        <a href="generateur.html" class="btn-cta">Démarrer l'expérience ✨</a>
+    </div>
 
     <section id="vision">
-        <h2 style="font-size: 3rem; text-transform: uppercase; font-weight: 900; letter-spacing: -2px; margin-bottom: 20px;">L'IA au service de <span style="color:var(--primary)">l'émotion</span></h2>
-        <div class="vision-grid">
-            <div class="vision-card">
-                <h3>Personnalisation Radicale</h3>
-                <p>Oubliez les catalogues préconçus. Notre IA analyse vos passions profondes pour sculpter un voyage qui ne ressemble à aucun autre sur terre.</p>
-            </div>
-            <div class="vision-card">
-                <h3>Gain de temps Absolu</h3>
-                <p>Nous condensons des semaines de recherches épuisantes en quelques secondes. Tout ce dont vous avez besoin est réuni dans un seul carnet intelligent.</p>
-            </div>
-            <div class="vision-card">
-                <h3>Expertise Augmentée</h3>
-                <p>Bénéficiez d'une agence disponible 24/7 qui connaît chaque coin de rue, chaque tarif en temps réel et chaque adresse secrète hors des sentiers battus.</p>
-            </div>
-        </div>
+        <h2>Notre Vision</h2>
+        <p class="content-text">
+            Chez Rnow, nous croyons que la planification d'un voyage ne devrait pas être une corvée. Nous utilisons la puissance de l'IA pour analyser des milliers de possibilités et vous offrir le carnet de voyage parfait en moins de 10 secondes.
+        </p>
     </section>
 
-    <section id="about" class="about-section">
-        <h2>À Propos de Rnow</h2>
-        <div class="about-content">
-            Rnow est une <b>agence de voyage boostée par l'IA</b> née d'une vision simple : organiser ses vacances doit rester une partie exaltante de l'aventure, mais sans la complexité logistique inutile.
-            <br><br>
-            Nous voulons <b>simplifier l'expérience au maximum</b> tout en la rendant totalement unique et humaine. 
-            Chez Rnow, nous vous accompagnons dans la conception de votre rêve, mais nous ne réservons pas votre place. 
-            <br><br>
-            <b>Pourquoi ce choix ?</b> Pour vous laisser le contrôle total sur votre budget, la liberté de choisir vos options de dernière minute et la garantie de payer le prix réel, sans aucune commission intermédiaire. Nous fournissons l'intelligence et la structure, vous vivez l'aventure.
-        </div>
-        <a href="generateur.html" class="cta-dark">Lancer le générateur</a>
+    <section id="about">
+        <h2>À Propos</h2>
+        <p class="content-text">
+            Plus qu'un simple générateur, Rnow est votre concierge personnel. Que vous soyez backpacker ou amateur de luxe, notre algorithme s'adapte à votre budget pour dénicher les pépites locales et les liens de réservation les plus fiables.
+        </p>
     </section>
 
-    <footer>
-        &copy; 2026 Rnow | L'intelligence artificielle au service de votre liberté.
-    </footer>
-
-    <script>
-        // --- CONFIGURATION SCROLLREVEAL (ANIMATIONS FLUIDES) ---
-        const sr = ScrollReveal({
-            distance: '80px',
-            duration: 2500,
-            delay: 400,
-            reset: false
-        });
-
-        sr.reveal('.hero h1', { origin: 'top', delay: 200 });
-        sr.reveal('.hero p', { origin: 'bottom', delay: 500 });
-        sr.reveal('.cta-main', { origin: 'bottom', delay: 800, distance: '30px' });
-        
-        sr.reveal('.vision-card', { 
-            interval: 300, 
-            origin: 'bottom',
-            scale: 0.9,
-            distance: '50px'
-        });
-
-        sr.reveal('.about-section h2', { origin: 'left', delay: 200 });
-        sr.reveal('.about-content', { origin: 'bottom', delay: 500 });
-    </script>
+    <footer>&copy; 2026 Rnow - Agence de voyage augmentée</footer>
 </body>
 </html>
