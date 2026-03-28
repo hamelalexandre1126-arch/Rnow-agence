@@ -3,64 +3,194 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rnow | L'Agence de Voyage Instantanée</title>
+    <title>Rnow | L'Expert Voyage Instantané</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap');
         
-        body { font-family: 'Poppins', sans-serif; background: #fcfcfc; margin: 0; color: #000; overflow-x: hidden; }
-        
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            margin: 0; 
+            color: #000; 
+            overflow-x: hidden;
+            /* --- FOND SUBTIL AVEC GRADIENT --- */
+            background: radial-gradient(circle at 10% 10%, rgba(126, 62, 240, 0.08) 0%, rgba(252, 252, 252, 1) 50%, rgba(240, 62, 126, 0.05) 100%);
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* --- FORMES DE DESIGN EN ARRIÈRE-PLAN --- */
+        .bg-blur {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.3;
+            z-index: -1;
+        }
+        .blur-1 { background: #7e3ef0; top: -100px; left: -100px; }
+        .blur-2 { background: #f03e7e; bottom: -150px; right: -150px; }
+
         /* --- NAVIGATION --- */
-        nav { display: flex; justify-content: space-between; align-items: center; padding: 30px 50px; }
-        .logo { font-weight: 900; font-size: 1.5rem; text-transform: uppercase; letter-spacing: -1px; }
+        nav { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 20px 50px; 
+            background: rgba(255, 255, 255, 0.7); /* Effet verre */
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+        }
+        .logo { font-weight: 900; font-size: 1.6rem; text-transform: uppercase; letter-spacing: -1.5px; }
         .logo span { color: #7e3ef0; }
-        .nav-links a { text-decoration: none; color: #000; font-weight: 700; margin-left: 30px; font-size: 0.9rem; text-transform: uppercase; }
+        .nav-links a { 
+            text-decoration: none; 
+            color: #222; 
+            font-weight: 700; 
+            margin-left: 30px; 
+            font-size: 0.9rem; 
+            text-transform: uppercase;
+            transition: 0.3s;
+        }
+        .nav-links a:hover { color: #f03e7e; }
 
         /* --- HERO SECTION --- */
-        .hero { height: 80vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 0 20px; }
-        .hero h1 { font-size: 5.5rem; font-weight: 900; line-height: 0.85; margin: 0; letter-spacing: -4px; text-transform: uppercase; }
-        .hero h1 span { background: linear-gradient(90deg, #f03e7e, #7e3ef0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .hero p { max-width: 600px; font-size: 1.2rem; margin: 30px 0; color: #555; line-height: 1.6; }
+        .hero { 
+            height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            text-align: center; 
+            padding: 0 20px; 
+            margin-top: 60px; /* Espace pour la nav fixe */
+        }
+        .hero h1 { 
+            font-size: 6rem; 
+            font-weight: 900; 
+            line-height: 0.85; 
+            margin: 0; 
+            letter-spacing: -5px; 
+            text-transform: uppercase;
+            text-shadow: 0 5px 15px rgba(0,0,0,0.03); /* Petite ombre portée sur le texte */
+        }
+        .hero h1 span { 
+            background: linear-gradient(90deg, #f03e7e, #7e3ef0); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+        }
+        .hero p { 
+            max-width: 650px; 
+            font-size: 1.25rem; 
+            margin: 35px 0 50px 0; 
+            color: #444; 
+            line-height: 1.7; 
+        }
         
         .btn-main { 
-            padding: 22px 45px; background: #000; color: #fff; text-decoration: none; 
-            border-radius: 50px; font-weight: 800; text-transform: uppercase; 
-            transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 22px 50px; 
+            background: #000; 
+            color: #fff; 
+            text-decoration: none; 
+            border-radius: 50px; 
+            font-weight: 800; 
+            text-transform: uppercase; 
+            transition: all 0.4s ease; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            position: relative;
+            overflow: hidden;
         }
-        .btn-main:hover { transform: translateY(-3px); background: #1a1a1a; box-shadow: 0 15px 40px rgba(126, 62, 240, 0.3); }
+        /* Effet de brillance au survol */
+        .btn-main::before {
+            content: '';
+            position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(120deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: all 0.5s;
+        }
+        .btn-main:hover::before { left: 100%; }
+        
+        .btn-main:hover { 
+            transform: translateY(-4px); 
+            background: #1a1a1a; 
+            box-shadow: 0 15px 40px rgba(126, 62, 240, 0.4); 
+        }
 
-        /* --- SECTION CONCEPT --- */
-        .concept { padding: 100px 50px; background: #fff; display: flex; gap: 50px; align-items: center; flex-wrap: wrap; }
-        .card { flex: 1; min-width: 250px; padding: 40px; border-radius: 20px; background: #fafafa; border: 1px solid #eee; }
-        .card h3 { font-weight: 900; text-transform: uppercase; margin-top: 0; color: #7e3ef0; }
+        /* --- SECTION CONCEPT AVEC RELIEF --- */
+        .concept { 
+            padding: 120px 50px; 
+            display: flex; 
+            gap: 40px; 
+            justify-content: center;
+            align-items: center; 
+            flex-wrap: wrap; 
+            position: relative;
+        }
+        .card { 
+            flex: 1; 
+            min-width: 280px; 
+            max-width: 350px;
+            padding: 45px; 
+            border-radius: 24px; 
+            background: rgba(255, 255, 255, 0.6); /* Effet verre */
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.06); /* Ombre douce pour le relief */
+            transition: 0.4s ease;
+        }
+        .card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 50px rgba(126, 62, 240, 0.1);
+            border-color: rgba(126, 62, 240, 0.2);
+        }
+        .card h3 { 
+            font-weight: 900; 
+            text-transform: uppercase; 
+            margin-top: 0; 
+            color: #7e3ef0; 
+            font-size: 1.3rem;
+            letter-spacing: -0.5px;
+        }
+        .card p {
+            font-size: 1rem;
+            color: #333;
+            line-height: 1.6;
+            margin-bottom: 0;
+        }
     </style>
 </head>
 <body>
+
+    <div class="bg-blur blur-1"></div>
+    <div class="bg-blur blur-2"></div>
 
     <nav>
         <div class="logo">R<span>now</span>.</div>
         <div class="nav-links">
             <a href="index.html">Accueil</a>
-            <a href="generateur.html" style="color: #7e3ef0;">Générateur</a>
+            <a href="generateur.html" style="color: #f03e7e; font-weight: 900;">Générateur</a>
         </div>
     </nav>
 
     <section class="hero">
         <h1>Travel<br><span>Right Now</span></h1>
-        <p>Arrêtez de planifier pendant des mois. Notre IA d'élite conçoit votre itinéraire de luxe sur-mesure en 30 secondes chrono.</p>
+        <p>Notre IA d'élite conçoit votre itinéraire de luxe sur-mesure en 30 secondes chrono.</p>
         <a href="generateur.html" class="btn-main">Créer mon voyage</a>
     </section>
 
     <section class="concept">
         <div class="card">
-            <h3>Expertise IA</h3>
-            <p>Gemini 1.5 analyse les prix réels des vols et hôtels pour vous offrir la meilleure expérience possible.</p>
+            <h3>Expertise IA 📍</h3>
+            <p>Gemini analyse les prix réels des vols et hôtels pour vous offrir la meilleure expérience possible.</p>
         </div>
         <div class="card">
-            <h3>Clé en main</h3>
+            <h3>Clé en main 🔑</h3>
             <p>Du vol au restaurant local secret, tout est inclus dans votre carnet de voyage Rnow.</p>
         </div>
         <div class="card">
-            <h3>Liberté</h3>
+            <h3>Liberté 🌊</h3>
             <p>Choisissez votre rythme, votre budget et votre style. On s'occupe du reste.</p>
         </div>
     </section>
