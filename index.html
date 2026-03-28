@@ -3,246 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rnow | Voyagez Maintenant. Payez le juste prix.</title>
+    <title>Rnow | Voyagez Maintenant</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;900&display=swap');
-        
-        :root { 
-            --primary: #7e3ef0; 
-            --secondary: #f03e7e; 
-            --dark: #000000; 
-            --white: #ffffff;
-            --glass: rgba(255, 255, 255, 0.03);
-            --border: rgba(255, 255, 255, 0.08);
-        }
-
-        body { 
-            font-family: 'Poppins', sans-serif; 
-            margin: 0; 
-            color: var(--white); 
-            background-color: var(--dark); 
-            min-height: 100vh; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            box-sizing: border-box; 
-            overflow-x: hidden; /* Empêche le scroll horizontal */
-        }
-
-        /* --- 🎆 BLURS DE FOND DYNAMIQUES (LE MOUVEMENT) --- */
-        .bg-blur { 
-            position: fixed; 
-            border-radius: 50%; 
-            filter: blur(120px); 
-            opacity: 0.25; 
-            z-index: -1; 
-            pointer-events: none; 
-            animation: float 15s infinite alternate ease-in-out;
-        }
-        .blur-1 { 
-            background: var(--primary); 
-            width: 500px; height: 500px; 
-            top: -150px; left: -150px; 
-        }
-        .blur-2 { 
-            background: var(--secondary); 
-            width: 400px; height: 400px; 
-            bottom: -100px; right: -100px; 
-            animation-delay: -5s;
-        }
-        
-        /* Animation de flottaison pour les blurs */
-        @keyframes float {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(50px, 50px); }
-        }
-
-        /* --- 🖥️ NAVIGATION PREMIUM --- */
-        nav { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            padding: 20px 50px; 
-            background: rgba(0, 0, 0, 0.8); 
-            backdrop-filter: blur(20px); 
-            border-bottom: 1px solid var(--border); 
-            position: fixed; top: 0; left: 0; right: 0; z-index: 1000; 
-            box-sizing: border-box;
-        }
-        .logo { font-weight: 900; font-size: 1.6rem; text-transform: uppercase; color: var(--white); text-decoration: none; }
-        .logo span { color: var(--primary); }
-        .nav-links { display: flex; align-items: center; }
-        .nav-links a { 
-            text-decoration: none; 
-            color: var(--white); 
-            font-weight: 700; 
-            margin-left: 30px; 
-            font-size: 0.8rem; 
-            text-transform: uppercase; 
-            transition: 0.3s;
-            opacity: 0.8;
-        }
-        .nav-links a:hover { opacity: 1; color: var(--primary); }
-        .nav-links a.btn-nav-cta {
-            color: var(--secondary);
-            border: 2px solid var(--secondary);
-            padding: 10px 20px;
-            border-radius: 12px;
-            margin-left: 30px;
-        }
-        .nav-links a.btn-nav-cta:hover { background: var(--secondary); color: var(--white); }
-
-        /* --- 🚀 HERO SECTION (PREMIÈRE IMPRESSION) --- */
-        .hero { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            text-align: center; 
-            padding: 180px 20px 100px 20px; 
-            width: 100%; 
-            max-width: 1000px; 
-            box-sizing: border-box;
-            animation: fadeIn 1s ease-out;
-        }
-        h1 { 
-            font-size: 3.5rem; 
-            font-weight: 900; 
-            text-transform: uppercase; 
-            line-height: 1.05; 
-            margin-bottom: 25px; 
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap');
+        :root { --primary: #7e3ef0; --secondary: #f03e7e; }
+        body { font-family: 'Poppins', sans-serif; margin: 0; background: #000; color: #fff; overflow-x: hidden; }
+        .hero { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; }
+        h1 { font-size: 4rem; font-weight: 900; text-transform: uppercase; margin: 0; }
         h1 span { color: var(--primary); }
-        p.subtitle { 
-            font-size: 1.2rem; 
-            opacity: 0.8; 
-            max-width: 650px; 
-            line-height: 1.7; 
-            margin-bottom: 50px; 
+        .btn-cta { margin-top: 40px; padding: 20px 50px; background: var(--primary); color: #fff; text-decoration: none; border-radius: 20px; font-weight: 900; text-transform: uppercase; transition: 0.4s; box-shadow: 0 20px 50px rgba(126,62,240,0.5); }
+        
+        /* Expérience de Scroll : Sections Blanches Dynamiques */
+        .scroll-section { padding: 100px 20px; display: flex; justify-content: center; }
+        .reveal-card { 
+            background: #fff; color: #000; padding: 80px; border-radius: 50px; max-width: 800px; 
+            transform: translateY(100px) scale(0.9); opacity: 0; transition: all 0.8s cubic-bezier(0.17, 0.67, 0.83, 0.67);
         }
+        .reveal-card.active { transform: translateY(0) scale(1); opacity: 1; }
+        h2 { font-size: 2.5rem; font-weight: 900; text-transform: uppercase; margin-bottom: 20px; color: var(--primary); }
+        p { font-size: 1.2rem; line-height: 1.8; }
 
-        /* Bouton Principal CTA */
-        .btn-cta { 
-            padding: 22px 55px; 
-            background: var(--primary); 
-            color: var(--white); 
-            text-decoration: none; 
-            font-weight: 900; 
-            border-radius: 22px; 
-            text-transform: uppercase; 
-            transition: 0.4s; 
-            box-shadow: 0 20px 50px rgba(126, 62, 240, 0.5); 
-            font-size: 1rem;
-        }
-        .btn-cta:hover { transform: translateY(-7px) scale(1.02); background: #6a34cc; }
-
-        /* --- 🧊 SECTIONS GLASSMORPHISM (VISION, À PROPOS) --- */
-        .content-container {
-            width: 100%;
-            max-width: 850px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 0 20px 80px 20px;
-            box-sizing: border-box;
-            gap: 50px;
-        }
-        section { 
-            width: 100%; 
-            background: var(--glass); 
-            backdrop-filter: blur(15px);
-            border: 1px solid var(--border); 
-            border-radius: 45px; 
-            padding: 60px; 
-            box-sizing: border-box; 
-            transition: 0.4s;
-            opacity: 0; /* Pour l'animation d'apparition */
-            animation: fadeInSection 1s ease forwards;
-        }
-        section:hover { 
-            transform: translateY(-5px); 
-            border-color: rgba(126, 62, 240, 0.3);
-            background: rgba(255, 255, 255, 0.05);
-        }
-        h2 { 
-            font-weight: 900; 
-            text-transform: uppercase; 
-            font-size: 2rem; 
-            margin-bottom: 25px; 
-            color: var(--white); 
-        }
-        h2 span { color: var(--secondary); }
-        .content-text { 
-            line-height: 1.9; 
-            opacity: 0.9; 
-            font-size: 1.1rem; 
-            color: var(--white);
-        }
-
-        /* --- 🏆 FOOTER --- */
-        footer { padding: 50px 20px; opacity: 0.3; font-size: 0.85rem; text-transform: uppercase; font-weight: 700; text-align: center; }
-
-        /* --- ✨ ANIMATIONS --- */
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeInSection { 
-            from { opacity: 0; transform: translateY(40px); } 
-            to { opacity: 1; transform: translateY(0); } 
-        }
-
-        /* --- 📱 MEDIA QUERIES MOBILE & TABLETTE --- */
-        @media (max-width: 900px) {
-            h1 { font-size: 2.8rem; }
-            nav { padding: 20px 30px; }
-            section { padding: 45px; border-radius: 35px; }
-        }
-
-        @media (max-width: 600px) {
-            h1 { font-size: 2.1rem; }
-            p.subtitle { font-size: 1rem; }
-            .nav-links { display: none; } /* On cache les liens secondaires sur mobile pour le logo */
-            .box, section { padding: 35px 25px; border-radius: 30px; }
-            h2 { font-size: 1.5rem; }
-            .content-text { font-size: 1rem; }
-            .hero { padding-top: 140px; }
-            .btn-cta { font-size: 0.9rem; padding: 20px 40px; }
-            .bg-blur { width: 300px; height: 300px; filter: blur(80px); }
-        }
+        @media (max-width: 600px) { h1 { font-size: 2.5rem; } .reveal-card { padding: 40px 25px; border-radius: 30px; } }
     </style>
 </head>
 <body>
-    <div class="bg-blur blur-1"></div><div class="bg-blur blur-2"></div>
-    
-    <nav>
-        <a href="index.html" class="logo">R<span>now</span>.</a>
-        <div class="nav-links">
-            <a href="#vision">Vision</a>
-            <a href="#about">À Propos</a>
-            <a href="generateur.html" class="btn-nav-cta">Lancer l'IA ⚡</a>
-        </div>
-    </nav>
-
     <div class="hero">
-        <h1>Voyagez <span>Maintenant.</span><br>Payez le juste prix.</h1>
-        <p class="subtitle">L'intelligence artificielle experte qui crée votre itinéraire parfait avec de vrais liens de réservation, sans ramer.</p>
-        <a href="generateur.html" class="btn-cta">Démarrer l'expérience ✨</a>
+        <h1>Voyagez <span>Maintenant.</span></h1>
+        <p style="opacity:0.7; font-size:1.2rem; margin-top:20px;">L'intelligence artificielle qui crée votre réalité.</p>
+        <a href="generateur.html" class="btn-cta">Lancer l'expérience ✨</a>
     </div>
 
-    <div class="content-container">
-        <section id="vision" style="animation-delay: 0.2s;">
+    <div class="scroll-section">
+        <div class="reveal-card">
             <h2>Notre <span>Vision</span></h2>
-            <p class="content-text">
-                Chez Rnow, nous pensons que la planification d'un voyage ne doit pas être une corvée. Nous utilisons la puissance de l'IA pour analyser des milliers de possibilités et vous offrir le carnet de voyage expert parfait, en moins de 10 secondes. Plus besoin de chercher pendant des heures.
-            </p>
-        </section>
-
-        <section id="about" style="animation-delay: 0.4s;">
-            <h2>À <span>Propos</span></h2>
-            <p class="content-text">
-                Rnow n'est pas un simple générateur. C'est votre concierge personnel premium, accessible 24/7. Que vous cherchiez l'aventure backpacker ou le luxe absolu, notre algorithme s'adapte à votre budget journalier pour vous dénicher des pépites et des liens réels pour réserver votre rêve.
-            </p>
-        </section>
+            <p>Nous avons cassé les codes de l'agence de voyage traditionnelle. Rnow utilise une IA de pointe pour transformer vos envies en un itinéraire réel avec liens de réservation en moins de 10 secondes. C'est le futur du voyage, aujourd'hui.</p>
+        </div>
     </div>
 
-    <footer>&copy; 2026 Rnow - Agence de voyage augmentée</footer>
+    <div class="scroll-section">
+        <div class="reveal-card">
+            <h2>À <span>Propos</span></h2>
+            <p>Plus qu'un outil, Rnow est votre concierge digital. De l'aventure backpacker au Guatemala au luxe absolu à Dubaï, nous calculons chaque dépense pour que vous restiez dans votre budget sans jamais sacrifier l'expérience.</p>
+        </div>
+    </div>
+
+    <script>
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) { entry.target.classList.add('active'); }
+            });
+        }, { threshold: 0.2 });
+        document.querySelectorAll('.reveal-card').forEach(card => observer.observe(card));
+    </script>
 </body>
 </html>
