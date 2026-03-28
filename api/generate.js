@@ -9,28 +9,33 @@ export default async function handler(req, res) {
   if (!apiKey) return res.status(500).json({ text: "Clé API manquante." });
 
   const promptFinal = `
-Tu es l'Expert-Concierge de l'agence Rnow. Ton client attend des ordres de mission précis, pas des suggestions vagues.
-Départ: ${depart} | Destination: ${destination} | Budget: ${budget}€ | Style: ${style} | Rythme: ${rythme}.
+Tu es l'expert de l'agence Rnow. Crée un voyage d'exception pour : ${destination}.
+Départ: ${depart} | Budget: ${budget}€ | Style: ${style} | Date: ${date} | Rythme: ${rythme}.
 
-RÈGLES D'OR DE RÉDACTION :
-- INTERDICTION de dire "cherchez une agence locale", "voyez avec votre hôtel" ou "selon vos préférences".
-- Tu DOIS choisir LE meilleur prestataire, LE meilleur restaurant et LE meilleur trajet.
-- Chaque info doit être exploitable immédiatement par le client (Nom + Adresse + Prix).
+CONSIGNES DE STYLE ET FORME (CRUCIAL) :
+- Écris avec enthousiasme, élégance et chaleur. Donne envie !
+- Utilise des EMOJIS premium et pertinents pour illustrer CHAQUE info (ex: ✈️, 🏨, 🍴, 🌊, 📍, ✨, 🌅).
+- FAIS BEAUCOUP D'ESPACES (sauts de ligne) entre les paragraphes pour une lecture fluide.
+- INTERDICTION d'utiliser des astérisques (**) ou des dièses (#).
 
-STRUCTURE SCANABLE POUR CHAQUE JOUR :
+STRUCTURE DE LA SECTION VOLS (À RESPECTER SCRUPULEUSEMENT) :
+Commence par : ✈️ TES VOLS SUR-MESURE.
+Puis détaille ainsi, AVEC UN SAUT DE LIGNE ENTRE CHAQUE LIGNE :
+🛫 ALLER [Date] :
+[Emoji Compagnie] [Nom de la compagnie]
+📍 Départ : ${depart} ([Code Aéroport]) à [Heure]
+🛑 Escale : [Ville Escale] ([Code]) de [Durée Escale]
+📍 Arrivée : ${destination} ([Code Aéroport]) à [Heure]
+🛬 RETOUR [Date] :
+[Emoji Compagnie] [Nom de la compagnie]
+📍 Départ : ${destination} ([Code Aéroport]) à [Heure]
+📍 Arrivée : ${depart} ([Code Aéroport]) à [Heure]
+(Fais de même pour les escales du retour).
 
-JOUR X : [NOM DE L'ÉTAPE]
-📍 L'ACTIVITÉ RNOW : [Nom précis de l'endroit/excursion]. [Description courte de pourquoi c'est LE meilleur choix de la région].
-💰 PRIX & RÉSA : [Prix exact en €]. Réservez sur [Nom du site officiel]. Si pas de site, indique : "Achat du billet sur place à [Lieu précis]".
-🏠 TON REFUGE : [Nom de l'hôtel/Airbnb], [Adresse complète]. [Point fort unique]. Prix: [Montant/nuit].
-🍴 LA TABLE RNOW : [Nom du resto], [Adresse]. Commande impérativement : [Nom du plat typique]. Budget: [Prix moyen].
-🚕 TRANSPORT : [Le trajet précis : ex "Taxi de A vers B" ou "Bus ligne 12"]. Coût: [Prix].
+SUITE DU PROGRAMME (11 POINTS) :
+[Reste de tes 11 points détaillés...]
 
-CONSIGNES DE SÉCURITÉ :
-- Si tu proposes un lien, il doit être RÉEL et vérifié (ex: Tripadvisor, GetYourGuide, ou Site Officiel). Pas de liens génériques.
-- Inclus les vols réels depuis ${depart} dans le calcul.
-- ZÉRO ASTÉRISQUE (*), ZÉRO DIÈSE (#).
-- Finis par : 💡 LE CONSEIL D'INITIÉ (Une astuce de local que personne ne connaît).
+Finis par : 💡 LE CONSEIL D'INITIÉ (Une astuce locale que personne ne connaît).
   `;
 
   try {
@@ -47,8 +52,8 @@ CONSIGNES DE SÉCURITÉ :
     const data = await response.json();
     let textOutput = data.candidates[0].content.parts[0].text;
 
-    // NETTOYAGE RADICAL
-    textOutput = textOutput.replace(/\*/g, '').replace(/#/g, '');
+    // Nettoyage de sécurité
+    textOutput = textOutput.replace(/\*\*/g, '').replace(/#/g, '');
 
     res.status(200).json({ text: textOutput });
   } catch (error) {
