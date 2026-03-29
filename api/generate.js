@@ -10,36 +10,34 @@ export default async function handler(req, res) {
 
   const instructionsRnow = `
 Tu es l'Expert-Concierge de Rnow. Ton ton est dynamique, moderne et strictement professionnel.
+Tu dois générer l'itinéraire COMPLET du jour 1 au jour ${duree}. Ne t'arrête jamais avant la fin.
 
 RÈGLES D'ÉCRITURE :
 - Utilise une PONCTUATION PARFAITE (Majuscule en début de chaque phrase).
-- Ne mets JAMAIS tout un paragraphe ou toute une phrase en MAJUSCULES.
+- Ne mets JAMAIS tout un paragraphe en MAJUSCULES.
 - Pas d'astérisques (*), pas de dièses (#), pas de gras (**).
 - Saute une ligne entre chaque puce.
 
-STRUCTURE DE RÉPONSE :
+STRUCTURE DE RÉPONSE OBLIGATOIRE :
+
 1. ACCUEIL : Salue le client avec élégance.
-2. ANALYSE EXPERTE : Paragraphe de 4-5 lignes analysant la faisabilité (Destination: ${destination}, Budget: ${budget}€, Confort: ${confort}). Explique l'optimisation de ${Math.round(budget/duree)}€/jour.
 
-POUR CHAQUE JOUR :
-------------------------------------------
-TITRE : JOUR X - [Nom de l'étape en majuscules simples]
+2. ANALYSE : Un paragraphe de 5 lignes analysant le voyage à ${destination} avec un budget de ${budget}€ (${Math.round(budget/duree)}€/jour) en mode ${confort}.
+
+3. VOTRE ITINÉRAIRE DÉTAILLÉ :
+Pour chaque jour (du JOUR 1 au JOUR ${duree}) :
+TITRE : JOUR X - [NOM DE L'ÉTAPE]
 Une phrase d'introduction soignée.
-
 📍 L'ACTIVITÉ : [Nom]. Détaille l'expérience.
 💰 RÉSERVATION : [Réserver l'activité](Lien) ou "Accès libre".
-
-🏠 TON REFUGE RNOW : [Nom]. Pourquoi ce choix pour le confort ${confort}.
+🏠 TON REFUGE RNOW : [Nom]. Pourquoi ce choix.
 💰 RÉSERVATION : [Réserver cet hôtel](Lien).
-
 🍴 LA TABLE RNOW : [Nom]. Conseil gastronomique.
-💰 RÉSERVATION : [Réserver une table](Lien) (si applicable).
+💰 RÉSERVATION : [Réserver une table](Lien).
+🚕 TRANSPORT : Détails logistiques.
 
-🚕 TRANSPORT : Détails logistiques (Mode, Temps, Coût).
-
-------------------------------------------
-5. LOGISTIQUE GLOBALE : Vols A/R ou train en fonction du voyage, Assurances et Location.
-6. LE CONSEIL D'INITIÉ : Secret de local.
+4. LOGISTIQUE GLOBALE : Vols/Train, Assurances et Location.
+5. LE CONSEIL D'INITIÉ : Secret de local.
 
 CONSIGNES LIENS :
 - Vols : [Réserver mon vol](https://www.skyscanner.fr/transport/vols/${depart}/${destination}/${date})
@@ -49,9 +47,12 @@ CONSIGNES LIENS :
 
   let promptFinal = "";
   if (type === "initial") {
-    promptFinal = `Génère un voyage de ${duree} jours à ${destination}. Budget: ${budget}€, Confort: ${confort}. ${instructionsRnow}`;
+    promptFinal = `URGENT : Génère un itinéraire complet de ${duree} jours pour ${destination}. 
+    Budget: ${budget}€. Style: ${style}. Confort: ${confort}. 
+    ${instructionsRnow}`;
   } else {
-    promptFinal = `Modifie cet itinéraire : "${ancienItineraire}" selon le feedback : "${feedback}". ${instructionsRnow}`;
+    promptFinal = `Modifie cet itinéraire : "${ancienItineraire}" selon le feedback : "${feedback}". 
+    Respecte la structure : ${instructionsRnow}`;
   }
 
   try {
@@ -64,16 +65,31 @@ CONSIGNES LIENS :
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         contents: [{ parts: [{ text: promptFinal }] }],
-        safetySettings: [{ category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }],
-        generationConfig: { temperature: 0.7, maxOutputTokens: 2048 }
+        // --- ON DÉSACTIVE TOUS LES FILTRES QUI POURRAIENT STOPPER LA GÉNÉRATION ---
+        safetySettings: [
+          { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+          { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+          { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
+          { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
+        ],
+        generationConfig: { 
+            temperature: 0.7, 
+            maxOutputTokens: 2500 // Augmenté pour éviter les coupures
+        }
       })
     });
 
     const data = await response.json();
-    let textOutput = data.candidates?.[0]?.content?.parts?.[0]?.text || "Erreur.";
+    
+    if (data.error) return res.status(200).json({ text: "Erreur API : " + data.error.message });
+
+    let textOutput = data.candidates?.[0]?.content?.parts?.[0]?.text || "L'IA a rencontré un problème lors de la rédaction.";
+    
+    // Nettoyage Markdown
     textOutput = textOutput.replace(/\*\*/g, '').replace(/\*/g, '').replace(/#/g, '');
+    
     res.status(200).json({ text: textOutput });
   } catch (error) {
-    res.status(500).json({ text: "Erreur technique." });
+    res.status(500).json({ text: "Erreur serveur technique." });
   }
 }
