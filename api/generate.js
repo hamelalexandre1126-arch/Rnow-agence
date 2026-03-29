@@ -8,34 +8,34 @@ export default async function handler(req, res) {
 
   if (!apiKey) return res.status(500).json({ text: "Clé API manquante." });
 
+  // Prompt ultra-directif pour éviter les fioritures qui consomment des tokens
   const instructionsRnow = `
-Tu es l'Expert-Concierge de Rnow. Tu dois ABSOLUMENT finir ta réponse par "FIN DU CARNET".
-Génère un itinéraire complet du jour 1 au jour ${duree}.
+Tu es l'Expert-Concierge de Rnow. 
+OBJECTIF : Générer un carnet de voyage COMPLET (Jour 1 à ${duree}) pour ${destination}.
 
-RÈGLES : 
-- Majuscule en début de phrase. 
-- Pas de gras (**), pas de dièses (#). 
-- Saute une ligne entre chaque puce.
+CONSIGNES :
+- Majuscule en début de phrase obligatoire.
+- JAMAIS de gras (**), JAMAIS de dièses (#).
+- Saute une ligne entre chaque point.
 
 STRUCTURE :
-1. ACCUEIL ET ANALYSE (${budget}€, ${confort})
-2. ITINÉRAIRE (JOUR 1 À ${duree}) :
-📍 ACTIVITÉ : [Nom]
-💰 RÉSERVATION : [Lien] ou Accès libre
-🏠 REFUGE RNOW : [Nom] + [Lien]
-🍴 TABLE RNOW : [Nom] + [Lien]
-🚕 TRANSPORT : [Infos]
-3. LOGISTIQUE ET CONSEIL D'INITIÉ
+1. Accueil & Analyse (${budget}€, ${confort}).
+2. Pour chaque jour (Jour 1, Jour 2...) :
+📍 ACTIVITÉ : [Nom] + pourquoi c'est top.
+💰 RÉSERVATION : [Nom](Lien) ou Accès libre.
+🏠 REFUGE RNOW : [Nom] + [Lien].
+🍴 TABLE RNOW : [Nom] + [Lien].
+🚕 TRANSPORT : [Temps et Coût].
+3. Logistique & Conseil local.
   `;
 
   const promptFinal = type === "initial" 
-    ? `Crée un voyage COMPLET de ${duree} jours au ${destination} pour ${budget}€. ${instructionsRnow}`
-    : `Modifie cet itinéraire : "${ancienItineraire}" avec ce changement : "${feedback}". ${instructionsRnow}`;
+    ? `Crée un itinéraire de ${duree} jours à ${destination}. Budget: ${budget}€. Style: ${style}. ${instructionsRnow}`
+    : `Modifie cet itinéraire : "${ancienItineraire}" selon le feedback : "${feedback}". ${instructionsRnow}`;
 
   try {
-    // ON PASSE SUR LE MODÈLE PRO POUR PLUS DE STABILITÉ
-    const modelName = "models/gemini-1.5-pro"; 
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/${modelName}:generateContent?key=${apiKey}`;
+    // Retour sur Flash 1.5 qui est le plus robuste pour ton quota
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
     const response = await fetch(apiUrl, {
       method: 'POST',
@@ -49,20 +49,23 @@ STRUCTURE :
           { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" }
         ],
         generationConfig: { 
-            temperature: 0.7, 
-            maxOutputTokens: 3500 // On pousse au max
+            temperature: 0.7,
+            topP: 0.8,
+            topK: 40
+            // On ne met pas de maxOutputTokens pour laisser l'IA finir sa phrase
         }
       })
     });
 
     const data = await response.json();
-    
-    // Si le modèle Pro n'est pas dispo, on rechute sur Flash automatiquement
+
     if (data.error) {
-        return res.status(200).json({ text: "Désolé, l'IA sature un peu. Réessayez dans 30 secondes ou réduisez la durée du voyage." });
+        return res.status(200).json({ text: "Quota atteint. Attendez 60 secondes pile et réessayez. " + data.error.message });
     }
 
-    let textOutput = data.candidates?.[0]?.content?.parts?.[0]?.text || "Erreur de génération.";
+    let textOutput = data.candidates?.[0]?.content?.parts?.[0]?.text || "L'IA a eu un petit bug. Réessayez.";
+    
+    // Nettoyage des symboles Markdown
     textOutput = textOutput.replace(/\*\*/g, '').replace(/\*/g, '').replace(/#/g, '');
     
     res.status(200).json({ text: textOutput });
