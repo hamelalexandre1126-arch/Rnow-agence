@@ -3,57 +3,295 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rnow | Voyagez Maintenant</title>
+    <title>Rnow | L'Expert-Concierge de Voyage IA</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap');
-        :root { --primary: #7e3ef0; --secondary: #f03e7e; }
-        body { font-family: 'Poppins', sans-serif; margin: 0; background: #000; color: #fff; overflow-x: hidden; }
-        .hero { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; }
-        h1 { font-size: 4rem; font-weight: 900; text-transform: uppercase; margin: 0; }
-        h1 span { color: var(--primary); }
-        .btn-cta { margin-top: 40px; padding: 20px 50px; background: var(--primary); color: #fff; text-decoration: none; border-radius: 20px; font-weight: 900; text-transform: uppercase; transition: 0.4s; box-shadow: 0 20px 50px rgba(126,62,240,0.5); }
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;900&display=swap');
         
-        /* Expérience de Scroll : Sections Blanches Dynamiques */
-        .scroll-section { padding: 100px 20px; display: flex; justify-content: center; }
-        .reveal-card { 
-            background: #fff; color: #000; padding: 80px; border-radius: 50px; max-width: 800px; 
-            transform: translateY(100px) scale(0.9); opacity: 0; transition: all 0.8s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+        :root { 
+            --primary: #7e3ef0; 
+            --secondary: #f03e7e; 
+            --dark: #000000; 
+            --white: #ffffff;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.08);
         }
-        .reveal-card.active { transform: translateY(0) scale(1); opacity: 1; }
-        h2 { font-size: 2.5rem; font-weight: 900; text-transform: uppercase; margin-bottom: 20px; color: var(--primary); }
-        p { font-size: 1.2rem; line-height: 1.8; }
 
-        @media (max-width: 600px) { h1 { font-size: 2.5rem; } .reveal-card { padding: 40px 25px; border-radius: 30px; } }
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            margin: 0; 
+            color: var(--white); 
+            background-color: var(--dark); 
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            box-sizing: border-box; 
+            overflow-x: hidden; 
+            scroll-behavior: smooth;
+        }
+
+        /* --- 🎆 ARRIÈRE-PLAN DYNAMIQUE (BLURS ANIMÉS) --- */
+        .bg-blur { 
+            position: fixed; 
+            border-radius: 50%; 
+            filter: blur(140px); 
+            opacity: 0.25; 
+            z-index: -1; 
+            pointer-events: none; 
+            animation: floatBlurs 20s infinite alternate ease-in-out;
+        }
+        .blur-1 { 
+            background: var(--primary); 
+            width: 600px; height: 600px; 
+            top: -200px; left: -200px; 
+        }
+        .blur-2 { 
+            background: var(--secondary); 
+            width: 500px; height: 500px; 
+            bottom: -150px; right: -150px; 
+            animation-delay: -7s;
+        }
+        @keyframes floatBlurs {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(80px, 80px) scale(1.1); }
+        }
+
+        /* --- 🖥️ NAVIGATION PREMIUM FIXE --- */
+        nav { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 25px 60px; 
+            background: rgba(0, 0, 0, 0.85); 
+            backdrop-filter: blur(25px); 
+            border-bottom: 1px solid var(--border); 
+            position: fixed; top: 0; left: 0; right: 0; z-index: 2000; 
+            box-sizing: border-box;
+        }
+        .logo { font-weight: 900; font-size: 1.8rem; text-transform: uppercase; color: var(--white); text-decoration: none; letter-spacing: -1px; }
+        .logo span { color: var(--primary); }
+        
+        .nav-links { display: flex; align-items: center; }
+        .nav-links a { 
+            text-decoration: none; 
+            color: var(--white); 
+            font-weight: 700; 
+            margin-left: 35px; 
+            font-size: 0.85rem; 
+            text-transform: uppercase; 
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0.7;
+        }
+        .nav-links a:hover { opacity: 1; color: var(--primary); transform: translateY(-2px); }
+        
+        /* Bouton Lancer l'IA dans la Nav */
+        .nav-links .btn-nav-ia {
+            background: var(--primary);
+            padding: 12px 25px;
+            border-radius: 14px;
+            opacity: 1;
+            margin-left: 40px;
+            box-shadow: 0 10px 25px rgba(126, 62, 240, 0.4);
+        }
+        .nav-links .btn-nav-ia:hover { background: #6a34cc; transform: translateY(-4px) scale(1.05); }
+
+        /* --- 🚀 HERO SECTION (PREMIER IMPACT) --- */
+        .hero { 
+            height: 100vh;
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            text-align: center; 
+            padding: 0 20px; 
+            width: 100%; 
+            max-width: 1100px; 
+            box-sizing: border-box;
+            animation: heroFadeIn 1.2s ease-out;
+        }
+        @keyframes heroFadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        h1 { 
+            font-size: 4.5rem; 
+            font-weight: 900; 
+            text-transform: uppercase; 
+            line-height: 1; 
+            margin-bottom: 30px; 
+            letter-spacing: -2px;
+        }
+        h1 span { color: var(--primary); }
+        p.subtitle { 
+            font-size: 1.3rem; 
+            opacity: 0.7; 
+            max-width: 700px; 
+            line-height: 1.8; 
+            margin-bottom: 50px; 
+        }
+
+        .btn-cta { 
+            padding: 24px 60px; 
+            background: var(--primary); 
+            color: var(--white); 
+            text-decoration: none; 
+            font-weight: 900; 
+            border-radius: 24px; 
+            text-transform: uppercase; 
+            transition: 0.5s; 
+            box-shadow: 0 25px 60px rgba(126, 62, 240, 0.5); 
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+        }
+        .btn-cta:hover { transform: translateY(-8px) scale(1.05); box-shadow: 0 30px 70px rgba(126, 62, 240, 0.7); }
+
+        /* --- 🧊 EXPÉRIENCE DE SCROLL (REVEAL CARDS) --- */
+        .content-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-bottom: 150px;
+        }
+        .scroll-section { 
+            width: 100%; 
+            padding: 120px 20px;
+            display: flex;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+        .reveal-card { 
+            background: var(--white); 
+            color: var(--dark); 
+            border-radius: 60px; 
+            padding: 80px; 
+            max-width: 900px; 
+            width: 100%;
+            box-sizing: border-box; 
+            box-shadow: 0 50px 150px rgba(0,0,0,0.8);
+            transform: translateY(150px) scale(0.85); 
+            opacity: 0; 
+            transition: all 1s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+        .reveal-card.active { 
+            transform: translateY(0) scale(1); 
+            opacity: 1; 
+        }
+        
+        h2 { 
+            font-weight: 900; 
+            text-transform: uppercase; 
+            font-size: 3rem; 
+            margin-bottom: 30px; 
+            color: var(--primary); 
+            letter-spacing: -1px;
+        }
+        h2 span { color: var(--dark); }
+        .content-text { 
+            line-height: 2; 
+            font-size: 1.3rem; 
+            color: #333;
+        }
+
+        /* --- 🏆 FOOTER --- */
+        footer { 
+            padding: 80px 20px; 
+            text-align: center;
+            width: 100%;
+            border-top: 1px solid var(--border);
+            margin-top: 50px;
+        }
+        .footer-text { opacity: 0.3; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; font-size: 0.9rem; }
+
+        /* --- 📱 MEDIA QUERIES (ADAPTATION MOBILE) --- */
+        @media (max-width: 1024px) {
+            nav { padding: 25px 40px; }
+            h1 { font-size: 3.5rem; }
+            .reveal-card { padding: 60px; }
+        }
+
+        @media (max-width: 768px) {
+            nav { padding: 15px 25px; }
+            .nav-links a:not(.btn-nav-ia) { display: none; } /* Cache liens textes sur mobile */
+            .nav-links .btn-nav-ia { margin-left: 0; padding: 10px 18px; font-size: 0.75rem; }
+            .logo { font-size: 1.4rem; }
+            h1 { font-size: 2.5rem; }
+            p.subtitle { font-size: 1.1rem; }
+            .reveal-card { padding: 40px 25px; border-radius: 35px; }
+            h2 { font-size: 2rem; }
+            .content-text { font-size: 1.05rem; }
+            .btn-cta { padding: 20px 40px; font-size: 1rem; }
+        }
     </style>
 </head>
 <body>
+
+    <div class="bg-blur blur-1"></div>
+    <div class="bg-blur blur-2"></div>
+    
+    <nav>
+        <a href="index.html" class="logo">R<span>now</span>.</a>
+        <div class="nav-links">
+            <a href="#vision">Vision</a>
+            <a href="#about">À Propos</a>
+            <a href="generateur.html" class="btn-nav-ia">Lancer l'IA ✨</a>
+        </div>
+    </nav>
+
     <div class="hero">
-        <h1>Voyagez <span>Maintenant.</span></h1>
-        <p style="opacity:0.7; font-size:1.2rem; margin-top:20px;">L'intelligence artificielle qui crée votre réalité.</p>
-        <a href="generateur.html" class="btn-cta">Lancer l'expérience ✨</a>
+        <h1>Voyagez <span>Maintenant.</span><br>Payez le juste prix.</h1>
+        <p class="subtitle">L'intelligence artificielle experte qui crée votre itinéraire réel avec noms d'établissements et liens de réservation cliquables.</p>
+        <a href="generateur.html" class="btn-cta">Démarrer l'expérience ✨</a>
     </div>
 
-    <div class="scroll-section">
-        <div class="reveal-card">
-            <h2>Notre <span>Vision</span></h2>
-            <p>Nous avons cassé les codes de l'agence de voyage traditionnelle. Rnow utilise une IA de pointe pour transformer vos envies en un itinéraire réel avec liens de réservation en moins de 10 secondes. C'est le futur du voyage, aujourd'hui.</p>
-        </div>
+    <div class="content-container">
+        
+        <section class="scroll-section" id="vision">
+            <div class="reveal-card">
+                <h2>Notre <span>Vision</span></h2>
+                <div class="content-text">
+                    Nous avons cassé les codes de l'agence de voyage traditionnelle. Rnow utilise une IA de pointe pour transformer vos envies en un itinéraire réel avec liens de réservation en moins de 10 secondes. C'est le futur du voyage, accessible aujourd'hui.
+                </div>
+            </div>
+        </section>
+
+        <section class="scroll-section" id="about">
+            <div class="reveal-card">
+                <h2>À <span>Propos</span></h2>
+                <div class="content-text">
+                    Plus qu'un outil, Rnow est votre concierge digital premium. De l'aventure backpacker au Guatemala au luxe absolu à Dubaï, nous calculons chaque dépense pour que vous restiez dans votre budget sans jamais sacrifier l'expérience locale.
+                </div>
+            </div>
+        </section>
+
     </div>
 
-    <div class="scroll-section">
-        <div class="reveal-card">
-            <h2>À <span>Propos</span></h2>
-            <p>Plus qu'un outil, Rnow est votre concierge digital. De l'aventure backpacker au Guatemala au luxe absolu à Dubaï, nous calculons chaque dépense pour que vous restiez dans votre budget sans jamais sacrifier l'expérience.</p>
-        </div>
-    </div>
+    <footer>
+        <div class="footer-text">&copy; 2026 Rnow - Agence de voyage augmentée</div>
+    </footer>
 
     <script>
+        const observerOptions = {
+            threshold: 0.2, // La carte apparaît quand 20% est visible
+            rootMargin: "0px 0px -50px 0px"
+        };
+
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-                if (entry.isIntersecting) { entry.target.classList.add('active'); }
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                } else {
+                    // Optionnel : retire "active" si tu veux que l'animation se répète au scroll inverse
+                    // entry.target.classList.remove('active');
+                }
             });
-        }, { threshold: 0.2 });
-        document.querySelectorAll('.reveal-card').forEach(card => observer.observe(card));
+        }, observerOptions);
+
+        // On cible toutes les cartes à révéler
+        document.querySelectorAll('.reveal-card').forEach(card => {
+            observer.observe(card);
+        });
     </script>
+
 </body>
 </html>
