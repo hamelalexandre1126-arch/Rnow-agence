@@ -8,20 +8,19 @@ export default async function handler(req, res) {
 
   if (!apiKey) return res.status(500).json({ text: "Clé API manquante." });
 
-  // Prompt ultra-directif pour éviter les fioritures qui consomment des tokens
   const instructionsRnow = `
 Tu es l'Expert-Concierge de Rnow. 
-OBJECTIF : Générer un carnet de voyage COMPLET (Jour 1 à ${duree}) pour ${destination}.
+Ton objectif est de générer un itinéraire COMPLET (Jour 1 à ${duree}) pour ${destination}.
 
 CONSIGNES :
-- Majuscule en début de phrase obligatoire.
-- JAMAIS de gras (**), JAMAIS de dièses (#).
-- Saute une ligne entre chaque point.
+- Majuscule en début de chaque phrase.
+- JAMAIS de gras (**), JAMAIS de dièses (#), JAMAIS d'astérisques (*).
+- Saute une ligne entre chaque point pour aérer.
 
 STRUCTURE :
 1. Accueil & Analyse (${budget}€, ${confort}).
 2. Pour chaque jour (Jour 1, Jour 2...) :
-📍 ACTIVITÉ : [Nom] + pourquoi c'est top.
+📍 ACTIVITÉ : [Nom] + description.
 💰 RÉSERVATION : [Nom](Lien) ou Accès libre.
 🏠 REFUGE RNOW : [Nom] + [Lien].
 🍴 TABLE RNOW : [Nom] + [Lien].
@@ -30,11 +29,11 @@ STRUCTURE :
   `;
 
   const promptFinal = type === "initial" 
-    ? `Crée un itinéraire de ${duree} jours à ${destination}. Budget: ${budget}€. Style: ${style}. ${instructionsRnow}`
-    : `Modifie cet itinéraire : "${ancienItineraire}" selon le feedback : "${feedback}". ${instructionsRnow}`;
+    ? `Crée un voyage de ${duree} jours à ${destination} pour ${budget}€. Style: ${style}. ${instructionsRnow}`
+    : `Modifie cet itinéraire : "${ancienItineraire}" selon : "${feedback}". ${instructionsRnow}`;
 
   try {
-    // Retour sur Flash 1.5 qui est le plus robuste pour ton quota
+    // SYNTAXE URL CORRIGÉE (Pas de "models/" dans l'URL)
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
     const response = await fetch(apiUrl, {
@@ -50,9 +49,7 @@ STRUCTURE :
         ],
         generationConfig: { 
             temperature: 0.7,
-            topP: 0.8,
-            topK: 40
-            // On ne met pas de maxOutputTokens pour laisser l'IA finir sa phrase
+            maxOutputTokens: 2500 // On remet une limite raisonnable pour éviter les erreurs de serveur
         }
       })
     });
@@ -60,16 +57,17 @@ STRUCTURE :
     const data = await response.json();
 
     if (data.error) {
-        return res.status(200).json({ text: "Quota atteint. Attendez 60 secondes pile et réessayez. " + data.error.message });
+        // Si ça met encore quota, c'est qu'il faut vraiment attendre les 60 secondes
+        return res.status(200).json({ text: "L'IA est sollicitée. Attendez une minute et réessayez. (" + data.error.message + ")" });
     }
 
-    let textOutput = data.candidates?.[0]?.content?.parts?.[0]?.text || "L'IA a eu un petit bug. Réessayez.";
+    let textOutput = data.candidates?.[0]?.content?.parts?.[0]?.text || "L'IA n'a pas pu répondre. Réessaye.";
     
-    // Nettoyage des symboles Markdown
+    // Nettoyage Markdown
     textOutput = textOutput.replace(/\*\*/g, '').replace(/\*/g, '').replace(/#/g, '');
     
     res.status(200).json({ text: textOutput });
   } catch (error) {
-    res.status(500).json({ text: "Erreur serveur." });
+    res.status(500).json({ text: "Erreur technique." });
   }
 }
