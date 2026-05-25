@@ -8,10 +8,9 @@ export default async function handler(req, res) {
 
   if (!apiKey) return res.status(500).json({ text: "Clé API manquante." });
 
-  // --- TON PROMPT RNOW D'ORIGINE RESTAURÉ ---
   const instructionsRnow = `
 Tu es l'Expert-Concierge de Rnow. Ton ton est dynamique, moderne et strictement professionnel.
-Tu dois ABSOLUMENT générer l'itinéraire COMPLET du jour 1 au jour ${duree}.
+Tu dois IMPÉRATIVEMENT générer l'itinéraire COMPLET du jour 1 au jour ${duree} sans aucune exception.
 
 RÈGLES D'ÉCRITURE :
 - Majuscule en début de chaque phrase.
@@ -54,13 +53,12 @@ CONSIGNES LIENS :
 
   let promptFinal = "";
   if (type === "initial") {
-    promptFinal = `Génère un voyage complet de ${duree} jours à ${destination}. Budget: ${budget}€. Style: ${style}. ${instructionsRnow}`;
+    promptFinal = `Génère un voyage complet et détaillé de ${duree} jours à ${destination}. Budget: ${budget}€. Style: ${style}. ${instructionsRnow}`;
   } else {
     promptFinal = `Modifie cet itinéraire : "${ancienItineraire}" selon le feedback : "${feedback}". ${instructionsRnow}`;
   }
 
   try {
-    // --- 🔍 DÉTECTION DYNAMIQUE DU MODÈLE ---
     const listResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
     const listData = await listResponse.json();
     let selectedModel = listData.models?.find(m => m.name.includes("flash")) || listData.models?.[0];
@@ -79,18 +77,19 @@ CONSIGNES LIENS :
           { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" }
         ],
         generationConfig: { 
-            temperature: 0.7, 
-            maxOutputTokens: 3000 // Augmenté pour éviter les coupures
+            temperature: 0.85, // Augmenté pour éviter que l'IA boucle et s'arrête
+            maxOutputTokens: 4000, // Poussé au maximum réel du modèle flash
+            topP: 0.95
         }
       })
     });
 
     const data = await response.json();
-    if (data.error) return res.status(200).json({ text: "L'IA est sollicitée. Attendez 60s. (" + data.error.message + ")" });
+    if (data.error) return res.status(200).json({ text: "Erreur API : " + data.error.message });
 
     let textOutput = data.candidates?.[0]?.content?.parts?.[0]?.text || "Erreur de génération.";
     
-    // Nettoyage Markdown (On enlève les gras et symboles)
+    // Nettoyage Markdown
     textOutput = textOutput.replace(/\*\*/g, '').replace(/\*/g, '').replace(/#/g, '');
 
     res.status(200).json({ text: textOutput });
