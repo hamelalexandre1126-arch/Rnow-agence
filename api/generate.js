@@ -9,61 +9,44 @@ export default async function handler(req, res) {
   if (!apiKey) return res.status(500).json({ text: "Clé API manquante." });
 
   const instructionsRnow = `
-Tu es l'Expert-Concierge de Rnow. Ton ton est dynamique, moderne et strictement professionnel.
-Tu dois IMPÉRATIVEMENT générer l'itinéraire COMPLET du jour 1 au jour ${duree} sans aucune exception.
+Tu es l'Expert-Concierge de Rnow. Ton ton est dynamique et professionnel. 
+Tu dois organiser le carnet de voyage avec cette structure précise :
 
-RÈGLES D'ÉCRITURE :
-- Majuscule en début de chaque phrase.
-- JAMAIS de texte entièrement en MAJUSCULES (sauf les titres de rubriques).
-- Pas d'astérisques (*), pas de dièses (#), pas de gras (**).
-- Saute une ligne entre chaque puce pour un rendu aéré.
+1. ACCUEIL ET ANALYSE : Salue et analyse le budget (${budget}€ pour ${duree} jours en mode ${confort}). Mentionne les envies du client : ${style}.
 
-STRUCTURE DE RÉPONSE :
+2. TRANSPORTS GLOBAUX : Détaille les vols, trains ou bus longue distance pour l'aller et le retour.
+💰 RÉSERVATION : [Lien Skyscanner/Omio](Lien)
 
-1. ACCUEIL : Salue le client avec élégance.
-2. ANALYSE EXPERTE : Un paragraphe de 4-5 lignes analysant la faisabilité (Destination: ${destination}, Budget: ${budget}€, Confort: ${confort}). Explique l'optimisation de ${Math.round(budget/duree)}€/jour.
+3. HÉBERGEMENTS : Liste tous les hébergements suggérés pour tout le séjour. Si plusieurs étapes, classe-les par destination.
+💰 RÉSERVATION : [Lien Booking](Lien)
 
-POUR CHAQUE JOUR (JOUR 1, JOUR 2, etc.) :
-------------------------------------------
-TITRE : JOUR X - [NOM DE L'ÉTAPE]
-Une phrase courte qui résume l'ambiance de la journée.
+4. RESTAURANTS ET GASTRONOMIE : Une liste des meilleures adresses (bon rapport qualité/prix) classées par destination. Ne le fais plus jour par jour.
 
-📍 L'ACTIVITÉ RNOW : [Nom précis]. Détaille ici pourquoi c'est génial et ce qu'il va vivre.
-💰 RÉSERVATION : [Réserver l'activité](Lien) uniquement si nécessaire. Sinon, écris "Accès libre".
+5. DÉTAIL JOUR PAR JOUR :
+Pour chaque jour (JOUR 1 à ${duree}) :
+📍 ACTIVITÉ : Détaille ce qu'on fait (en lien avec les envies : ${style}).
+💰 RÉSERVATION : [Lien GetYourGuide](Lien) (si besoin, sinon "Accès libre").
+🚕 LOGISTIQUE JOURNÉE : Précise les transports internes (Uber, Collectivos, Tuk-tuk, location, etc.).
 
-🏠 TON REFUGE RNOW : [Nom]. Explique l'atout unique du lieu.
-💰 RÉSERVATION : [Réserver cet hôtel](Lien).
-
-🍴 LA TABLE RNOW : [Nom]. Décris le plat signature et l'ambiance.
-💰 RÉSERVATION : [Réserver une table](Lien) (si applicable).
-
-🚕 TRANSPORT : Détaille ici les trajets du jour (Mode, Temps, Coût estimé).
-
-------------------------------------------
-
-5. LOGISTIQUE GLOBALE : Vols A/R ou Train, Assurances et Location.
-6. LE CONSEIL D'INITIÉ : Un secret de local pour rendre le voyage inoubliable.
+6. LOGISTIQUE FINALE : Assurances et conseils pratiques.
 
 CONSIGNES LIENS :
-- Vols : [Réserver mon vol](https://www.skyscanner.fr/transport/vols/${depart}/${destination}/${date})
-- Hôtels : [Réserver cet hôtel](https://www.booking.com/searchresults.html?ss=NOM_HOTEL+${destination})
-- Activités : [Réserver l'activité](https://www.getyourguide.fr/s/?q=NOM_ACTIVITE)
-- SI PAS DE RÉSERVATION NÉCESSAIRE : Ne mets aucun lien derrière.
+- Hébergements : https://www.booking.com/searchresults.html?ss=NOM_HOTEL+${destination}
+- Activités : https://www.getyourguide.fr/s/?q=NOM_ACTIVITE
+- Vols : https://www.skyscanner.fr/transport/vols/${depart}/${destination}/${date}
+
+RÈGLES D'ÉCRITURE : Majuscule au début de chaque phrase. Pas de gras (**), pas de dièses (#).
   `;
 
   let promptFinal = "";
   if (type === "initial") {
-    promptFinal = `Génère un voyage complet et détaillé de ${duree} jours à ${destination}. Budget: ${budget}€. Style: ${style}. ${instructionsRnow}`;
+    promptFinal = `Génère un voyage complet de ${duree} jours à ${destination}. ${instructionsRnow}`;
   } else {
-    promptFinal = `Modifie cet itinéraire : "${ancienItineraire}" selon le feedback : "${feedback}". ${instructionsRnow}`;
+    promptFinal = `Prends cet itinéraire : "${ancienItineraire}". Applique ces changements : "${feedback}". ${instructionsRnow}`;
   }
 
   try {
-    const listResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
-    const listData = await listResponse.json();
-    let selectedModel = listData.models?.find(m => m.name.includes("flash")) || listData.models?.[0];
-
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/${selectedModel.name}:generateContent?key=${apiKey}`;
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
     const response = await fetch(apiUrl, {
       method: 'POST',
@@ -76,24 +59,17 @@ CONSIGNES LIENS :
           { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" },
           { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" }
         ],
-        generationConfig: { 
-            temperature: 0.85, // Augmenté pour éviter que l'IA boucle et s'arrête
-            maxOutputTokens: 4000, // Poussé au maximum réel du modèle flash
-            topP: 0.95
-        }
+        generationConfig: { temperature: 0.75, maxOutputTokens: 3500 }
       })
     });
 
     const data = await response.json();
-    if (data.error) return res.status(200).json({ text: "Erreur API : " + data.error.message });
-
     let textOutput = data.candidates?.[0]?.content?.parts?.[0]?.text || "Erreur de génération.";
     
     // Nettoyage Markdown
     textOutput = textOutput.replace(/\*\*/g, '').replace(/\*/g, '').replace(/#/g, '');
-
+    
     res.status(200).json({ text: textOutput });
-
   } catch (error) {
     res.status(500).json({ text: "Erreur technique." });
   }
