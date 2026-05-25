@@ -22,10 +22,10 @@
         .row { display: flex; gap: 20px; flex-wrap: wrap; }
         .col { flex: 1; min-width: 250px; }
         .btn-main { width: 100%; padding: 22px; border: none; border-radius: 20px; background: #000; color: #fff; font-weight: 900; text-transform: uppercase; cursor: pointer; transition: 0.4s; }
+        .btn-main:hover { transform: translateY(-3px); background: var(--primary); }
         
-        /* Loader Animation */
         .loader-container { display: none; margin: 30px 0; width: 100%; }
-        .progress-bar { width: 100%; height: 6px; background: #f0f0f0; border-radius: 10px; overflow: hidden; position: relative; }
+        .progress-bar { width: 100%; height: 6px; background: #f0f0f0; border-radius: 10px; overflow: hidden; }
         .progress-fill { width: 0%; height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); animation: loading 3s infinite; }
         @keyframes loading { 0% { width: 0%; } 50% { width: 70%; } 100% { width: 100%; } }
         
@@ -35,11 +35,12 @@
         .itineraire-content { font-size: 1.05rem; line-height: 2.2; white-space: pre-wrap; margin-bottom: 30px; }
         .rnow-link { color: var(--primary); font-weight: bold; text-decoration: underline; }
 
+        #modifs-zone { display: none; border: 3px solid var(--secondary); margin-top: 20px; }
+
         @media (max-width: 600px) {
             nav { padding: 15px 20px; }
             .box, .itineraire-box { padding: 30px 20px; }
             h1 { font-size: 1.6rem; }
-            .nav-links { display: none; }
         }
     </style>
 </head>
@@ -56,7 +57,7 @@
                 </div>
                 <div class="row">
                     <div class="form-group col"><label>Date</label><input type="date" id="dateDepart" required></div>
-                    <div class="form-group col"><label>Niveau de confort</label>
+                    <div class="form-group col"><label>Confort</label>
                         <select id="confort">
                             <option value="Backpacker">🎒 Backpacker</option>
                             <option value="Standard" selected>🚗 Standard</option>
@@ -64,8 +65,14 @@
                         </select>
                     </div>
                 </div>
-                <div class="form-group"><label>Budget total (€)</label><input type="number" id="budget" placeholder="1500" required></div>
-                <div class="form-group"><label>Durée (jours)</label><input type="number" id="duree" placeholder="7" required></div>
+                <div class="row">
+                    <div class="form-group col"><label>Budget total (€)</label><input type="number" id="budget" placeholder="1500" required></div>
+                    <div class="form-group col"><label>Durée (jours)</label><input type="number" id="duree" placeholder="7" required></div>
+                </div>
+                <div class="form-group">
+                    <label>Tes envies (Vacances de rêve)</label>
+                    <textarea id="styleVoyage" rows="3" placeholder="Ex: Surf, gastronomie locale, volcans, calme..."></textarea>
+                </div>
                 <button type="button" id="btnGenerer" class="btn-main">Générer mon voyage ✨</button>
                 <div id="loader" class="loader-container">
                     <div style="text-align:center; color: var(--primary); font-weight:900; margin-bottom:10px; font-size:0.8rem;">L'IA RNW SCULPTE VOTRE CARNET...</div>
@@ -73,24 +80,91 @@
                 </div>
             </form>
         </div>
+
         <div id="voyages-container"></div>
+
+        <div id="modifs-zone" class="box">
+            <label>Une modification ? (Ex: Moins de marche, plus de plage...)</label>
+            <textarea id="feedbackClient" rows="3" placeholder="Dis-moi ce que tu souhaites ajuster..."></textarea>
+            <button type="button" id="btnAffiner" class="btn-main" style="background: var(--secondary); margin-top: 15px;">Affiner l'itinéraire ⚡</button>
+        </div>
     </div>
+
     <script>
+        let dernierItineraire = "";
         let versionVoyage = 1;
-        function formaterTexte(t) { return t.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" class="rnow-link">$1</a>'); }
+
+        function formaterTexte(t) { 
+            return t.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" class="rnow-link">$1</a>'); 
+        }
+
+        async function appelerAPI(payload) {
+            const res = await fetch('/api/generate', { 
+                method: 'POST', 
+                headers: {'Content-Type': 'application/json'}, 
+                body: JSON.stringify(payload) 
+            });
+            return await res.json();
+        }
+
+        function ajouterAuConteneur(texte) {
+            const container = document.getElementById('voyages-container');
+            const boite = document.createElement('div');
+            boite.className = 'itineraire-box';
+            boite.innerHTML = `
+                <h2>Voyage Rnow V${versionVoyage}</h2>
+                <div class="itineraire-content">${formaterTexte(texte)}</div>
+                <button class="btn-main" style="background:#25D366">RECEVOIR SUR WHATSAPP 📱</button>
+            `;
+            
+            // Correction Bouton WhatsApp
+            boite.querySelector('button').onclick = () => {
+                const message = encodeURIComponent("Mon carnet Rnow :\n\n" + texte);
+                window.open(`https://wa.me/?text=${message}`, '_blank');
+            };
+
+            container.prepend(boite);
+            document.getElementById('modifs-zone').style.display = 'block';
+            dernierItineraire = texte;
+            versionVoyage++;
+            boite.scrollIntoView({ behavior: 'smooth' });
+        }
+
         document.getElementById('btnGenerer').onclick = async function() {
             const loader = document.getElementById('loader');
             loader.style.display = 'block';
-            const payload = { type: "initial", depart: document.getElementById('depart').value, destination: document.getElementById('destination').value, budget: document.getElementById('budget').value, confort: document.getElementById('confort').value, date: document.getElementById('dateDepart').value, duree: document.getElementById('duree').value };
-            const res = await fetch('/api/generate', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
-            const data = await res.json();
+            const payload = { 
+                type: "initial", 
+                depart: document.getElementById('depart').value, 
+                destination: document.getElementById('destination').value, 
+                budget: document.getElementById('budget').value, 
+                confort: document.getElementById('confort').value, 
+                date: document.getElementById('dateDepart').value, 
+                duree: document.getElementById('duree').value,
+                style: document.getElementById('styleVoyage').value 
+            };
+            const data = await appelerAPI(payload);
+            if (data.text) ajouterAuConteneur(data.text);
+            loader.style.display = 'none';
+        };
+
+        document.getElementById('btnAffiner').onclick = async function() {
+            const feedback = document.getElementById('feedbackClient').value;
+            if (!feedback) return;
+            const loader = document.getElementById('loader');
+            loader.style.display = 'block';
+            const payload = { 
+                type: "correction", 
+                ancienItineraire: dernierItineraire, 
+                feedback: feedback,
+                destination: document.getElementById('destination').value,
+                budget: document.getElementById('budget').value,
+                duree: document.getElementById('duree').value
+            };
+            const data = await appelerAPI(payload);
             if (data.text) {
-                const container = document.getElementById('voyages-container');
-                const boite = document.createElement('div');
-                boite.className = 'itineraire-box';
-                boite.innerHTML = `<h2>Voyage Rnow V${versionVoyage}</h2><div class="itineraire-content">${formaterTexte(data.text)}</div><button class="btn-main" style="background:#25D366" onclick="window.open('https://wa.me/?text=${encodeURIComponent(data.text)}')">RECEVOIR SUR WHATSAPP 📱</button>`;
-                container.prepend(boite);
-                versionVoyage++;
+                ajouterAuConteneur(data.text);
+                document.getElementById('feedbackClient').value = "";
             }
             loader.style.display = 'none';
         };
