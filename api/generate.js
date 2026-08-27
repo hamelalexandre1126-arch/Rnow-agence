@@ -6,42 +6,56 @@ export default async function handler(req, res) {
   const { type, depart, destination, budget, confort, style, date, duree, ancienItineraire, feedback } = req.body;
   const apiKey = process.env.GEMINI_API_KEY;
 
-  if (!apiKey) return res.status(500).json({ text: "Clé API manquante." });
+  if (!apiKey) {
+    return res.status(200).json({ text: "Erreur : La clé GEMINI_API_KEY n'est pas configurée sur Vercel." });
+  }
 
   const instructionsRnow = `
-Tu es l'Expert-Concierge de Rnow. Ton ton est dynamique et professionnel. 
-Tu dois organiser le carnet de voyage avec cette structure thématique précise :
+Tu es l'Expert-Concierge de Rnow. Ton ton est dynamique, moderne et professionnel.
+Génère le carnet complet avec cette structure précise :
 
-1. ACCUEIL ET ANALYSE : Salue et analyse le budget (${budget}€ pour ${duree} jours en mode ${confort}). Prend bien en compte les envies du client : ${style}.
-
-2. TRANSPORTS GLOBAUX : Détaille les vols, trains ou bus longue distance pour l'aller et le retour.
-💰 RÉSERVATION : [Réserver le transport](https://www.skyscanner.fr/transport/vols/${depart}/${destination}/${date})
-
-3. HÉBERGEMENTS : Liste tous les hébergements suggérés pour tout le séjour. Si plusieurs destinations/étapes, classe-les par ville.
-💰 RÉSERVATION : [Réserver cet hôtel](https://www.booking.com/searchresults.html?ss=HOTEL+${destination})
-
-4. RESTAURANTS ET GASTRONOMIE : Une liste des meilleures adresses (bon rapport qualité/prix) classées par ville. Ne le fais plus jour par jour.
-
-5. DÉTAIL JOUR PAR JOUR (Focus Activités et Logistique locale) :
-Pour chaque jour (JOUR 1 à ${duree}) :
-📍 ACTIVITÉ : Détaille l'expérience principale en lien avec : ${style}.
+1. ACCUEIL ET ANALYSE EXPERTE : Analyse le budget (${budget}€ pour ${duree} jours en mode ${confort}) et les envies : ${style || 'Découverte'}.
+2. TRANSPORTS GLOBAUX : Vols ou trains A/R depuis ${depart || 'Paris'} vers ${destination}. Lien : [Réserver mon transport](https://www.skyscanner.fr/transport/vols/${depart || 'PAR'}/${destination}/${date || '2026-06-01'})
+3. HÉBERGEMENTS : Liste les établissements par ville. Lien : [Réserver cet hôtel](https://www.booking.com/searchresults.html?ss=HOTEL+${destination})
+4. GASTRONOMIE : Bonnes adresses et pépites locales triées par ville.
+5. DÉTAIL JOUR PAR JOUR (Du Jour 1 au Jour ${duree}) :
+- Pour chaque jour :
+📍 ACTIVITÉ : Ce qu'on fait (en lien avec les envies).
 💰 RÉSERVATION : [Réserver l'activité](https://www.getyourguide.fr/s/?q=ACTIVITE+${destination}) ou "Accès libre".
-🚕 LOGISTIQUE JOURNÉE : Précise comment circuler ce jour-là (Uber, Collectivos, Tuk-tuk, navette, etc.).
+🚕 LOGISTIQUE LOCALE : Moyens de transport du jour (Collectivos, Taxi, Bus, Marche).
+6. CONSEILS PRATIQUES & INITIÉS.
 
-6. LOGISTIQUE FINALE : Assurances et conseils pratiques.
-
-RÈGLES D'ÉCRITURE : Majuscule au début de chaque phrase. Pas de gras (**), pas de dièses (#). Saute des lignes entre les rubriques.
+RÈGLES D'ÉCRITURE : Majuscule en début de chaque phrase. Pas d'astérisques (*), pas de dièses (#), pas de gras (**). Saute des lignes entre les rubriques.
   `;
 
   let promptFinal = "";
   if (type === "initial") {
-    promptFinal = `Génère un itinéraire COMPLET et détaillé de ${duree} jours à ${destination}. ${instructionsRnow}`;
+    promptFinal = `Génère un itinéraire complet et détaillé de ${duree} jours à ${destination}. ${instructionsRnow}`;
   } else {
     promptFinal = `Prends cet itinéraire : "${ancienItineraire}". Modifie-le selon ce feedback : "${feedback}". ${instructionsRnow}`;
   }
 
   try {
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    // 1. Détection dynamique du modèle actif pour éviter l'erreur "Model Not Found"
+    const listRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+    const listData = await listRes.json();
+
+    if (listData.error) {
+      return res.status(200).json({ text: "Erreur Google API : " + listData.error.message });
+    }
+
+    // Sélectionne un modèle de génération valide (flash ou pro)
+    const validModel = listData.models?.find(m => 
+      m.supportedGenerationMethods?.includes("generateContent") && 
+      (m.name.includes("flash") || m.name.includes("gemini"))
+    ) || listData.models?.[0];
+
+    if (!validModel) {
+      return res.status(200).json({ text: "Aucun modèle Gemini disponible sur ce compte Google AI Studio." });
+    }
+
+    // 2. Appel du modèle sélectionné
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/${validModel.name}:generateContent?key=${apiKey}`;
 
     const response = await fetch(apiUrl, {
       method: 'POST',
@@ -54,17 +68,27 @@ RÈGLES D'ÉCRITURE : Majuscule au début de chaque phrase. Pas de gras (**), pa
           { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" },
           { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" }
         ],
-        generationConfig: { temperature: 0.8, maxOutputTokens: 3800 }
+        generationConfig: { temperature: 0.75, maxOutputTokens: 3800 }
       })
     });
 
     const data = await response.json();
-    let textOutput = data.candidates?.[0]?.content?.parts?.[0]?.text || "Erreur de génération.";
-    
+
+    if (data.error) {
+      return res.status(200).json({ text: "Erreur lors de la génération : " + data.error.message });
+    }
+
+    let textOutput = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!textOutput) {
+      return res.status(200).json({ text: "L'IA a retourné une réponse vide. Veuillez réessayer." });
+    }
+
+    // Nettoyage Markdown
     textOutput = textOutput.replace(/\*\*/g, '').replace(/\*/g, '').replace(/#/g, '');
-    
+
     res.status(200).json({ text: textOutput });
+
   } catch (error) {
-    res.status(500).json({ text: "Erreur technique serveur." });
+    res.status(200).json({ text: "Erreur serveur : " + error.message });
   }
 }
