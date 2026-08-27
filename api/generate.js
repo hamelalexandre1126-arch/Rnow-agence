@@ -11,32 +11,57 @@ export default async function handler(req, res) {
   }
 
   const instructionsRnow = `
-Tu es l'Expert-Concierge de Rnow. Ton ton est dynamique, moderne et professionnel.
-Génère le carnet complet avec cette structure précise :
+Tu es l'Expert-Concierge de Rnow.
+Ton objectif : Créer un carnet percutant, très aéré, visuel et sans blabla inutile.
 
-1. ACCUEIL ET ANALYSE EXPERTE : Analyse le budget (${budget}€ pour ${duree} jours en mode ${confort}) et les envies : ${style || 'Découverte'}.
-2. TRANSPORTS GLOBAUX : Vols ou trains A/R depuis ${depart || 'Paris'} vers ${destination}. Lien : [Réserver mon transport](https://www.skyscanner.fr/transport/vols/${depart || 'PAR'}/${destination}/${date || '2026-06-01'})
-3. HÉBERGEMENTS : Liste les établissements par ville. Lien : [Réserver cet hôtel](https://www.booking.com/searchresults.html?ss=HOTEL+${destination})
-4. GASTRONOMIE : Bonnes adresses et pépites locales triées par ville.
-5. DÉTAIL JOUR PAR JOUR (Du Jour 1 au Jour ${duree}) :
-- Pour chaque jour :
-📍 ACTIVITÉ : Ce qu'on fait (en lien avec les envies).
-💰 RÉSERVATION : [Réserver l'activité](https://www.getyourguide.fr/s/?q=ACTIVITE+${destination}) ou "Accès libre".
-🚕 LOGISTIQUE LOCALE : Moyens de transport du jour (Collectivos, Taxi, Bus, Marche).
-6. CONSEILS PRATIQUES & INITIÉS.
+STRUCTURE OBLIGATOIRE DU CARNET :
 
-RÈGLES D'ÉCRITURE : Majuscule en début de chaque phrase. Pas d'astérisques (*), pas de dièses (#), pas de gras (**). Saute des lignes entre les rubriques.
+1. L'ESSENTIEL EN UN COUP D'ŒIL
+Rédige un court paragraphe de 3 lignes maximum qui résume l'esprit du voyage, la faisabilité et l'ambiance globale selon les envies : ${style || 'Découverte'}.
+
+2. FICHE TECHNIQUE DU VOYAGE (Puces synthétiques)
+- Budget maîtrisé : ${budget}€ au total (soit environ ${Math.round(budget/duree)}€/jour) en mode ${confort}.
+- Trajet A/R : Vols/trains optimisés depuis ${depart || 'Paris'} vers ${destination}.
+[Réserver mon transport](https://www.skyscanner.fr/transport/vols/${depart || 'PAR'}/${destination}/${date || '2026-06-01'})
+- Hébergement sélectionné : Nom de l'établissement choisi, quartier stratégique et ambiance.
+[Réserver l'hôtel](https://www.booking.com/searchresults.html?ss=HOTEL+${destination})
+- Déplacements sur place : Mode recommandé (scooter, Uber, collectivo, pass métro, etc.) avec estimation de coût.
+
+3. MONUMENTS & INCONTOURNABLES
+Liste 2 ou 3 sites majeurs ou expériences emblématiques à ne pas rater avec liens dédiés :
+- Nom du monument / spot : Pourquoi c'est incontournable.
+[Réserver l'entrée / visite](https://www.getyourguide.fr/s/?q=${destination})
+
+4. LES TABLES SÉLECTIONNÉES PAR RNOW
+Donne 3 adresses précises (bon rapport qualité/prix, street food pépite ou table d'ambiance) :
+- Nom du restaurant : Spécialité à commander impérativement.
+
+5. PLANNING JOUR PAR JOUR (Focus Activités & Rythme)
+Pour chaque jour (Jour 1 à Jour ${duree}) :
+- JOUR X : Nom de l'étape
+Matin : Activité précise et astuce timing.
+Après-midi : Exploration ou détente.
+Lien activité si payant : [Réserver l'activité](https://www.getyourguide.fr/s/?q=ACTIVITE+${destination}) ou mention "Accès libre".
+Logistique du jour : Précision sur le transport d'un point A à un point B.
+
+6. LE CONSEIL RNOW (Secret d'initié)
+Donne une astuce d'expert très précise, niche et peu connue des touristes (spot secret pour le coucher de soleil, horaire pour éviter la foule, coutume locale méconnue, coupe-file gratuit, arnaque locale à contourner). Ce conseil doit prouver l'expertise absolue de l'agence.
+
+RÈGLES DE FORME STRICTES :
+- Phrases courtes, directes et percutantes.
+- Utilise une majuscule au début de chaque phrase.
+- AUCUN gras markdown (**), AUCUN dièse (#), AUCUN astérisque (*).
+- Laisse un espace propre entre chaque section.
   `;
 
   let promptFinal = "";
   if (type === "initial") {
-    promptFinal = `Génère un itinéraire complet et détaillé de ${duree} jours à ${destination}. ${instructionsRnow}`;
+    promptFinal = `Génère le carnet de voyage expert de ${duree} jours à ${destination}. ${instructionsRnow}`;
   } else {
-    promptFinal = `Prends cet itinéraire : "${ancienItineraire}". Modifie-le selon ce feedback : "${feedback}". ${instructionsRnow}`;
+    promptFinal = `Itinéraire actuel : "${ancienItineraire}". Ajuste-le selon cette demande : "${feedback}". ${instructionsRnow}`;
   }
 
   try {
-    // 1. Détection dynamique du modèle actif pour éviter l'erreur "Model Not Found"
     const listRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
     const listData = await listRes.json();
 
@@ -44,17 +69,15 @@ RÈGLES D'ÉCRITURE : Majuscule en début de chaque phrase. Pas d'astérisques (
       return res.status(200).json({ text: "Erreur Google API : " + listData.error.message });
     }
 
-    // Sélectionne un modèle de génération valide (flash ou pro)
     const validModel = listData.models?.find(m => 
       m.supportedGenerationMethods?.includes("generateContent") && 
       (m.name.includes("flash") || m.name.includes("gemini"))
     ) || listData.models?.[0];
 
     if (!validModel) {
-      return res.status(200).json({ text: "Aucun modèle Gemini disponible sur ce compte Google AI Studio." });
+      return res.status(200).json({ text: "Aucun modèle de génération disponible sur ce compte." });
     }
 
-    // 2. Appel du modèle sélectionné
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/${validModel.name}:generateContent?key=${apiKey}`;
 
     const response = await fetch(apiUrl, {
@@ -68,7 +91,7 @@ RÈGLES D'ÉCRITURE : Majuscule en début de chaque phrase. Pas d'astérisques (
           { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" },
           { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" }
         ],
-        generationConfig: { temperature: 0.75, maxOutputTokens: 3800 }
+        generationConfig: { temperature: 0.7, maxOutputTokens: 3800 }
       })
     });
 
@@ -80,15 +103,14 @@ RÈGLES D'ÉCRITURE : Majuscule en début de chaque phrase. Pas d'astérisques (
 
     let textOutput = data.candidates?.[0]?.content?.parts?.[0]?.text;
     if (!textOutput) {
-      return res.status(200).json({ text: "L'IA a retourné une réponse vide. Veuillez réessayer." });
+      return res.status(200).json({ text: "L'IA n'a retourné aucun contenu. Veuillez réessayer." });
     }
 
-    // Nettoyage Markdown
     textOutput = textOutput.replace(/\*\*/g, '').replace(/\*/g, '').replace(/#/g, '');
 
     res.status(200).json({ text: textOutput });
 
   } catch (error) {
-    res.status(200).json({ text: "Erreur serveur : " + error.message });
+    res.status(200).json({ text: "Erreur technique de traitement : " + error.message });
   }
 }
