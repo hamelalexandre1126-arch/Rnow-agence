@@ -52,11 +52,11 @@
             <h1>Crée ton <span>Voyage</span></h1>
             <form id="voyageForm">
                 <div class="row">
-                    <div class="form-group col"><label>Départ</label><input type="text" id="depart" placeholder="Paris" required></div>
-                    <div class="form-group col"><label>Destination</label><input type="text" id="destination" placeholder="Tulum" required></div>
+                    <div class="form-group col"><label>Départ</label><input type="text" id="depart" placeholder="Paris" value="Paris"></div>
+                    <div class="form-group col"><label>Destination</label><input type="text" id="destination" placeholder="Tulum" value="Tulum"></div>
                 </div>
                 <div class="row">
-                    <div class="form-group col"><label>Date</label><input type="date" id="dateDepart" required></div>
+                    <div class="form-group col"><label>Date</label><input type="date" id="dateDepart"></div>
                     <div class="form-group col"><label>Confort</label>
                         <select id="confort">
                             <option value="Backpacker">🎒 Backpacker</option>
@@ -66,8 +66,8 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="form-group col"><label>Budget total (€)</label><input type="number" id="budget" placeholder="1500" required></div>
-                    <div class="form-group col"><label>Durée (jours)</label><input type="number" id="duree" placeholder="7" required></div>
+                    <div class="form-group col"><label>Budget total (€)</label><input type="number" id="budget" placeholder="1500" value="1200"></div>
+                    <div class="form-group col"><label>Durée (jours)</label><input type="number" id="duree" placeholder="7" value="5"></div>
                 </div>
                 <div class="form-group">
                     <label>Tes envies (Vacances de rêve)</label>
@@ -75,7 +75,7 @@
                 </div>
                 <button type="button" id="btnGenerer" class="btn-main">Générer mon voyage ✨</button>
                 <div id="loader" class="loader-container">
-                    <div style="text-align:center; color: var(--primary); font-weight:900; margin-bottom:10px; font-size:0.8rem;">L'IA RNW SCULPTE VOTRE CARNET...</div>
+                    <div style="text-align:center; color: var(--primary); font-weight:900; margin-bottom:10px; font-size:0.8rem;">L'IA RNOW SCULPTE VOTRE CARNET...</div>
                     <div class="progress-bar"><div class="progress-fill"></div></div>
                 </div>
             </form>
@@ -84,7 +84,7 @@
         <div id="voyages-container"></div>
 
         <div id="modifs-zone" class="box">
-            <label>Une modification ? (Ex: Moins de marche, plus de plage...)</label>
+            <label>Une modification ?</label>
             <textarea id="feedbackClient" rows="3" placeholder="Dis-moi ce que tu souhaites ajuster..."></textarea>
             <button type="button" id="btnAffiner" class="btn-main" style="background: var(--secondary); margin-top: 15px;">Affiner l'itinéraire ⚡</button>
         </div>
@@ -98,15 +98,6 @@
             return t.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" class="rnow-link">$1</a>'); 
         }
 
-        async function appelerAPI(payload) {
-            const res = await fetch('/api/generate', { 
-                method: 'POST', 
-                headers: {'Content-Type': 'application/json'}, 
-                body: JSON.stringify(payload) 
-            });
-            return await res.json();
-        }
-
         function ajouterAuConteneur(texte) {
             const container = document.getElementById('voyages-container');
             const boite = document.createElement('div');
@@ -114,10 +105,10 @@
             boite.innerHTML = `
                 <h2>Voyage Rnow V${versionVoyage}</h2>
                 <div class="itineraire-content">${formaterTexte(texte)}</div>
-                <button class="btn-wa" style="width: 100%; padding: 22px; border: none; border-radius: 20px; background: #25D366; color: #fff; font-weight: 900; text-transform: uppercase; cursor: pointer;">RECEVOIR SUR WHATSAPP 📱</button>
+                <button class="btn-main" style="background:#25D366; width:100%; margin-top:20px;">RECEVOIR SUR WHATSAPP 📱</button>
             `;
             
-            boite.querySelector('.btn-wa').onclick = () => {
+            boite.querySelector('button').onclick = () => {
                 const message = encodeURIComponent("Mon carnet Rnow :\n\n" + texte);
                 window.open(`https://wa.me/?text=${message}`, '_blank');
             };
@@ -132,21 +123,32 @@
         document.getElementById('btnGenerer').onclick = async function() {
             const loader = document.getElementById('loader');
             loader.style.display = 'block';
-            const payload = { 
-                type: "initial", 
-                depart: document.getElementById('depart').value, 
-                destination: document.getElementById('destination').value, 
-                budget: document.getElementById('budget').value, 
-                confort: document.getElementById('confort').value, 
-                date: document.getElementById('dateDepart').value, 
-                duree: document.getElementById('duree').value,
-                style: document.getElementById('styleVoyage').value 
-            };
-            const data = await appelerAPI(payload);
-            if (data.text && data.text !== "Erreur de génération.") {
-                ajouterAuConteneur(data.text);
+            
+            try {
+                const payload = { 
+                    type: "initial", 
+                    depart: document.getElementById('depart').value || "Paris", 
+                    destination: document.getElementById('destination').value || "Tulum", 
+                    budget: document.getElementById('budget').value || "1200", 
+                    confort: document.getElementById('confort').value, 
+                    date: document.getElementById('dateDepart').value || "2026-06-01", 
+                    duree: document.getElementById('duree').value || "5",
+                    style: document.getElementById('styleVoyage').value || "Découverte"
+                };
+
+                const res = await fetch('/api/generate', { 
+                    method: 'POST', 
+                    headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify(payload) 
+                });
+
+                const data = await res.json();
+                ajouterAuConteneur(data.text || "Aucune réponse reçue.");
+            } catch (err) {
+                ajouterAuConteneur("Erreur de connexion : " + err.message);
+            } finally {
+                loader.style.display = 'none';
             }
-            loader.style.display = 'none';
         };
 
         document.getElementById('btnAffiner').onclick = async function() {
@@ -154,20 +156,33 @@
             if (!feedback) return;
             const loader = document.getElementById('loader');
             loader.style.display = 'block';
-            const payload = { 
-                type: "correction", 
-                ancienItineraire: dernierItineraire, 
-                feedback: feedback,
-                destination: document.getElementById('destination').value,
-                budget: document.getElementById('budget').value,
-                duree: document.getElementById('duree').value
-            };
-            const data = await appelerAPI(payload);
-            if (data.text) {
-                ajouterAuConteneur(data.text);
-                document.getElementById('feedbackClient').value = "";
+
+            try {
+                const payload = { 
+                    type: "correction", 
+                    ancienItineraire: dernierItineraire, 
+                    feedback: feedback,
+                    destination: document.getElementById('destination').value,
+                    budget: document.getElementById('budget').value,
+                    duree: document.getElementById('duree').value
+                };
+
+                const res = await fetch('/api/generate', { 
+                    method: 'POST', 
+                    headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify(payload) 
+                });
+
+                const data = await res.json();
+                if (data.text) {
+                    ajouterAuConteneur(data.text);
+                    document.getElementById('feedbackClient').value = "";
+                }
+            } catch (err) {
+                ajouterAuConteneur("Erreur lors de la modification : " + err.message);
+            } finally {
+                loader.style.display = 'none';
             }
-            loader.style.display = 'none';
         };
     </script>
 </body>
