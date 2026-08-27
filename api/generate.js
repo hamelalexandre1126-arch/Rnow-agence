@@ -12,71 +12,59 @@ export default async function handler(req, res) {
 
   const instructionsRnow = `
 Tu es l'Expert-Concierge de Rnow.
-Ton objectif : Créer un carnet percutant, très aéré, visuel et sans blabla inutile.
+Rédige un carnet direct, percutant, concis et aéré. Ne t'arrête jamais avant la fin du carnet.
 
-STRUCTURE OBLIGATOIRE DU CARNET :
+STRUCTURE DU CARNET :
 
-1. L'ESSENTIEL EN UN COUP D'ŒIL
-Rédige un court paragraphe de 3 lignes maximum qui résume l'esprit du voyage, la faisabilité et l'ambiance globale selon les envies : ${style || 'Découverte'}.
+L'ESSENTIEL EN UN COUP D'ŒIL
+Court paragraphe de 2-3 phrases résumant l'ambiance et la faisabilité pour ${destination}.
 
-2. FICHE TECHNIQUE DU VOYAGE (Puces synthétiques)
-- Budget maîtrisé : ${budget}€ au total (soit environ ${Math.round(budget/duree)}€/jour) en mode ${confort}.
-- Trajet A/R : Vols/trains optimisés depuis ${depart || 'Paris'} vers ${destination}.
-[Réserver mon transport](https://www.skyscanner.fr/transport/vols/${depart || 'PAR'}/${destination}/${date || '2026-06-01'})
-- Hébergement sélectionné : Nom de l'établissement choisi, quartier stratégique et ambiance.
-[Réserver l'hôtel](https://www.booking.com/searchresults.html?ss=HOTEL+${destination})
-- Déplacements sur place : Mode recommandé (scooter, Uber, collectivo, pass métro, etc.) avec estimation de coût.
+FICHE TECHNIQUE DU VOYAGE
+- Budget : ${budget}€ au total (environ ${Math.round(budget/duree)}€/jour) en mode ${confort}.
+- Trajet A/R : Trajet optimisé depuis ${depart || 'Paris'} vers ${destination}. [Réserver mon transport](https://www.skyscanner.fr)
+- Hébergement sélectionné : Un établissement phare recommandé pour le séjour. [Réserver l'hôtel](https://www.booking.com)
+- Déplacements locaux : Mode recommandé (transports en commun, vélo, taxi, marche).
 
-3. MONUMENTS & INCONTOURNABLES
-Liste 2 ou 3 sites majeurs ou expériences emblématiques à ne pas rater avec liens dédiés :
-- Nom du monument / spot : Pourquoi c'est incontournable.
-[Réserver l'entrée / visite](https://www.getyourguide.fr/s/?q=${destination})
+MONUMENTS ET INCONTOURNABLES
+Liste 2 ou 3 lieux majeurs :
+- Nom du spot : Pourquoi y aller. [Réserver l'entrée](https://www.getyourguide.fr)
 
-4. LES TABLES SÉLECTIONNÉES PAR RNOW
-Donne 3 adresses précises (bon rapport qualité/prix, street food pépite ou table d'ambiance) :
-- Nom du restaurant : Spécialité à commander impérativement.
+LES TABLES SÉLECTIONNÉES PAR RNOW
+3 adresses recommandées :
+- Nom de la table : Spécialité locale à tester.
 
-5. PLANNING JOUR PAR JOUR (Focus Activités & Rythme)
-Pour chaque jour (Jour 1 à Jour ${duree}) :
-- JOUR X : Nom de l'étape
-Matin : Activité précise et astuce timing.
-Après-midi : Exploration ou détente.
-Lien activité si payant : [Réserver l'activité](https://www.getyourguide.fr/s/?q=ACTIVITE+${destination}) ou mention "Accès libre".
-Logistique du jour : Précision sur le transport d'un point A à un point B.
+PLANNING JOUR PAR JOUR (Du Jour 1 au Jour ${duree})
+Pour chaque jour :
+- JOUR X : Titre court
+Matin : Activité principale.
+Après-midi : Exploration ou visite. [Réserver l'activité](https://www.getyourguide.fr)
+Transport du jour : Conseil de déplacement rapide.
 
-6. LE CONSEIL RNOW (Secret d'initié)
-Donne une astuce d'expert très précise, niche et peu connue des touristes (spot secret pour le coucher de soleil, horaire pour éviter la foule, coutume locale méconnue, coupe-file gratuit, arnaque locale à contourner). Ce conseil doit prouver l'expertise absolue de l'agence.
+LE CONSEIL RNOW
+Donne une astuce d'initié très précise (horaire secret, pépite méconnue, astuce locale) pour valoriser l'expertise de l'agence.
 
-RÈGLES DE FORME STRICTES :
-- Phrases courtes, directes et percutantes.
-- Utilise une majuscule au début de chaque phrase.
-- AUCUN gras markdown (**), AUCUN dièse (#), AUCUN astérisque (*).
-- Laisse un espace propre entre chaque section.
+RÈGLES D'ÉCRITURE :
+- Pas de formatage Markdown agressif : AUCUN astérisque (*), AUCUN dièse (#), AUCUN texte en gras (**).
+- Majuscule au début de chaque phrase.
+- Phrases courtes pour garantir une génération rapide et complète.
   `;
 
-  let promptFinal = "";
-  if (type === "initial") {
-    promptFinal = `Génère le carnet de voyage expert de ${duree} jours à ${destination}. ${instructionsRnow}`;
-  } else {
-    promptFinal = `Itinéraire actuel : "${ancienItineraire}". Ajuste-le selon cette demande : "${feedback}". ${instructionsRnow}`;
-  }
+  const promptFinal = type === "initial"
+    ? `Génère l'intégralité du carnet de voyage pour ${duree} jours à ${destination}. ${instructionsRnow}`
+    : `Itinéraire actuel : "${ancienItineraire}". Ajuste-le selon : "${feedback}". ${instructionsRnow}`;
 
   try {
     const listRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
     const listData = await listRes.json();
 
     if (listData.error) {
-      return res.status(200).json({ text: "Erreur Google API : " + listData.error.message });
+      return res.status(200).json({ text: "Erreur API : " + listData.error.message });
     }
 
     const validModel = listData.models?.find(m => 
       m.supportedGenerationMethods?.includes("generateContent") && 
-      (m.name.includes("flash") || m.name.includes("gemini"))
+      m.name.includes("flash")
     ) || listData.models?.[0];
-
-    if (!validModel) {
-      return res.status(200).json({ text: "Aucun modèle de génération disponible sur ce compte." });
-    }
 
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/${validModel.name}:generateContent?key=${apiKey}`;
 
@@ -91,19 +79,22 @@ RÈGLES DE FORME STRICTES :
           { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" },
           { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" }
         ],
-        generationConfig: { temperature: 0.7, maxOutputTokens: 3800 }
+        generationConfig: { 
+          temperature: 0.6, // Baisse de température pour une génération plus rapide et stable
+          maxOutputTokens: 2500 
+        }
       })
     });
 
     const data = await response.json();
 
     if (data.error) {
-      return res.status(200).json({ text: "Erreur lors de la génération : " + data.error.message });
+      return res.status(200).json({ text: "Erreur génération : " + data.error.message });
     }
 
     let textOutput = data.candidates?.[0]?.content?.parts?.[0]?.text;
     if (!textOutput) {
-      return res.status(200).json({ text: "L'IA n'a retourné aucun contenu. Veuillez réessayer." });
+      return res.status(200).json({ text: "Génération interrompue. Réessayez." });
     }
 
     textOutput = textOutput.replace(/\*\*/g, '').replace(/\*/g, '').replace(/#/g, '');
@@ -111,6 +102,6 @@ RÈGLES DE FORME STRICTES :
     res.status(200).json({ text: textOutput });
 
   } catch (error) {
-    res.status(200).json({ text: "Erreur technique de traitement : " + error.message });
+    res.status(200).json({ text: "Erreur serveur : " + error.message });
   }
 }
